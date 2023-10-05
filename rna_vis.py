@@ -8,6 +8,7 @@ from d3blocks import D3Blocks
 import pandas as pd
 import json
 import collections
+from get_interactions import getInteractions
 
 nt_colors = {'A': '#00994C',
     'C': '#000099',
@@ -16,12 +17,19 @@ nt_colors = {'A': '#00994C',
 }
 
 """
-Returns (nucleotide name, position)
+Returns ('p'/'nt', name, position, chain)
+ASSUMES: proteins are represented by 3 letter code, and nucleotides by one letter!
 """
-def parse_ntid(ntid):
-    temp_split = ntid.split('.')
-    return temp_split[3], str(temp_split[4])
-    
+def parse_node(node_id):
+    temp_split = node_id.split(':')
+    # Is a protein
+    if(len(temp_split[1]) == 3):
+        return ('p', temp_split[1], temp_split[2], temp_split[0])
+    elif(len(temp_split[1]) == 1): #Is a nucleotide
+        return ('nt', temp_split[1], temp_split[2], temp_split[0])
+    else: #ERROR
+        print("Error parsing node!")
+        return None    
 
 """
 Returns base and backbone pairings from pre-processed (i.e., RNA only) DSSR 
@@ -53,7 +61,7 @@ def get_edges(dssr, protein_interactions):
     for i in range(len(pairs)-1):
         backbone_edges.append((pairs[i][0], pairs[i+1][0]))
     
-    
+    # add protein interactions
     interaction_edges = []
     for key, val in protein_interactions.items():
         for v in val:
@@ -63,13 +71,13 @@ def get_edges(dssr, protein_interactions):
 
     return pairs,backbone_edges, interaction_edges
 
-# parser = MMCIFParser()
+parser = MMCIFParser()
 
-# home = "/Users/aricohen/Desktop/"
-# pdb_path = "{}/rnaprodb_dev/".format(home)
-# pdb_file = "1ivs-assembly1.cif"
-# original_structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
-# protein, rna = splitEntities(original_structure) # split RNA and protein from structure
+home = "/home/aricohen/Desktop/"
+pdb_path = "{}/rnaprodb_dev/".format(home)
+pdb_file = "1ivs-assembly1.cif"
+original_structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
+protein, rna = splitEntities(original_structure) # split RNA and protein from structure
 
 rna = cleanRNA(rna)
 protein = protein #no need for cleanProtein at the moment
@@ -86,18 +94,32 @@ df['weight'] = [20]*len(pairs) + [40]*(len(backbone_edges)) + [5]*(len(interacti
 d3 = D3Blocks()
 d3.d3graph(df, filepath='./')
 
+# can probably pre-compute, then add to the dataframe and use that?
 # iterate through nodes to change colors, label, etc.
 for node in d3.D3graph.node_properties:
-    nt_tuple = parse_ntid(node) # (nt, position)
-    nt_name = nt_tuple[0]
-    nt_pos = str(nt_tuple[1])
-
+    parsed_node = parse_node(node) # ('p'/'nt', name, position, chain)
+    
+    name = parsed_node[1]
+    pos = str(parsed_node[2])
+    chain = parsed_node[3]
+    
+    # global changes
     d3.D3graph.node_properties[node]['size'] = 20
-    d3.D3graph.node_properties[node]['label']= nt_pos
-    d3.D3graph.node_properties[node]['color']= nt_colors[nt_name]
+    d3.D3graph.node_properties[node]['label']= '' # empty label, use tooltip instead
     d3.D3graph.node_properties[node]['opacity']= 0.705
     d3.D3graph.node_properties[node]['fontcolor']= '#000000'
     d3.D3graph.node_properties[node]['fontsize']= 20
     d3.D3graph.node_properties[node]['edge_size']= 5
 
-d3.D3graph.show()
+    if(parsed_node[0] == 'nt'): # is a nucleotide
+        d3.D3graph.node_properties[node]['color']= nt_colors[name] #use nt color scheme
+        d3.D3graph.node_properties[node]['size'] = 20
+        tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
+    else: # is protein residue
+        d3.D3graph.node_properties[node]['size'] = 10
+        d3.D3graph.node_properties[node]['color']= 'gray' #use gray
+        tooltip = 'Resiude: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
+    d3.D3graph.node_properties[node]['tooltip']= tooltip
+
+print(d3.D3graph.edge_properties)
+d3.D3graph.show(filepath='./')
