@@ -121,5 +121,5 @@ for node in d3.D3graph.node_properties:
         tooltip = 'Resiude: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
     d3.D3graph.node_properties[node]['tooltip']= tooltip
 
-print(d3.D3graph.edge_properties)
+# print(d3.D3graph.edge_properties)
 d3.D3graph.show(filepath='./')
