@@ -17,6 +17,19 @@ nt_colors = {'A': '#00994C',
 }
 
 """
+Returns text string from node tuple representation
+"""
+def node_to_text(node):
+    return node[3] + ":" + node[1] + ":" + node[2]
+
+def is_backbone_edge(node_1, node_2):
+    #if (both nucleotides) AND (one nt away from each other) AND (on same strand)
+    if(node_1[0] == 'nt' and node_2[0] == 'nt' and ((int(node_2[2]) - int(node_1[2]) == 1) or (int(node_2[2]) - int(node_1[2]) == -1)) and node_1[3] == node_2[3]):
+       return True
+    else:
+        return False
+
+"""
 Returns ('p'/'nt', name, position, chain)
 ASSUMES: proteins are represented by 3 letter code, and nucleotides by one letter!
 """
@@ -30,6 +43,15 @@ def parse_node(node_id):
     else: #ERROR
         print("Error parsing node!")
         return None    
+
+"""
+Returns (('p'/'nt', name, position, chain),('p'/'nt', name, position, chain))
+ASSUMES: proteins are represented by 3 letter code, and nucleotides by one letter!
+"""
+def parse_edge(node_id):
+    first_node = parse_node(node_id[0])
+    sec_node = parse_node(node_id[1])
+    return first_node,sec_node
 
 """
 Returns base and backbone pairings from pre-processed (i.e., RNA only) DSSR 
@@ -121,5 +143,23 @@ for node in d3.D3graph.node_properties:
         tooltip = 'Resiude: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
     d3.D3graph.node_properties[node]['tooltip']= tooltip
 
+# iterate through edges to determine colors, backbone edges 
+for edge in d3.D3graph.edge_properties:
+    first_node,sec_node = parse_edge(edge)
+    edge_tuple = (node_to_text(first_node),node_to_text(sec_node)) #turn back into text to compare to backbone edge
+    if edge_tuple in backbone_edges: #is a backbone edge. NOTE change to iterate through backbone edges instead!
+        d3.D3graph.edge_properties[edge]['marker_start'] = ''
+        d3.D3graph.edge_properties[edge]['marker_end'] = 'arrow'
+        d3.D3graph.edge_properties[edge]['directed'] = True
+        d3.D3graph.edge_properties[edge]['color'] = '#000000'
+        d3.D3graph.edge_properties[edge]['label_color'] = '#000000'
+        d3.D3graph.edge_properties[edge]['marker_color'] = '#000000'
+    else:
+        d3.D3graph.edge_properties[edge]['marker_end'] = ''
+        # d3.D3graph.edge_properties[edge]['directed'] = False
+
+
+# d3.D3graph.set_edge_properties(directed=True)
 # print(d3.D3graph.edge_properties)
 d3.D3graph.show(filepath='./')
+print(d3.D3graph.edge_properties)
