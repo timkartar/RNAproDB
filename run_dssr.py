@@ -13,7 +13,7 @@ def runDSSR(structure, quiet=True, prefix='rna'):
     """
     
     if not isinstance(structure, str):
-        file_name = "./dssr_output/{}.tmp.pdb".format(prefix)
+        file_name = "./dssr_output/{}.tmp.mmcif".format(prefix)
         structure.save(file_name)
     else:
         file_name = structure

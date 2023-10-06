@@ -171,10 +171,11 @@ class StructureData(object):
     
     def save(self, outfile=None, bfactor_key=None):
         from Bio.PDB import PDBIO
-        __io = PDBIO()
+        from Bio.PDB.mmcifio import MMCIFIO
+        __io = MMCIFIO()
         # write structure to file
         if outfile is None:
-            outfile = self.name + ".pdb"
+            outfile = self.name + ".mmcif"
         
         if bfactor_key is not None:
             for atom in self.get_atoms():
@@ -183,7 +184,7 @@ class StructureData(object):
                 else:
                     atom.bfactor = 0.0
         
-        logging.debug("Saving pdb file: %s", outfile)
+        logging.debug("Saving mmcif file: %s", outfile)
         __io.set_structure(self.structure)
         __io.save(outfile)
         
