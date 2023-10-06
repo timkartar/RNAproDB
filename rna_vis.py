@@ -45,9 +45,9 @@ def get_edges(dssr, protein_interactions):
         pairs_dict[p1] = p2
         pairs_dict[p2] = p1
     # add base pairing and self edges
+    
     for nt in data["nts"]:
-        nt_id = ":".join(nt.get("nt_id").split(".")[2:-1])
-        
+        nt_id = ":".join(nt.get("nt_id").split(".")[2:-1])        
         if nt_id in pairs_dict:
             # base pairing edge
             pair_edge = (nt_id, pairs_dict[nt_id])
@@ -55,27 +55,38 @@ def get_edges(dssr, protein_interactions):
             # self edge
             pair_edge = (nt_id, nt_id)
         pairs.append(pair_edge)
-
     # add backbone edges
     backbone_edges = []
-    for i in range(len(pairs)-1):
-        backbone_edges.append((pairs[i][0], pairs[i+1][0]))
-    
-    # add protein interactions
+    for i, nt in enumerate(data["nts"]):
+        nt_id = ":".join(nt.get("nt_id").split(".")[2:-1])
+        try:
+            nt_next = ":".join(data["nts"][i+1].get("nt_id").split(".")[2:-1])
+        except Exception as e:
+            print(nt_id, e)
+            continue
+        c1 = nt_id.split(":")[0]
+        c2 = nt_next.split(":")[0]
+
+        if c1 == c2:
+            backbone_edges.append((nt_id, nt_next))
+        
     interaction_edges = []
     for key, val in protein_interactions.items():
         for v in val:
             nt = ":".join((key.split(":")[:-1]))
             interaction_edges.append((nt, v))
             
+    interaction_edges = list(set(interaction_edges))
 
     return pairs,backbone_edges, interaction_edges
 
 parser = MMCIFParser()
 
-home = "/home/aricohen/Desktop/"
-pdb_path = "{}/rnaprodb_dev/".format(home)
-pdb_file = "1ivs-assembly1.cif"
+home = "/home/raktim/rnaprodb/rnaprodb/" #change this line only
+
+pdb_path = "{}/pdb/".format(home)
+pdb_file = "8fvi-assembly1.cif"
+#pdb_file = "1ivs-assembly1.cif"
 original_structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(original_structure) # split RNA and protein from structure
 
@@ -90,7 +101,7 @@ pairs,backbone_edges, interaction_edges = get_edges(data, protein_interactions)
 all_edges = pairs + backbone_edges + interaction_edges
 
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
-df['weight'] = [20]*len(pairs) + [40]*(len(backbone_edges)) + [5]*(len(interaction_edges))
+df['weight'] = [20]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges))
 d3 = D3Blocks()
 d3.d3graph(df, filepath='./')
 
@@ -122,4 +133,4 @@ for node in d3.D3graph.node_properties:
     d3.D3graph.node_properties[node]['tooltip']= tooltip
 
 # print(d3.D3graph.edge_properties)
-d3.D3graph.show(filepath='./')
+d3.D3graph.show(filepath='{}/output/{}.html'.format(home, pdb_file))
