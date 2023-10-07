@@ -9,7 +9,6 @@ import pandas as pd
 import json
 import collections
 from get_interactions import getInteractions, getProteinSecStructure
-from run_dssp import run_dssp
 
 nt_colors = {'A': '#00994C',
     'C': '#000099',
@@ -133,7 +132,8 @@ def get_edges(dssr, protein_interactions):
 
 parser = MMCIFParser()
 
-home = "/home/aricohen/Desktop/rnaprodb_dev/" #change this line only
+#update: no need to change anymore
+home =  os.path.dirname(os.path.abspath(__file__)) #change this line only 
 
 pdb_path = "{}/pdb/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
@@ -162,7 +162,7 @@ all_edges = pairs + backbone_edges + interaction_edges + stacks
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [20]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 d3 = D3Blocks()
-d3.d3graph(df, filepath='./', showfig=False)
+d3.d3graph(df, filepath=None, showfig=False)
 d3.D3graph.set_edge_properties(directed=True, marker_color='red') # setting earlier to then update?
 
 # can probably pre-compute, then add to the dataframe and use that?
