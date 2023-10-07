@@ -18,7 +18,7 @@ nt_colors = {'A': '#00994C',
 }
 
 """
-Returns rnaprodb text string (A:B:C) from dssr id representation
+Returns rnaprodb nucleotide text string (A:B:C) from dssr id representation
 """
 def dssr_id_to_text(dssr_id):
     return ":".join(dssr_id.split(".")[2:-1])
