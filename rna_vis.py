@@ -8,7 +8,8 @@ from d3blocks import D3Blocks
 import pandas as pd
 import json
 import collections
-from get_interactions import getInteractions
+from get_interactions import getInteractions, getProteinSecStructure
+from run_dssp import run_dssp
 
 nt_colors = {'A': '#00994C',
     'C': '#000099',
@@ -23,10 +24,13 @@ def dssr_id_to_text(dssr_id):
     return ":".join(dssr_id.split(".")[2:-1])
 
 """
+Input: ('p'/'nt', name, position, chain, ss (protein only))
 Returns text string from node tuple representation
 """
 def node_to_text(node):
-    return node[3] + ":" + node[1] + ":" + node[2]
+    if len(node) == 5: # IS A PROTEIN
+        return node[3] + ":" + node[1] + ":" + node[2] + ":" + node[4]
+    return node[3] + ":" + node[1] + ":" + node[2] # is a NT
 
 """
 IP: Returns if two nodes (tuple representation) are a backbone
@@ -52,14 +56,14 @@ def get_stacking_interactions(dssr):
 
 
 """
-Returns ('p'/'nt', name, position, chain)
+Returns ('p'/'nt', name, position, chain, ss (protein only))
 ASSUMES: proteins are represented by 3 letter code, and nucleotides by one letter!
 """
 def parse_node(node_id):
     temp_split = node_id.split(':')
     # Is a protein
     if(len(temp_split[1]) == 3):
-        return ('p', temp_split[1], temp_split[2], temp_split[0])
+        return ('p', temp_split[1], temp_split[2], temp_split[0], temp_split[3])
     elif(len(temp_split[1]) == 1): #Is a nucleotide
         return ('nt', temp_split[1], temp_split[2], temp_split[0])
     else: #ERROR
@@ -88,8 +92,8 @@ def get_edges(dssr, protein_interactions):
         p2 = dssr_id_to_text(pair.get("nt2"))
         pairs_dict[p1] = p2
         pairs_dict[p2] = p1
-    # add base pairing and self edges
     
+    # add base pairing and self edges
     for nt in data["nts"]:
         nt_id = dssr_id_to_text(nt.get("nt_id"))
         if nt_id in pairs_dict:
@@ -117,10 +121,12 @@ def get_edges(dssr, protein_interactions):
     interaction_edges = []
     for key, val in protein_interactions.items():
         for v in val:
-            nt = ":".join((key.split(":")[:-1]))
+            nt = ":".join((key.split(":")[:-1])) #be careful here
+            ss = key.split(":")[3]
             interaction_edges.append((nt, v))
             
     interaction_edges = list(set(interaction_edges))
+    # print(interaction_edges) #('C:C', 'A:PRO:277:H')
     stacks = get_stacking_interactions(dssr)
 
     return pairs,backbone_edges, interaction_edges,stacks
@@ -131,21 +137,22 @@ home = "/home/aricohen/Desktop/rnaprodb_dev/" #change this line only
 
 pdb_path = "{}/pdb/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
-pdb_file = "1ivs-assembly1.cif"
+prefix = '1ivs'
+pdb_file = "{}-assembly1.cif".format(prefix)
 original_structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(original_structure) # split RNA and protein from structure
 
+# NOTE: here we save the cleaned temporary file before processing it in runDSSR. For larger files, this poses a challenge.
 rna = cleanRNA(rna)
-protein = protein #no need for cleanProtein at the moment
 data = runDSSR(rna, quiet=True, prefix='1ivs')
 
+# we need a way to combine cleaned RNA and protein in new file for DSSR
+# since DSSR does not work on only the protein structure!
 
-## protein_dssr = runDSSR(prefix="1ivs_combined")
 ## get secondary structure for protein residues
 ## for protein interaction edges, color the protein nodes by their secondary structure ()
-
-protein_interactions = getInteractions(protein, rna)
-
+# protein.save_pdb("./dssr_output/1ivs.tmp.pdb")
+protein_interactions = getInteractions(protein, rna, prefix)
 
 pairs,backbone_edges, interaction_edges,stacks = get_edges(data, protein_interactions)
 
@@ -155,13 +162,13 @@ all_edges = pairs + backbone_edges + interaction_edges + stacks
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [20]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 d3 = D3Blocks()
-d3.d3graph(df, filepath='./')
+d3.d3graph(df, filepath='./', showfig=False)
 d3.D3graph.set_edge_properties(directed=True, marker_color='red') # setting earlier to then update?
 
 # can probably pre-compute, then add to the dataframe and use that?
 # iterate through nodes to change colors, label, etc.
 for node in d3.D3graph.node_properties:
-    parsed_node = parse_node(node) # ('p'/'nt', name, position, chain)
+    parsed_node = parse_node(node) # ('p'/'nt', name, position, chain, ss(protein only))
     
     name = parsed_node[1]
     pos = str(parsed_node[2])
@@ -169,9 +176,9 @@ for node in d3.D3graph.node_properties:
     
     # global changes
     d3.D3graph.node_properties[node]['size'] = 12 # original 20
-    d3.D3graph.node_properties[node]['label']= "---" + name # empty label, use tooltip instead
+    d3.D3graph.node_properties[node]['label']= "" # empty label, use tooltip instead
     d3.D3graph.node_properties[node]['opacity']= 0.705
-    d3.D3graph.node_properties[node]['fontsize']= 20
+    d3.D3graph.node_properties[node]['fontsize']= 10
     d3.D3graph.node_properties[node]['edge_size']= 1 # original 5
 
     if(parsed_node[0] == 'nt'): # is a nucleotide
@@ -179,10 +186,16 @@ for node in d3.D3graph.node_properties:
         tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
         d3.D3graph.node_properties[node]['fontcolor']= nt_colors[name]
     else: # is protein residue
+        ss = parsed_node[4]
         d3.D3graph.node_properties[node]['size'] = 5 # original 5
-        d3.D3graph.node_properties[node]['color']= 'gray' #use gray
-        d3.D3graph.node_properties[node]['label']= '' # empty label, use tooltip instead
-        tooltip = 'Resiude: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
+        d3.D3graph.node_properties[node]['color']= 'gray' #use gray by default
+        d3.D3graph.node_properties[node]['label']= name + pos # empty label, use tooltip instead
+        d3.D3graph.node_properties[node]['fontcolor']= 'black'
+        if(ss == "H"): #Helix
+            d3.D3graph.node_properties[node]['color']= 'white'
+        elif(ss == "S"): #Helix
+            d3.D3graph.node_properties[node]['color']= 'black'
+        tooltip = 'Residue: ' + name +"\nPosition: " + pos + "\nChain: " + chain + "\nSec. Structure: " + ss
     d3.D3graph.node_properties[node]['tooltip']= tooltip
 
 # iterate through edges to determine colors, backbone edges 
@@ -200,7 +213,6 @@ for edge in d3.D3graph.edge_properties:
         d3.D3graph.edge_properties[edge]['marker_end'] = ''
         # d3.D3graph.edge_properties[edge]['directed'] = False
 
-print(d3.D3graph.edge_properties)
 d3.D3graph.show(filepath='{}/output/{}.html'.format(home, pdb_file))
 
 # 'weight': 100.0, 'weight_scaled': 2.8129, 'edge_distance': 91.3043, 'color': '#808080', 'marker_start': '', 'marker_end': 'arrow', 'marker_color': '#808080', 'label': '', 'label_color': '#808080', 'label_fontsize': 8}
