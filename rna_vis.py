@@ -16,7 +16,8 @@ from utilities import node_to_text
 
 parser = MMCIFParser()
 
-home = "/home/aricohen/Desktop/rnaprodb_dev/" #change this line only
+#update: no need to change anymore
+home =  os.path.dirname(os.path.abspath(__file__)) #change this line only 
 
 pdb_path = "{}/pdb/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
@@ -36,7 +37,7 @@ all_edges = pairs + backbone_edges + interaction_edges + stacks
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [20]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 d3 = D3Blocks()
-d3.d3graph(df, filepath='./', showfig=False)
+d3.d3graph(df, filepath=None, showfig=False)
 d3.D3graph.set_edge_properties(directed=True, marker_color='red') # setting earlier to then update?
 
 # can probably pre-compute, then add to the dataframe and use that?
