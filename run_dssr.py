@@ -1,6 +1,6 @@
 import subprocess
 import json
-import os
+import os, sys
 import collections
 
 def runDSSR(structure, quiet=True, prefix='rna'):
@@ -33,3 +33,11 @@ def runDSSR(structure, quiet=True, prefix='rna'):
     
 
     return DSSR
+
+if __name__ == "__main__":
+    fname = sys.argv[1]
+    cifdir = "../data/cifs/"
+    for item in open(fname,"r").readlines():
+        item = item.strip()
+        f = os.path.join(cifdir, fname)
+
