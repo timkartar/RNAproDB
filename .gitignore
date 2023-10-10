@@ -29,6 +29,7 @@ report/
 
 # Distribution / packaging
 .Python
+run/
 build/
 develop-eggs/
 dist/

@@ -16,7 +16,7 @@ def runDSSR(structure, quiet=True, prefix='rna', tmpdir=''):
     prefix: string
         The file prefix.
     """
-    outpath = "./dssr_output/{}".format(tmpdir)
+    outpath = "/home/raktim/rnaprodb/rnaprodb/dssr_output/{}".format(tmpdir)
     if not os.path.exists(outpath):
         os.makedirs(outpath)
     if not isinstance(structure, str):
@@ -47,8 +47,7 @@ if __name__ == "__main__":
     
     #update: no need to change anymore
     home =  os.path.dirname(os.path.abspath(__file__)) #change this line only 
-    
-    pdb_path = "{}/../data/cifs/".format(home)
+    pdb_path = "/home/raktim/rnaprodb/data/cifs/"
     
     # pdb_file = "8fvi-assembly1.cif"
     
@@ -69,5 +68,5 @@ if __name__ == "__main__":
                 chain.id = chain.id+chain.id
             full.add(chain)
         full = StructureData(full)
-        data = runDSSR(full, quiet=True, prefix=pdb_file.split("-")[0], tmpdir=fname.split("/")[-1])
+        data = runDSSR(full, quiet=True, prefix=pdb_file.split("-")[0], tmpdir="")
 
