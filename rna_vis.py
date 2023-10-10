@@ -12,7 +12,6 @@ from get_interactions import getInteractions, getProteinSecStructure
 from run_dssr import runDSSR
 from get_edges import getEdges
 from process_graph import processEdges, processNodes
-from utilities import node_to_text
 
 parser = MMCIFParser()
 
@@ -45,4 +44,7 @@ d3.D3graph.set_edge_properties(directed=True, marker_color='red') # setting earl
 d3.D3graph.node_properties = processNodes(d3.D3graph.node_properties)
 d3.D3graph.edge_properties = processEdges(d3.D3graph.edge_properties, backbone_edges)
 
-d3.D3graph.show(filepath='{}/output/{}.html'.format(home, pdb_file))
+d3.D3graph.show(filepath='{}/output/{}.html'.format(home, pdb_file), click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10})
+
+# Logs the node data to the console when you click, in color_on_click() function!
+# console.log("Clicked Node Data:", d3.select(this).data()[0]);
