@@ -2,7 +2,6 @@ import subprocess
 import json
 import os, sys
 import collections
-from Bio.PDB import MMCIFParser
 from structure_data import StructureData
 from split_entities import splitEntities
 from clean_rna import cleanRNA
@@ -66,6 +65,6 @@ if __name__ == "__main__":
     full = rna[0]
     for chain in protein.get_chains():
         full.add(chain)
-    
-    data = runDSSR(rna, quiet=True, prefix='1ivs')
+    full = StructureData(full)
+    data = runDSSR(full, quiet=True, prefix='1ivs')
 

@@ -1,4 +1,4 @@
-from utilities import node_to_text
+from utilities import node_to_text, parse_node
 
 nt_colors = {'A': '#00994C',
     'C': '#000099',
@@ -7,22 +7,7 @@ nt_colors = {'A': '#00994C',
 }
 
 """
-Returns ('p'/'nt', name, position, chain, ss (protein only))
-ASSUMES: proteins are represented by 3 letter code, and nucleotides by one letter!
-"""
-def parse_node(node_id):
-    temp_split = node_id.split(':')
-    # Is a protein
-    if(len(temp_split[1]) == 3):
-        return ('p', temp_split[1], temp_split[2], temp_split[0], temp_split[3])
-    elif(len(temp_split[1]) == 1): #Is a nucleotide
-        return ('nt', temp_split[1], temp_split[2], temp_split[0])
-    else: #ERROR
-        print("Error parsing node!")
-        return None    
-
-"""
-Returns (('p'/'nt', name, position, chain),('p'/'nt', name, position, chain))
+Returns (('p'/'n', name, position, chain),('p'/'n', name, position, chain))
 ASSUMES: proteins are represented by 3 letter code, and nucleotides by one letter!
 """
 def parse_edge(node_id):
@@ -32,8 +17,7 @@ def parse_edge(node_id):
 
 def processNodes(node_properties):
     for node in node_properties:
-        parsed_node = parse_node(node) # ('p'/'nt', name, position, chain, ss(protein only))
-        
+        parsed_node = parse_node(node) # ('p'/'n', name, position, chain, ss(protein only))
         name = parsed_node[1]
         pos = str(parsed_node[2])
         chain = parsed_node[3]
@@ -45,7 +29,7 @@ def processNodes(node_properties):
         node_properties[node]['fontsize']= 10
         node_properties[node]['edge_size']= 1 # original 5
 
-        if(parsed_node[0] == 'nt'): # is a nucleotide
+        if(parsed_node[0] == 'n'): # is a nucleotide
             node_properties[node]['color']= nt_colors[name] #use nt color scheme
             tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
             node_properties[node]['fontcolor']= nt_colors[name]
@@ -59,6 +43,8 @@ def processNodes(node_properties):
                 node_properties[node]['color']= 'white'
             elif(ss == "S"): #Helix
                 node_properties[node]['color']= 'black'
+            elif(ss == "Unknown"): #Unknown
+                node_properties[node]['color']= 'red'
             tooltip = 'Residue: ' + name +"\nPosition: " + pos + "\nChain: " + chain + "\nSec. Structure: " + ss
         node_properties[node]['tooltip']= tooltip
     return node_properties

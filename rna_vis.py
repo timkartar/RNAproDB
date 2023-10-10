@@ -6,11 +6,10 @@ from d3blocks import D3Blocks
 import pandas as pd
 import json
 import collections
-from get_interactions import getInteractions, getProteinSecStructure
+from get_interactions import getInteractions
 from run_dssr import runDSSR
 from get_edges import getEdges
 from process_graph import processEdges, processNodes
-from utilities import node_to_text
 import json
 
 parser = MMCIFParser()
@@ -31,20 +30,22 @@ protein, rna = splitEntities(structure) # split RNA and protein from structure
 #   TODO: uncomment the two lines below this comment, comment the runDSSR line and fix the 
 #   breakage that happens then. Remove runDSSR import when it's done.
 
-#with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
-#    data = json.load(FH, object_pairs_hook=collections.OrderedDict) #TODO: uncomment this
+with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
+   data = json.load(FH, object_pairs_hook=collections.OrderedDict) #TODO: uncomment this
 
-data = runDSSR(rna, quiet=True, prefix='1ivs') #TODO: comment this out
+# data = runDSSR(rna, quiet=True, prefix='1ivs') #TODO: comment this out
 
-protein_interactions = getInteractions(protein, rna, prefix)
-pairs,backbone_edges, interaction_edges,stacks = getEdges(data, protein_interactions)
+protein_interactions,ss_dict = getInteractions(protein, rna, prefix)
+pairs,backbone_edges, interaction_edges,stacks = getEdges(data, protein_interactions, ss_dict)
 all_edges = pairs + backbone_edges + interaction_edges + stacks
+
 
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [20]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 d3 = D3Blocks()
 d3.d3graph(df, filepath=None, showfig=False)
 d3.D3graph.set_edge_properties(directed=True, marker_color='red') # setting earlier to then update?
+
 
 # can probably pre-compute, then add to the dataframe and use that?
 # iterate through nodes to change colors, label, etc.
