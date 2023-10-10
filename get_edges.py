@@ -9,7 +9,6 @@ OrderedDict([('index', 12), ('num_nts', 7), ('nts_short', 'GAGAGAC'), ('nts_long
 def get_stacking_interactions(dssr, ss_dict):
     stack_interactions = []
     for stack in dssr['stacks']:
-        print(stack)
         nts_long_split = stack['nts_long'].split(',')
         num_nts = stack["num_nts"]
         for i,nt in enumerate(nts_long_split):
