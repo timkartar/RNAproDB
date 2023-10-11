@@ -19,7 +19,7 @@ home =  os.path.dirname(os.path.abspath(__file__)) #change this line only
 
 pdb_path = "{}/dssr_output/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
-prefix = '1ivs'
+prefix = '8h1b'
 pdb_file = "{}.tmp.cif".format(prefix)
 structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(structure) # split RNA and protein from structure

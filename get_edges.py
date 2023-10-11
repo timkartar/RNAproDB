@@ -38,11 +38,12 @@ def getEdges(dssr, protein_interactions, ss_dict):
     num_nts = dssr["num_nts"]
 
     #add pairs to dictionary for easy lookup
-    for pair in dssr["pairs"]:
-        p1 = dssr_id_to_text(pair.get("nt1"))
-        p2 = dssr_id_to_text(pair.get("nt2"))
-        pairs_dict[p1] = p2
-        pairs_dict[p2] = p1
+    if "pairs" in dssr.keys():
+        for pair in dssr["pairs"]:
+            p1 = dssr_id_to_text(pair.get("nt1"))
+            p2 = dssr_id_to_text(pair.get("nt2"))
+            pairs_dict[p1] = p2
+            pairs_dict[p2] = p1
     
     # add base pairing, self edges, and backbone edges
     for i,nt in enumerate(dssr["nts"]):
