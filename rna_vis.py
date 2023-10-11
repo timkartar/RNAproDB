@@ -19,7 +19,7 @@ home =  os.path.dirname(os.path.abspath(__file__)) #change this line only
 
 pdb_path = "{}/dssr_output/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
-prefix = '8h1b'
+prefix = '1ivs'
 pdb_file = "{}.tmp.cif".format(prefix)
 structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(structure) # split RNA and protein from structure
@@ -51,7 +51,7 @@ d3.D3graph.set_edge_properties(directed=True, marker_color='red') # setting earl
 # iterate through nodes to change colors, label, etc.
 
 d3.D3graph.node_properties = processNodes(d3.D3graph.node_properties)
-d3.D3graph.edge_properties = processEdges(d3.D3graph.edge_properties, backbone_edges)
+d3.D3graph.edge_properties = processEdges(d3.D3graph.edge_properties, backbone_edges, stacks)
 
 d3.D3graph.show(filepath='{}/output/{}.html'.format(home, pdb_file), click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10})
 

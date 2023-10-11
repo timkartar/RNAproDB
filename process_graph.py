@@ -49,7 +49,7 @@ def processNodes(node_properties):
         node_properties[node]['tooltip']= tooltip
     return node_properties
 
-def processEdges(edge_properties, backbone_edges):
+def processEdges(edge_properties, backbone_edges, stacks):
     for edge in edge_properties:
         first_node,sec_node = parse_edge(edge)
         edge_tuple = (node_to_text(first_node),node_to_text(sec_node)) #turn back into text to compare to backbone edge
@@ -60,6 +60,9 @@ def processEdges(edge_properties, backbone_edges):
             # edge_properties[edge]['label_color'] = 'red'
             # edge_properties[edge]['label_fontsize'] = 8
             # edge_properties[edge]['marker_color'] = 'red' # BROKEN!
+        if edge_tuple in stacks:
+            edge_properties[edge]['marker_start'] = ''
+            # edge_properties[edge]['marker_end'] = 'square'
         else:
             edge_properties[edge]['marker_end'] = ''
             # edge_properties[edge]['directed'] = False
