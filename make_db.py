@@ -1,0 +1,76 @@
+import sqlite3
+import json
+import os, sys
+from sqlite3 import Error
+import pypdb
+import json
+from tqdm import tqdm
+
+def create_connection(db_file):
+    """ create a database connection to a SQLite database """
+    conn = None
+    conn = sqlite3.connect(db_file)
+    print(sqlite3.version)
+    #except Error as e:
+    #print(e)
+    if conn:
+        conn.close()
+        print("closed connection")
+
+def create_tables(f):
+    conn = sqlite3.connect(f)
+    cursor = conn.cursor()
+    cursor.execute("drop table if exists Structures")
+    sql = '''
+    create table Structures(
+    PDB_ID char(4) NOT NULL, 
+    AUTHORS text,
+    TITLE text,
+    YEAR INT,
+    DOI text,
+    PubMed INT
+    )
+    '''
+
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
+
+def add_data(conn, table_name, data):
+    query = ("insert into {} values {}".format(table_name, tuple(data)))
+    print(query)
+    conn.execute(query)
+    conn.commit()
+
+
+if __name__ == '__main__':
+    dbf = "./sqldb/test.db"
+    create_tables(dbf)
+    conn = sqlite3.connect(dbf)  
+    for item in tqdm(os.listdir("dssr_output")):
+        if item.endswith(".cif"):
+            continue
+        else:
+            prefix = item.split("-")[0]
+            info = pypdb.get_info(prefix)
+            
+            data = [prefix]
+            data.append(",".join(info['citation'][0]['rcsb_authors']))
+            data.append(info['citation'][0]['title'])
+            try:
+                data.append(info['citation'][0]['year'])
+            except:
+                data.append("NULL")
+            try:
+                data.append(info['citation'][0]['pdbx_database_id_pub_med'])
+            except:
+                data.append("NULL")
+            try:
+                data.append(info['citation'][0]['pdbx_database_id_doi'])
+            except:
+                data.append("NULL")
+            add_data(conn, "Structures", data)
+    
+    conn.close()
+            
+
