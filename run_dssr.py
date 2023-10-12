@@ -55,18 +55,27 @@ if __name__ == "__main__":
         item = item.strip()
         #f = os.path.join(cifdir, fname)
         pdb_file = item #"{}-assembly1.cif".format(prefix)
-        original_structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
-        protein, rna = splitEntities(original_structure) # split RNA and protein from structure
+        
+        prefix = pdb_file.split("-")[0]
+        if os.path.exists("/home/raktim/rnaprodb/rnaprodb/dssr_output/{}-dssr.json".format(prefix)):
+            print("{}-already exists".format(prefix))
+            continue
+        
+        try:
+            original_structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
+            protein, rna = splitEntities(original_structure) # split RNA and protein from structure
 
-        # NOTE: here we save the cleaned temporary file before processing it in runDSSR. For larger files, this poses a challenge.
-        rna = cleanRNA(rna)
+            # NOTE: here we save the cleaned temporary file before processing it in runDSSR. For larger files, this poses a challenge.
+            rna = cleanRNA(rna)
 
 
-        full = rna[0]
-        for chain in protein.get_chains():
-            while chain.id in [i.id for i in full.child_list]:
-                chain.id = chain.id+chain.id
-            full.add(chain)
-        full = StructureData(full)
-        data = runDSSR(full, quiet=True, prefix=pdb_file.split("-")[0], tmpdir="")
+            full = rna[0]
+            for chain in protein.get_chains():
+                while chain.id in [i.id for i in full.child_list]:
+                    chain.id = chain.id+chain.id
+                full.add(chain)
+            full = StructureData(full)
+            data = runDSSR(full, quiet=True, prefix=pdb_file.split("-")[0], tmpdir="")
+        except Exception as e:
+            print(prefix, e)
 

@@ -24,6 +24,7 @@ __pycache__/
 dssr_output/
 output/
 report/
+sqldb/
 # C extensions
 *.so
 
