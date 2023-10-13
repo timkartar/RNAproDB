@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" >
+<head>
+  <meta charset="utf-8" /><meta name="generator" content="Docutils 0.18.1: http://docutils.sourceforge.net/" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>&lt;no title&gt; &mdash; d3graph d3graph documentation</title>
+      <link rel="stylesheet" href="_static/pygments.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/theme.css" type="text/css" />
+      <link rel="stylesheet" href="_static/css/custom.css" type="text/css" />
+  <!--[if lt IE 9]>
+    <script src="_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+        <script src="_static/jquery.js"></script>
+        <script src="_static/_sphinx_javascript_frameworks_compat.js"></script>
+        <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js"></script>
+        <script src="_static/doctools.js"></script>
+        <script src="_static/sphinx_highlight.js"></script>
+    <script src="_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="genindex.html" />
+    <link rel="search" title="Search" href="search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="index.html" class="icon icon-home">
+            d3graph
+          </a>
+              <div class="version">
+                2.4.7
+              </div>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+    
+              <p class="caption" role="heading"><span class="caption-text">Background</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html">Abstract</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Abstract.html#schematic-overview">Schematic overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="D3.html">D3 Motivation</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Installation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html">Quickstart</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#installation">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Installation.html#uninstalling">Uninstalling</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Data</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Data.html">Input</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Data.html#output">Output</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Methods</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Core_Functionalities.html">Core Functionalities</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Node%20properties.html">Node properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Edge%20properties.html">Edge properties</a></li>
+<li class="toctree-l1"><a class="reference internal" href="On%20Click%20Actions.html">On Click Actions</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Examples</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html">Big Bang network</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Examples.html#karate-club-network">Karate Club network</a></li>
+</ul>
+<p class="caption" role="heading"><span class="caption-text">Documentation</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html">Sponsor</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#medium-blog">Medium Blog</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#github">Github</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Documentation.html#citing">Citing</a></li>
+<li class="toctree-l1"><a class="reference internal" href="Coding%20quality.html">Coding quality</a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html"><code class="docutils literal notranslate"><span class="pre">adjmat2dict()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.adjmat2vec"><code class="docutils literal notranslate"><span class="pre">adjmat2vec()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.d3graph"><code class="docutils literal notranslate"><span class="pre">d3graph</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.data_checks"><code class="docutils literal notranslate"><span class="pre">data_checks()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.edges2G"><code class="docutils literal notranslate"><span class="pre">edges2G()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.get_support"><code class="docutils literal notranslate"><span class="pre">get_support()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.json_create"><code class="docutils literal notranslate"><span class="pre">json_create()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.library_compatibility_checks"><code class="docutils literal notranslate"><span class="pre">library_compatibility_checks()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.make_graph"><code class="docutils literal notranslate"><span class="pre">make_graph()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.nodes2G"><code class="docutils literal notranslate"><span class="pre">nodes2G()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.remove_special_chars"><code class="docutils literal notranslate"><span class="pre">remove_special_chars()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.set_logger"><code class="docutils literal notranslate"><span class="pre">set_logger()</span></code></a></li>
+<li class="toctree-l1"><a class="reference internal" href="d3graph.d3graph.html#d3graph.d3graph.vec2adjmat"><code class="docutils literal notranslate"><span class="pre">vec2adjmat()</span></code></a></li>
+</ul>
+
+    <a href= "genindex.html">Index</a>
+  
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="index.html">d3graph</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">&lt;no title&gt;</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="_sources/sponsor.rst.txt" rel="nofollow"> View page source</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <div class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>You can support this project in various ways ❤️</p>
+<ul class="simple">
+<li><p>Become a <a class="reference external" href="https://github.com/sponsors/erdogant?o=esb/">Sponsor</a>!</p></li>
+<li><p><a class="reference external" href="https://www.buymeacoffee.com/erdogant">Buy</a> me a coffee! I ❤️ coffee :)</p></li>
+<li><p><a class="reference external" href="https://erdogant.github.io/donate/?currency=USD&amp;amount=1000">Donate</a> in Bitcoin.</p></li>
+<li><p>Follow me on medium! Go to my <a class="reference external" href="https://erdogant.medium.com/">medium profile</a> and press <em>follow</em>.</p></li>
+<li><p><strong>Star</strong> this repo at the github page.</p></li>
+<li><p>You can also buy a digital educational product over <a class="reference external" href="https://erdogant.gumroad.com/">here</a>.</p></li>
+<li><p>Other contributions can be in the form of feature requests, idea discussions, reporting bugs, opening pull requests.</p></li>
+</ul>
+<p>Cheers Mate.</p>
+</div>
+<iframe src="https://github.com/sponsors/erdogant/button" title="Sponsor erdogant" height="35" width="116" style="border: 0;"></iframe>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2020, Erdogan Taskesen.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
