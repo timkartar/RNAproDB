@@ -40,4 +40,9 @@ def parse_node(node_id):
         return ('n', temp_split[1], temp_split[2], temp_split[0])
     else: #ERROR
         print("Error parsing node!")
-        return None    
+        return None
+    
+d3to1 = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
+        'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
+        'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
+        'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}

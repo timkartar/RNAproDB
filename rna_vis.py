@@ -56,7 +56,7 @@ all_edges = pairs + backbone_edges + interaction_edges + stacks
 # print(df_links_json)
 d3 = d3graph()
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
-df['weight'] = [20]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
+df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 adjmat = vec2adjmat(df['source'], df['target'], weight=df['weight'])
 d3.graph(adjmat)
 d3.set_edge_properties(directed=True, marker_color='red') # setting earlier to then update?
@@ -66,6 +66,6 @@ d3.set_edge_properties(directed=True, marker_color='red') # setting earlier to t
 # iterate through nodes to change colors, label, etc.
 
 d3.node_properties = processNodes(d3.node_properties)
-d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks)
+d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs)
 
 d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10})

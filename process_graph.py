@@ -1,9 +1,9 @@
-from utilities import node_to_text, parse_node
+from utilities import node_to_text, parse_node, d3to1
 
-nt_colors = {'A': '#00994C',
-    'C': '#000099',
-    'G': '#FBA922',
-    'U': '#990000'
+nt_colors = {'A': '#98DF8A',
+    'C': '#AEC7E8',
+    'G': '#DBDB8D',
+    'U': '#FF9896'
 }
 
 """
@@ -21,49 +21,69 @@ def processNodes(node_properties):
         name = parsed_node[1]
         pos = str(parsed_node[2])
         chain = parsed_node[3]
-        
+
         # global changes
-        node_properties[node]['size'] = 12 # original 20
-        node_properties[node]['label']= "" # empty label, use tooltip instead
-        node_properties[node]['opacity']= 0.705
-        node_properties[node]['fontsize']= 10
+        node_properties[node]['size'] = 25 # original 20
+        node_properties[node]['opacity']= 1
         node_properties[node]['edge_size']= 1 # original 5
+        node_properties[node]['fontcolor']= 'black'
+
 
         if(parsed_node[0] == 'n'): # is a nucleotide
             node_properties[node]['color']= nt_colors[name] #use nt color scheme
             tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
-            node_properties[node]['fontcolor']= nt_colors[name]
+            node_properties[node]['shape'] = 'circle' #is detected in  d3graphscript.js
+            node_properties[node]['label']= name # empty label, use tooltip instead
+            node_properties[node]['fontsize']= 25
+
         else: # is protein residue
+            # Get one letter code
+            if name in d3to1:
+                one_letter_code = d3to1[name]
+            else:
+                one_letter_code = "X"
+            node_properties[node]['fontsize']= 15
             ss = parsed_node[4]
-            node_properties[node]['size'] = 5 # original 5
-            node_properties[node]['color']= 'gray' #use gray by default
-            node_properties[node]['label']= name + pos # empty label, use tooltip instead
-            node_properties[node]['fontcolor']= 'black'
+            node_properties[node]['size'] = 30 # original 5
+            node_properties[node]['color']= '#c6c6c6' #use gray by default
+            node_properties[node]['label']= one_letter_code
+            node_properties[node]['shape'] = 'rect' # detect in the JS
             if(ss == "H"): #Helix
                 node_properties[node]['color']= 'white'
             elif(ss == "S"): #Helix
-                node_properties[node]['color']= 'black'
+                node_properties[node]['color']= '#e8e8e8'
             elif(ss == "Unknown"): #Unknown
                 node_properties[node]['color']= 'red'
             tooltip = 'Residue: ' + name +"\nPosition: " + pos + "\nChain: " + chain + "\nSec. Structure: " + ss
         node_properties[node]['tooltip']= tooltip
     return node_properties
 
-def processEdges(edge_properties, backbone_edges, stacks):
+def processEdges(edge_properties, backbone_edges, stacks, pairs):
     for edge in edge_properties:
         first_node,sec_node = parse_edge(edge)
+        edge_properties[edge]['my_type'] = 'none'
         edge_tuple = (node_to_text(first_node),node_to_text(sec_node)) #turn back into text to compare to backbone edge
         if edge_tuple in backbone_edges: #is a backbone edge. NOTE change to iterate through backbone edges instead!
             edge_properties[edge]['marker_start'] = ''
             # edge_properties[edge]['marker_end'] = 'arrow' # already set in set edge properties
-            edge_properties[edge]['color'] = 'red' # works!
+            edge_properties[edge]['color'] = 'black' # works!
             # edge_properties[edge]['label_color'] = 'red'
             # edge_properties[edge]['label_fontsize'] = 8
             # edge_properties[edge]['marker_color'] = 'red' # BROKEN!
-        if edge_tuple in stacks:
+            edge_properties[edge]['my_type'] = 'backbone'
+            edge_properties[edge]['edge_width'] = 8
+        elif edge_tuple in stacks:
             edge_properties[edge]['marker_start'] = ''
+            # edge_properties[edge]['my_type'] = 'link'
             # edge_properties[edge]['marker_end'] = 'square'
+            edge_properties[edge]['edge_width'] = 2
+        elif edge_tuple in pairs:
+            # edge_properties[edge]['marker_end'] = 'square'
+            edge_properties[edge]['edge_width'] = 8
+            # edge_properties[edge]['my_type'] = "link"
         else:
+            edge_properties[edge]['edge_width'] = 2
             edge_properties[edge]['marker_end'] = ''
+            # edge_properties[edge]['my_type'] = "link"
             # edge_properties[edge]['directed'] = False
     return edge_properties
