@@ -27,6 +27,31 @@ def getProteinSecStructure(protein, prefix):
     return residue_seq_to_ss
     # resseq = residue.get_full_id()[3][1]
 
+def check_interaction_type(resname, atomname):
+    '''
+    check whether the protein RNA interaction is in major groove/minor groove/backbone
+    '''
+    MAJOR_GROOVE_ATOMS = {
+    "A": ["N7", "N6"],
+    "C": ["N4", "C5"],
+    "G": ["N7", "O6"],
+    "U": ["O4", "C5"]
+    }
+
+    MINOR_GROOVE_ATOMS = {
+    "A": ["N3", "C2"],
+    "C": ["O2"],
+    "G": ["N3", "C2"],
+    "U": ["O2"]
+    }
+    if atomname in MAJOR_GROOVE_ATOMS[resname]:
+        return "major"
+    elif atomname in MINOR_GROOVE_ATOMS[resname]:
+        return "minor"
+    elif "'" in atomname or "P" in atomname:
+        return "backbone"
+    else:
+        return "other"
 
 """
 Returns dict of interactions of nucleotide with pchnaem, presname, presid[1]
@@ -52,14 +77,13 @@ def getInteractions(protein, rna, prefix):
         
         neighbors = ns.search(atom.coord, radius=cut_off, level="R")
         result = []
+        int_type = check_interaction_type(resname, atomname)
         for item in neighbors:
             pchname = item.get_parent().id
             presid = item.get_id()
             presname = item.get_resname()
-            #result.append("{}:{}{}".format(pchname, presname, presid))
             ss = secondary_structure_dict[presid[1]]
             result.append("{}:{}:{}:{}".format(pchname, presname, presid[1], ss)) #'A:LEU:269:H'
-            #return secondary structure
-        #interactions["{}:{}{}:{}".format(chname, resname, resid, atomname)] = result
-        interactions["{}:{}:{}:{}".format(chname, resname, resid[1], atomname)] = result
+        
+        interactions["{}:{}:{}:{}".format(chname, resname, resid[1], int_type)] = result
     return interactions, secondary_structure_dict

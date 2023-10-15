@@ -1,6 +1,5 @@
 from utilities import dssr_id_to_text, is_a_protein
 
-
 """
 NOTE: There can be multiple stacking interactions, and stacks can include protein residues!
 NOTE: Assuming stack is in order of the file, otherwise will need to figure out the order!
@@ -65,14 +64,24 @@ def getEdges(dssr, protein_interactions, ss_dict):
                 backbone_edges.append((nt_id, nt_next))
         
     interaction_edges = []
+    interaction_types = {}
     for key, val in protein_interactions.items():
         for v in val:
             nt = ":".join((key.split(":")[:-1])) #be careful here
             # ss = v.split(":")[3]
             interaction_edges.append((nt, v))
-            
+            if (nt,v) not in interaction_types.keys():
+                interaction_types[(nt,v)] = set([key.split(":")[-1]])
+            else:
+                interaction_types[(nt,v)].add(key.split(":")[-1])
+    
+    #print(interaction_types)
+    
     interaction_edges = list(set(interaction_edges))
+    
     # print(interaction_edges) #('C:C', 'A:PRO:277:H')
     stacks = get_stacking_interactions(dssr, ss_dict)
 
-    return pairs,backbone_edges, interaction_edges,stacks
+    return pairs,backbone_edges, interaction_edges, interaction_types, stacks
+
+

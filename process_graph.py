@@ -50,7 +50,7 @@ def processNodes(node_properties):
             node_properties[node]['shape'] = 'rect' # detect in the JS
             if(ss == "H"): #Helix
                 node_properties[node]['color']= 'white'
-            elif(ss == "S"): #Helix
+            elif(ss == "S"): #sheet
                 node_properties[node]['color']= '#e8e8e8'
             elif(ss == "Unknown"): #Unknown
                 node_properties[node]['color']= 'red'
@@ -58,7 +58,15 @@ def processNodes(node_properties):
         node_properties[node]['tooltip']= tooltip
     return node_properties
 
-def processEdges(edge_properties, backbone_edges, stacks, pairs):
+def check_wc_pairing(edge_tuple):
+    item1 = edge_tuple[0].split(":")[1]
+    item2 = edge_tuple[1].split(":")[1]
+    wc_pairs = ['AU','GC','UA','CG']
+    if (item1 + item2) in wc_pairs:
+        return True
+    return False
+
+def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_types):
     for edge in edge_properties:
         first_node,sec_node = parse_edge(edge)
         edge_properties[edge]['my_type'] = 'none'
@@ -77,13 +85,34 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs):
             # edge_properties[edge]['my_type'] = 'link'
             # edge_properties[edge]['marker_end'] = 'square'
             edge_properties[edge]['edge_width'] = 2
+        
         elif edge_tuple in pairs:
+            if not check_wc_pairing(edge_tuple):
+                edge_properties[edge]['color'] = '#F2936D'
             # edge_properties[edge]['marker_end'] = 'square'
-            edge_properties[edge]['edge_width'] = 8
+            edge_properties[edge]['edge_width'] = 6
             # edge_properties[edge]['my_type'] = "link"
         else:
             edge_properties[edge]['edge_width'] = 2
             edge_properties[edge]['marker_end'] = ''
             # edge_properties[edge]['my_type'] = "link"
             # edge_properties[edge]['directed'] = False
+        
+        ### segregate protein-RNA interaction edges
+        if edge_tuple in interaction_types.keys():
+            types = list(interaction_types[edge_tuple])
+            if "major" in types and "minor" not in types:
+                edge_properties[edge]['color'] = '#5DE3BA'
+                edge_properties[edge]['edge_width'] = 4
+            elif "minor" in types and "major" not in types:
+                edge_properties[edge]['color'] = '#CE5DE3'
+                edge_properties[edge]['edge_width'] = 4
+            elif "major" in types and "minor" in types:
+                edge_properties[edge]['color'] = 'black'
+            elif "other" in types:
+                edge_properties[edge]['color'] = 'black'
+            else: #only backbone
+                edge_properties[edge]['color'] = 'black' #for now
+            
+
     return edge_properties

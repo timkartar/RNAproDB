@@ -20,10 +20,12 @@ function d3graphscript(config = {
     .charge(config.charge)
     .linkDistance((d) => d.edge_distance || config.distance)
     //.linkDistance((d) => config.distance > 0 ? config.distance : d.edge_weight)
-    .size([width, height]);
+    .size([width, height])
+    .friction(0.8); // added friction, this control the spread-outness
 
   // DRAGGING START
   function dragstarted(d) {
+    force.start()
     d3.event.sourceEvent.stopPropagation();
     d3.select(this).classed("dragging", true);
   }
@@ -33,6 +35,7 @@ function d3graphscript(config = {
   }
 
   function dragended(d) {
+    force.stop() //stop movement after dragging ends
     d3.select(this).classed("dragging", false);
   }
 
