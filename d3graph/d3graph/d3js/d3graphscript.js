@@ -210,6 +210,9 @@ function zoomFit(transitionDuration) {
 
   // console.log(node)
   //Now we are giving the SVGs co-ordinates - the force layout is generating the co-ordinates which this code is using to update the attributes of the SVG elements
+//
+ var timetostopautozoom = 0
+ var zoomstopthreshold = 100 // parameter, may not be optimal !!
   force.on("tick", function() {
     link.attr("x1", function(d) { return d.source.x; })
       .attr("y1", function(d) { return d.source.y; })
@@ -227,7 +230,9 @@ function zoomFit(transitionDuration) {
       ;
 
     node.each(collide(config.collision)); //COLLISION DETECTION. High means a big fight to get untouchable nodes (default=0.5)
-    zoomFit(0);
+
+    timetostopautozoom += 1
+    if (timetostopautozoom < zoomstopthreshold) zoomFit(0);
   });
 
   // --------- MARKER -----------
