@@ -51,8 +51,8 @@ function d3graphscript(config = {
   var svg = d3.select("body").append("svg")
     .attr("width", width)
     .attr("height", height)
-   .call(d3.behavior.zoom().on("zoom", function () { svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")") }))
-//    .on("dblclick.zoom", null)
+    .call(d3.behavior.zoom().on("zoom", function () { svg.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")") }))
+    .on("dblclick.zoom", null)
     .append("g")
 
   //.on("dblclick", threshold); // EXPLODE ALL CONNECTED POINTS
@@ -163,8 +163,54 @@ function d3graphscript(config = {
           .map((key) => `${d[key]}`)
           .join('\n')
       )
+var root = d3.select('g')// any svg.select(...) that has a single node like a container group by #id
+
+var zoom = d3.behavior
+	.zoom()
+	.scaleExtent([1/4, 4])
+	.on('zoom.zoom', function () {
+		console.trace("zoom", d3.event.translate, d3.event.scale);
+		root.attr('transform',
+			'translate(' + d3.event.translate + ')'
+			+   'scale(' + d3.event.scale     + ')');
+	})
+;
+
+function zoomFit(transitionDuration) {
+    var bounds = svg.node().getBBox();
+    console.log(bounds)
+    var parent = svg.node().parentElement;
+    var fullWidth  = parent.clientWidth  || parent.parentNode.clientWidth,
+        fullHeight = parent.clientHeight || parent.parentNode.clientHeight;
+
+    console.log(fullWidth, fullHeight)
+
+    var width  = bounds.width,
+        height = bounds.height;
+    var midX = bounds.x + width / 2,
+        midY = bounds.y + height / 2;
+    if (width == 0 || height == 0) return; // nothing to fit
+    var scale = 0.85 / Math.max(width / fullWidth, height / fullHeight);
+    var translate = [
+        fullWidth  / 2 - scale * midX,
+        fullHeight / 2 - scale * midY
+    ];
+
+    //console.trace("zoomFit", translate, scale);
+
+    svg
+        .transition()
+        .duration(transitionDuration || 0) // milliseconds
+        .call(zoom.translate(translate).scale(scale).event);
+}
+
+
+
   // console.log(node)
   //Now we are giving the SVGs co-ordinates - the force layout is generating the co-ordinates which this code is using to update the attributes of the SVG elements
+//
+ var timetostopautozoom = 0
+ var zoomstopthreshold = 100 // parameter, may not be optimal !!
   force.on("tick", function() {
     link.attr("x1", function(d) { return d.source.x; })
       .attr("y1", function(d) { return d.source.y; })
@@ -183,6 +229,8 @@ function d3graphscript(config = {
 
     node.each(collide(config.collision)); //COLLISION DETECTION. High means a big fight to get untouchable nodes (default=0.5)
 
+    timetostopautozoom += 1
+    if (timetostopautozoom < zoomstopthreshold) zoomFit(0);
   });
 
   // --------- MARKER -----------
@@ -220,7 +268,6 @@ function d3graphscript(config = {
         .style("stroke-width", 1);                             // Marker edge thickness
 
   // --------- END MARKER -----------
-
 
   // collision detection
 
