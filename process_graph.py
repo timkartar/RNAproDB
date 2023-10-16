@@ -1,6 +1,6 @@
 from utilities import node_to_text, parse_node, d3to1
 
-nt_colors = {'A': '#98DF8A',
+nt_colors = {'A': '#90cc84',
     'C': '#AEC7E8',
     'G': '#DBDB8D',
     'U': '#FF9896'

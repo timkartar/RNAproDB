@@ -6,8 +6,8 @@ from pymol import stored
 NOTE: ONLY WORKS ON PDB FILES FOR NOW!
 """
 def getProteinSecStructure(protein, prefix):
-    protein.save_pdb("./dssr_output/{}.tmp.pdb".format(prefix))
-    cmd.load('./dssr_output/{}.tmp.pdb'.format(prefix), prefix)
+    protein.save("./dssr_output/{}.protein.tmp.cif".format(prefix))
+    cmd.load('./dssr_output/{}.protein.tmp.cif'.format(prefix), prefix)
     stored.ss = ""
     cmd.iterate( '(n. CA)', 'stored.ss = stored.ss + ("%1s"%ss)')
     counter = 1
