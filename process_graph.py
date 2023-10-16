@@ -70,16 +70,18 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
     for edge in edge_properties:
         first_node,sec_node = parse_edge(edge)
         edge_properties[edge]['my_type'] = 'none'
+        edge_properties[edge]['marker_end'] = ''
         edge_tuple = (node_to_text(first_node),node_to_text(sec_node)) #turn back into text to compare to backbone edge
         if edge_tuple in backbone_edges: #is a backbone edge. NOTE change to iterate through backbone edges instead!
             edge_properties[edge]['marker_start'] = ''
             # edge_properties[edge]['marker_end'] = 'arrow' # already set in set edge properties
-            edge_properties[edge]['color'] = 'black' # works!
+            edge_properties[edge]['color'] = '#605f5f' # works!
             # edge_properties[edge]['label_color'] = 'red'
             # edge_properties[edge]['label_fontsize'] = 8
             # edge_properties[edge]['marker_color'] = 'red' # BROKEN!
             edge_properties[edge]['my_type'] = 'backbone'
-            edge_properties[edge]['edge_width'] = 8
+            edge_properties[edge]['marker_end'] = 'arrow'
+            edge_properties[edge]['edge_width'] = 6
         elif edge_tuple in stacks:
             edge_properties[edge]['marker_start'] = ''
             # edge_properties[edge]['my_type'] = 'link'
@@ -91,6 +93,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
                 edge_properties[edge]['color'] = '#F2936D'
             # edge_properties[edge]['marker_end'] = 'square'
             edge_properties[edge]['edge_width'] = 6
+            edge_properties[edge]['my_type'] = 'pair'
             # edge_properties[edge]['my_type'] = "link"
         else:
             edge_properties[edge]['edge_width'] = 2

@@ -71,9 +71,8 @@ function d3graphscript(config = {
     .attr("class", function(d){
       console.log("Ahoy!");
       console.log(d.my_type);
-      if(d.my_type == "backbone")
+      if(d.my_type == "pair")
       {
-        console.log("Hi!");
         return "link-dashed";
       }
       else{
@@ -204,22 +203,22 @@ function d3graphscript(config = {
     .enter()
     .append('svg:marker')
       .attr('id', function(d){ return 'marker_' + d.name})
-      .attr('markerHeight', 10)
-      .attr('markerWidth', 10)
+      .attr('markerHeight', 14) //ARI modified
+      .attr('markerWidth', 17) //ARI modified
       //.attr('markerUnits', 'strokeWidth')
       .attr("markerUnits", "userSpaceOnUse")                   // Fix marker width
       .attr('orient', 'auto')
       //.attr('refX', -15)                                     // Offset marker-start
-      .attr('refX', 15)                                        // Offset marker-end
+      .attr('refX', 21)                                        // Offset marker-end //ARI modified
       .attr('refY', 0)
       .attr('viewBox', function(d){ return d.viewbox })
       .append('svg:path')
 	    //.attr("transform", "rotate(180)")                    // Marker-start mirrored
         .attr('d', function(d){ return d.path })               // Marker type
         //.style("fill", function(d) {return d.marker_color;}) // Marker color
-        .style("fill", '#808080')                              // Marker color
-        .style("stroke", '#808080')                            // Marker edge-color
-        .style("opacity", 0.95)                                // Marker opacity
+        .style("fill", '#605f5f')                              // Marker color
+        .style("stroke", '#605f5f')                            // Marker edge-color
+        .style("opacity", 1)                                // Marker opacity
         .style("stroke-width", 1);                             // Marker edge thickness
 
   // --------- END MARKER -----------

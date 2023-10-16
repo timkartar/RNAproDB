@@ -56,7 +56,7 @@ df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interac
 adjmat = vec2adjmat(df['source'], df['target'], weight=df['weight'])
 d3.graph(adjmat)
 
-#d3.set_edge_properties(directed=True, marker_color='red') # setting earlier to then update?
+d3.set_edge_properties(directed=True) # setting earlier to then update?
 
 
 # can probably pre-compute, then add to the dataframe and use that?
@@ -65,4 +65,5 @@ d3.graph(adjmat)
 d3.node_properties = processNodes(d3.node_properties)
 d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types)
 
-d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10})
+d3.show(filepath='{}/output/{}.html'.format(home, pdb_file))
+# click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click

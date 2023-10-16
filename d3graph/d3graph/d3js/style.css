@@ -7,13 +7,13 @@
 
 .link {
   stroke: #999;
-  stroke-opacity: .6;
+  stroke-opacity: 1;
 }
 
 .link-dashed {
   stroke: #999;
-  stroke-opacity: .6;
-  stroke-dasharray: 20,10,5,5,5,10;
+  stroke-opacity: 1;
+  stroke-dasharray: 6,9;
 }
 
 h3 {
