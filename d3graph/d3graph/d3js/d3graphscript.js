@@ -21,7 +21,7 @@ function d3graphscript(config = {
     .linkDistance((d) => d.edge_distance || config.distance)
     //.linkDistance((d) => config.distance > 0 ? config.distance : d.edge_weight)
     .size([width, height])
-    .friction(0.8); // added friction, this control the spread-outness
+    .friction(0.9); // added friction, this control the spread-outness
 
   // DRAGGING START
   function dragstarted(d) {
