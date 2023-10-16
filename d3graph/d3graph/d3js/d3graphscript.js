@@ -69,8 +69,6 @@ function d3graphscript(config = {
     .data(graph.links)
     .enter().append("line")
     .attr("class", function(d){
-      console.log("Ahoy!");
-      console.log(d.my_type);
       if(d.my_type == "pair")
       {
         return "link-dashed";
@@ -107,7 +105,7 @@ function d3graphscript(config = {
     .call(drag)
     .on('dblclick', connectedNodes); // HIGHLIGHT ON/OFF
   // console.log(node);
-  {{ CLICK_COMMENT }} node.on('click', color_on_click); // ON CLICK HANDLER
+  {{ CLICK_COMMENT }} node.on('click', zoom_on_click); // ON CLICK HANDLER
 
   // Create Circles for nodes with shape_class of "circle"
   d3.selectAll('g.node[shape_class="circle"]').append("circle")
@@ -274,7 +272,7 @@ function d3graphscript(config = {
 
 
     // COLOR ON CLICK
-	function color_on_click() {
+	function zoom_on_click() {
 		// Give the original color back
 		d3.selectAll(".node")
 		.select("circle")
@@ -285,6 +283,9 @@ function d3graphscript(config = {
 		.attr("r", function(d) { return d.node_size; })
 		;
 
+    // console.log(d3.select(this)[0][0]["__data__"]["name"]);
+    
+
 		// Set the color on click
 		d3.select(this).select("circle")
 		.style("fill", {{ CLICK_FILL }})
@@ -292,8 +293,6 @@ function d3graphscript(config = {
 		.style("stroke-width", {{ CLICK_STROKEW }})
 		.attr("r", function(d) { return d.node_size*{{ CLICK_SIZE }}; })
 		;}
-
-
 
   function connectedNodes() {
     if (toggle == 0) {
