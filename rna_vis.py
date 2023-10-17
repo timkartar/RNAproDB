@@ -54,6 +54,9 @@ d3 = d3graph(support=None)
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 adjmat = vec2adjmat(df['source'], df['target'], weight=df['weight'])
+
+###############################################################
+
 d3.graph(adjmat)
 
 d3.set_edge_properties(directed=True) # setting earlier to then update?
