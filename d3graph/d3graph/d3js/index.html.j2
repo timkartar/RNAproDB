@@ -20,8 +20,10 @@
 
         window.addEventListener('DOMContentLoaded', function () {
             d3graphscript({
-                width: {{ width }},
-                height: {{ height }},
+                //width: {{ width }},
+                //height: {{ height }},
+                width: window.innerWidth,
+                height: window.innerHeight,
                 charge: {{ charge }},
                 distance: {{ edge_distance }},
                 directed: {{ directed | lower }},
