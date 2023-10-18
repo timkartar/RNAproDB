@@ -272,7 +272,7 @@ function zoomFit(transitionDuration) {
   // collision detection
 
   var padding = 1, // separation between circles
-    radius = 8;
+    radius = 25;
 
   function collide(alpha) {
     var quadtree = d3.geom.quadtree(graph.nodes);
