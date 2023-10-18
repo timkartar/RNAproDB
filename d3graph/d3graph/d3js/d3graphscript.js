@@ -105,7 +105,7 @@ function d3graphscript(config = {
     .call(drag)
     .on('dblclick', connectedNodes); // HIGHLIGHT ON/OFF
   // console.log(node);
-  {{ CLICK_COMMENT }} node.on('click', zoom_on_click); // ON CLICK HANDLER
+  {{ CLICK_COMMENT }} node.on('click', color_on_click); // ON CLICK HANDLER
 
   // Create Circles for nodes with shape_class of "circle"
   d3.selectAll('g.node[shape_class="circle"]').append("circle")
@@ -271,13 +271,13 @@ function zoomFit(transitionDuration) {
 
   // collision detection
 
-  var padding = 1, // separation between circles
+  var padding = 1, // separation between circleszoom
     radius = 25;
 
   function collide(alpha) {
     var quadtree = d3.geom.quadtree(graph.nodes);
     return function(d) {
-      var rb = 2 * radius + padding,
+      var rb = 2 * radius + padding,zoom
         nx1 = d.x - rb,
         nx2 = d.x + rb,
         ny1 = d.y - rb,
@@ -319,7 +319,7 @@ function zoomFit(transitionDuration) {
 
 
     // COLOR ON CLICK
-	function zoom_on_click() {
+	function color_on_click() {
 		// Give the original color back
 		d3.selectAll(".node")
 		.select("circle")
