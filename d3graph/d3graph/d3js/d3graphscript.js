@@ -169,7 +169,7 @@ var zoom = d3.behavior
 	.zoom()
 	.scaleExtent([1/4, 4])
 	.on('zoom.zoom', function () {
-		console.trace("zoom", d3.event.translate, d3.event.scale);
+		// console.trace("zoom", d3.event.translate, d3.event.scale);
 		root.attr('transform',
 			'translate(' + d3.event.translate + ')'
 			+   'scale(' + d3.event.scale     + ')');
@@ -178,12 +178,12 @@ var zoom = d3.behavior
 
 function zoomFit(transitionDuration) {
     var bounds = svg.node().getBBox();
-    console.log(bounds)
+    // console.log(bounds)
     var parent = svg.node().parentElement;
     var fullWidth  = parent.clientWidth  || parent.parentNode.clientWidth,
         fullHeight = parent.clientHeight || parent.parentNode.clientHeight;
 
-    console.log(fullWidth, fullHeight)
+    // console.log(fullWidth, fullHeight)
 
     var width  = bounds.width,
         height = bounds.height;
@@ -329,9 +329,16 @@ function zoomFit(transitionDuration) {
 		.style("stroke-width", function(d) {return d.edge_width;})
 		.attr("r", function(d) { return d.node_size; })
 		;
-
-    // console.log(d3.select(this)[0][0]["__data__"]["name"]);
+    var name_split = d3.select(this)[0][0]["__data__"]["name"].split(":");
+    var chain = name_split[0];
+    var residue = name_split[2];
     
+    console.log(chain);
+    console.log(residue);
+    var selectionString = residue+":" + chain;
+    console.log(selectionString);
+    parent.zoomOnClick(selectionString);   
+    // stage_nm1.getComponentsByName("my_structure").autoView()
 
 		// Set the color on click
 		d3.select(this).select("circle")
