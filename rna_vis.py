@@ -50,7 +50,7 @@ all_edges = pairs + backbone_edges + interaction_edges + stacks
 # df_links['weight'] = [20]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 # df_links_json = df_links.to_json(orient='records')
 # print(df_links_json)
-d3 = d3graph(support=None)
+d3 = d3graph(support=None, collision=0.5)
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 adjmat = vec2adjmat(df['source'], df['target'], weight=df['weight'])
