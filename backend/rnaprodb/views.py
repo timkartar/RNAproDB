@@ -29,7 +29,7 @@ def run_script(request):
 
         # Return the result or handle errors as desired
         if result.returncode == 0:
-            return JsonResponse({"message": "Script ran successfully!", "output": output})
+            return JsonResponse({'file_url': '/{}.tmp.cif.html'.format(pdbid), "message": "Script ran successfully!", "output": output})
         else:
             return JsonResponse({"message": "Error running script.", "error": errors})
     
