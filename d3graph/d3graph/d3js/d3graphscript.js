@@ -31,6 +31,7 @@ forcefieldButton.addEventListener("click", function() {
   if(isForcefieldActive){ //if force field is active, make sure none of the nodes are fixed!
     d3.selectAll('g.node[shape_class="circle"]').each(function(e) {e.fixed=false});
     d3.selectAll('g.node[shape_class="rect"]').each(function(e) {e.fixed=false});
+    force.start()
   }
   else{ // if force field inactive, set every node as fixed!
     d3.selectAll('g.node[shape_class="circle"]').each(function(e) {e.fixed=true});
@@ -38,6 +39,9 @@ forcefieldButton.addEventListener("click", function() {
   }
 });
 
+function canReactCallThis(){
+  alert("Yes it can!");
+}
 
 // DRAGGING START
 function dragstarted(d) {
@@ -49,7 +53,7 @@ function dragstarted(d) {
 }
 
 function dragged(d) {
-  // d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
+  d3.select(this).attr("cx", d.x = d3.event.x).attr("cy", d.y = d3.event.y);
   d.fx = d3.event.x;
   d.fy = d3.event.y;
 }
