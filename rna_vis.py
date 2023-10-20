@@ -11,6 +11,7 @@ from run_dssr import runDSSR
 from get_edges import getEdges
 from process_graph import processEdges, processNodes
 import json
+from hbond_extractor import hbondExtractor, labelHbondEdges
 
 parser = MMCIFParser()
 
@@ -32,6 +33,9 @@ with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
 protein_interactions,ss_dict = getInteractions(protein, rna, prefix)
 pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(data, protein_interactions, ss_dict)
 
+#update: added functions to extract all H-bond interactions from dssr and to add H-bond labels to interaction_types object
+hbond_set = hbondExtractor(data)
+interaction_types  = labelHbondEdges(interaction_types, hbond_set)
 
 all_edges = pairs + backbone_edges + interaction_edges + stacks
 # all_nodes = set()
@@ -50,7 +54,7 @@ all_edges = pairs + backbone_edges + interaction_edges + stacks
 # df_links['weight'] = [20]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 # df_links_json = df_links.to_json(orient='records')
 # print(df_links_json)
-d3 = d3graph(support=None, collision=0.5)
+d3 = d3graph(support=None)
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 adjmat = vec2adjmat(df['source'], df['target'], weight=df['weight'])
