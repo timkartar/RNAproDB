@@ -77,5 +77,8 @@ d3.set_edge_properties(directed=True) # setting earlier to then update?
 d3.node_properties = processNodes(d3.node_properties)
 d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types)
 
-d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
+# d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 # click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click
+final_json = d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
+final_json_str = json.dumps(final_json)
+print(final_json_str)

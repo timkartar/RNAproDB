@@ -163,10 +163,15 @@ class d3graph:
         self.setup_slider()
         # Create json
         json_data = json_create(self.G)
-        # Create html with json file embedded
-        html = self.write_html(json_data, overwrite=overwrite)
-        # Display the chart
-        return self.display(html)
+        # print(json_data)
+
+        # ARI CHANGE
+        return json_data
+
+        # # Create html with json file embedded
+        # html = self.write_html(json_data, overwrite=overwrite)
+        # # Display the chart
+        # return self.display(html)
 
     def display(self, html):
         """Display."""
