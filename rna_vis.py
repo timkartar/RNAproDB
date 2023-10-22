@@ -12,6 +12,7 @@ from get_edges import getEdges
 from process_graph import processEdges, processNodes
 import json
 from hbond_extractor import hbondExtractor, labelHbondEdges
+import sys
 
 parser = MMCIFParser()
 
@@ -21,6 +22,10 @@ home =  os.path.dirname(os.path.abspath(__file__)) #change this line only
 pdb_path = "{}/dssr_output/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
 prefix = '1ivs'
+
+if len(sys.argv) > 1:
+   prefix = sys.argv[1]
+
 pdb_file = "{}.tmp.cif".format(prefix)
 structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(structure) # split RNA and protein from structure
@@ -54,7 +59,7 @@ all_edges = pairs + backbone_edges + interaction_edges + stacks
 # df_links['weight'] = [20]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 # df_links_json = df_links.to_json(orient='records')
 # print(df_links_json)
-d3 = d3graph(support=None)
+d3 = d3graph(support=None, collision=0.5)
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 adjmat = vec2adjmat(df['source'], df['target'], weight=df['weight'])
