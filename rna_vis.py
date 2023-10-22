@@ -11,6 +11,8 @@ from run_dssr import runDSSR
 from get_edges import getEdges
 from process_graph import processEdges, processNodes
 import json
+from hbond_extractor import hbondExtractor, labelHbondEdges
+import sys
 
 parser = MMCIFParser()
 
@@ -20,6 +22,10 @@ home =  os.path.dirname(os.path.abspath(__file__)) #change this line only
 pdb_path = "{}/dssr_output/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
 prefix = '1ivs'
+
+if len(sys.argv) > 1:
+   prefix = sys.argv[1]
+
 pdb_file = "{}.tmp.cif".format(prefix)
 structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(structure) # split RNA and protein from structure
@@ -32,6 +38,9 @@ with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
 protein_interactions,ss_dict = getInteractions(protein, rna, prefix)
 pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(data, protein_interactions, ss_dict)
 
+#update: added functions to extract all H-bond interactions from dssr and to add H-bond labels to interaction_types object
+hbond_set = hbondExtractor(data)
+interaction_types  = labelHbondEdges(interaction_types, hbond_set)
 
 all_edges = pairs + backbone_edges + interaction_edges + stacks
 # all_nodes = set()
@@ -68,5 +77,8 @@ d3.set_edge_properties(directed=True) # setting earlier to then update?
 d3.node_properties = processNodes(d3.node_properties)
 d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types)
 
-d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
+# d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 # click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click
+final_json = d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
+final_json_str = json.dumps(final_json)
+print(final_json_str)
