@@ -5,3 +5,4 @@ UPPER LIMIT : 3hhn
 run_dssr fails: 8h9d, 5o61, 6zdu, 6lu8
 Blank altlocs in duplicate residue ILE (' ', 105, ' '): 5o61
 Not able to be downloaded (perhaps too big?): 7qjh, 8br3
+NGLviewer fing up: 3hhn
