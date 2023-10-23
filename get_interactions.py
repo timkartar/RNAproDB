@@ -88,7 +88,10 @@ def getInteractions(protein, rna, prefix):
             pchname = item.get_parent().id
             presid = item.get_id()
             presname = item.get_resname()
-            ss = secondary_structure_dict[presid[1]]
+            try:
+                ss = secondary_structure_dict[presid[1]]
+            except:
+                ss = 'X' #pymol couldn't return
             result.append("{}:{}:{}:{}".format(pchname, presname, presid[1], ss)) #'A:LEU:269:H'
         
         interactions["{}:{}:{}:{}".format(chname, resname, resid[1], int_type)] = result
