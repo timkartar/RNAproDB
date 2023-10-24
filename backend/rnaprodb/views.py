@@ -59,6 +59,7 @@ def run_script(request):
                 'file_url': '/{}.tmp.cif.html'.format(pdbid), 
                 "message": "Script ran successfully!",
                 "title": pdb_info['citation'][0]['title'],
+                'protein_name': (pdb_info['struct']['title']).capitalize().replace('rna', 'RNA'),
                 "output": json_output  # Use the parsed JSON data here
             }
             return JsonResponse(response_data)
