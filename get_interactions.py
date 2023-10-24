@@ -66,7 +66,7 @@ def getInteractions(protein, rna, prefix):
     interactions = {}
     ns = Nsearch(list(protein.get_atoms()))
     interactions = {} 
-    cut_off = 5
+    cut_off = 4
 
     secondary_structure_dict = getProteinSecStructure(protein, prefix) # residue number to secondary structure abbreviation 
     # print("secondary structure length from pymol: {}".format(len(secondary_structure_dict)))
