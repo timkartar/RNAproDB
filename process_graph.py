@@ -116,6 +116,8 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
                 edge_properties[edge]['color'] = 'black'
             else: #only backbone
                 edge_properties[edge]['color'] = 'black' #for now
-            
+            if "hbond" in types:
+                edge_properties[edge]['my_type'] = 'protein_rna_hbond'
+
 
     return edge_properties
