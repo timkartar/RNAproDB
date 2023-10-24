@@ -5,6 +5,7 @@ from .models import RNA
 from django.http import JsonResponse
 import subprocess
 import json
+from pypdb import get_info
 # Create your views here.
 
 class RNAView(viewsets.ModelViewSet):
@@ -49,9 +50,15 @@ def run_script(request):
             return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
 
         if result.returncode == 0:
+
+            # Use PyPDB to get title
+            pdb_info = get_info(pdbid)
+
+
             response_data = {
                 'file_url': '/{}.tmp.cif.html'.format(pdbid), 
-                "message": "Script ran successfully!", 
+                "message": "Script ran successfully!",
+                "title": pdb_info['citation'][0]['title'],
                 "output": json_output  # Use the parsed JSON data here
             }
             return JsonResponse(response_data)
