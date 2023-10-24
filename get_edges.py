@@ -1,5 +1,5 @@
 from utilities import dssr_id_to_text, is_a_protein
-
+import sys
 """
 NOTE: There can be multiple stacking interactions, and stacks can include protein residues!
 NOTE: Assuming stack is in order of the file, otherwise will need to figure out the order!
@@ -16,12 +16,14 @@ def get_stacking_interactions(dssr, ss_dict):
                 sec_nucleotide = dssr_id_to_text(nts_long_split[i+1])
                 
                 if(is_a_protein(first_nucleotide)):
+                    chid = first_nucleotide.split(":")[0]
                     protein_num = first_nucleotide.split(":")[2] # gets residue #!
-                    ss = ss_dict[int(protein_num)]
+                    ss = ss_dict[chid + ":" + protein_num]
                     first_nucleotide = first_nucleotide + ":{}".format(ss) # append ss to the protein residue
                 if(is_a_protein(sec_nucleotide)):
+                    chid = sec_nucleotide.split(":")[0]
                     protein_num = sec_nucleotide.split(":")[2] # gets residue #!
-                    ss = ss_dict[int(protein_num)]
+                    ss = ss_dict[chid + ":" + protein_num]
                     sec_nucleotide = sec_nucleotide + ":{}".format(ss) # append ss to the protein residue
 
                 stack_interactions.append((first_nucleotide, sec_nucleotide))

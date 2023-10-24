@@ -23,7 +23,7 @@ def run_script(request):
 
         
         # script_path = "/home/raktim/rnaprodb/rnaprodb/rna_vis.py"
-        script_path = "/home/aricohen/Desktop/django-react-rnaprodb/rnaprodb_dev/rna_vis.py"
+        script_path = "./rna_vis.py"
         result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
 
         # You can capture the stdout or stderr for further use if needed

@@ -1,6 +1,7 @@
 from Bio.PDB import NeighborSearch as Nsearch
 from pymol import cmd
 from pymol import stored
+import sys
 
 """
 NOTE: ONLY WORKS ON PDB FILES FOR NOW!
@@ -9,29 +10,16 @@ def getProteinSecStructure(protein, prefix):
     # not needed
     #protein.save("./dssr_output/{}.protein.tmp.cif".format(prefix))
     cmd.load('./dssr_output/{}.tmp.cif'.format(prefix), prefix)
-    stored.ss = ""
-    cmd.iterate( '(n. CA)', 'stored.ss = stored.ss + ("%1s"%ss)')
-    counter = 1
+    stored.ss = []
+    cmd.iterate( '(n. CA)', "stored.ss.append((chain+':'+resi + ':'+ss))")
+    
 
     residue_seq_to_ss = {} # residue seq (1...) : secondary structure
-
+    
     # go through the large string of stored.ss and extract each secondary structure
     for c in stored.ss:
-        residue_seq_to_ss[counter] = c
-        counter += 1
-    # vals = set()
-    # for i in range(1,len(residue_seq_to_ss)+1):
-    #     if residue_seq_to_ss[i] not in vals:
-    #         vals.add(residue_seq_to_ss[i])
-    #         print(residue_seq_to_ss[i])
-    # print(vals) # only see S, H, and L
-    
-    #print(residue_seq_to_ss)
-    #import sys
-    #sys.exit()
-    
+        residue_seq_to_ss[":".join(c.split(":")[:2]) ] = c.split(":")[2]
     return residue_seq_to_ss
-    # resseq = residue.get_full_id()[3][1]
 
 def check_interaction_type(resname, atomname):
     '''
@@ -66,7 +54,7 @@ def getInteractions(protein, rna, prefix):
     interactions = {}
     ns = Nsearch(list(protein.get_atoms()))
     interactions = {} 
-    cut_off = 5
+    cut_off = 4
 
     secondary_structure_dict = getProteinSecStructure(protein, prefix) # residue number to secondary structure abbreviation 
     # print("secondary structure length from pymol: {}".format(len(secondary_structure_dict)))
@@ -89,7 +77,7 @@ def getInteractions(protein, rna, prefix):
             presid = item.get_id()
             presname = item.get_resname()
             try:
-                ss = secondary_structure_dict[presid[1]]
+                ss = secondary_structure_dict[pchname + ":" + str(presid[1])]
             except:
                 ss = 'X' #pymol couldn't return
             result.append("{}:{}:{}:{}".format(pchname, presname, presid[1], ss)) #'A:LEU:269:H'
