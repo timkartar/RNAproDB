@@ -53,6 +53,7 @@ def get_neighbors_within_distance(G, nodes, distance=2):
     for _ in range(distance):
         for node in list(nodes_set):
             nodes_set = nodes_set.union(set(G.neighbors(node)))
+            nodes_set = nodes_set.union(set(G.predecessors(node)))
     return nodes_set
 
 def nx_to_json(G, node_index_mapping):
@@ -73,11 +74,11 @@ def update_subgraph_edge_indices(subgraph, node_index_mapping):
         edge_data['source'] = node_index_mapping[u]
         edge_data['target'] = node_index_mapping[v]
 
+
 if __name__ == "__main__":
-    data = readJSON(sys.argv[1])
+    data = readJSON(sys.argv[1]) # assumes pre-computed JSON file
     G = json_to_nx(data)
-    user_nodes = ["C:955", "A:646"]
-    #user_nodes = ["C:6", "J:25"]
+    user_nodes = sys.argv[2].split(",")
     subgraph_nodes = get_neighbors_within_distance(G,user_nodes)
     # print(subgraph_nodes)
     subgraph_edges = [(u, v) for u, v in G.edges() if u in subgraph_nodes and v in subgraph_nodes]
