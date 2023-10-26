@@ -24,7 +24,7 @@ def run_script(request):
         
         # script_path = "/home/raktim/rnaprodb/rnaprodb/rna_vis.py"
         script_path = "./rna_vis.py"
-        script_path = "./get_subgraph.py"
+        script_path2 = "./get_subgraph.py"
         result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
 
         # You can capture the stdout or stderr for further use if needed

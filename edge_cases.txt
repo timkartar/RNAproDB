@@ -1,4 +1,4 @@
-Missing part of neucleotide, dssr doesn't return as nucleotide : 8fvi
+Missing part of nucleotide, dssr doesn't return as nucleotide : 8fvi
 Bad resolution, cannot idenity nts : 1r2x/1r2w/3dg4
 Too big to show, made of small asymmetric unit : 1zdh
 UPPER LIMIT : 3hhn
