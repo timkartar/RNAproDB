@@ -31,6 +31,8 @@ def processNodes(node_properties):
         node_properties[node]['edge_size']= 1 # original 5
         node_properties[node]['fontcolor']= 'black'
 
+        #ID of chain:number
+        node_properties[node]['rnaprodb_id'] = "{}:{}".format(chain, pos)
 
         if(parsed_node[0] == 'n'): # is a nucleotide
             node_properties[node]['color']= nt_colors[name] #use nt color scheme
@@ -72,6 +74,12 @@ def check_wc_pairing(edge_tuple):
 def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_types):
     for edge in edge_properties:
         first_node,sec_node = parse_edge(edge)
+
+        #global ids for each
+        edge_properties[edge]['source_id'] = "{}:{}".format(first_node[3], first_node[2]) # chain:#
+        edge_properties[edge]['target_id'] = "{}:{}".format(sec_node[3], sec_node[2]) # chain:#
+
+
         edge_properties[edge]['my_type'] = 'none'
         edge_properties[edge]['marker_end'] = ''
         edge_tuple = (node_to_text(first_node),node_to_text(sec_node)) #turn back into text to compare to backbone edge
