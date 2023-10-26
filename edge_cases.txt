@@ -1,8 +1,16 @@
 Missing part of nucleotide, dssr doesn't return as nucleotide : 8fvi
-Bad resolution, cannot idenity nts : 1r2x/1r2w/3dg4
+Bad resolution, cannot identify nts : 1r2x/1r2w/3dg4
 Too big to show, made of small asymmetric unit : 1zdh
 UPPER LIMIT : 3hhn
 run_dssr fails: 8h9d, 5o61, 6zdu, 6lu8, 8idf
 Blank altlocs in duplicate residue ILE (' ', 105, ' '): 5o61
 Not able to be downloaded (perhaps too big?): 7qjh, 8br3
 NGLviewer fing up: 3hhn
+Biological assembly 1 doesn't contain protein: 1c2w, 1c2x, 1fcw, 1fg0, 1foq, 1h1k, 1lu3, 1njn, 1njo, 1p9x, 1qza, 1qzb, 1t1o, 1z58, 1zo3, 2agn, 2o43, 2o44, 2o45, 2z9q, 3bb, 3dg0, 3dg2, 3dg4, 3dg5, 3fwo, 3izd, 3j28, 3j29, 3j2a, 3j2b, 3j2c, 3j2d, 3j2e, 3j2f, 3j2g, 3j2h, 3jq4, 4c4q, 5g2y, 6qyz, 7ur5, 7uri, 7urm, 7zfw
+Biological assembly 1 doesn't contain nts: 1gtf, 1gtn, 1utd, 1c9s, 3pf4, 5eeu, 5eev, 5eew, 5eex, 5eey, 5eez, 5ef0, 5ef1, 5ef2, 5ef3, 5k78, 5t8y, 6gd3, 6zdu, 7ndj, 7pdv, 8h9d  
+Bad resolution, cannot identify aa: 1dv4, 1eqq, 1qd7
+Decent resolution, but aa residues are unknown: 6o1o 
+Decent resolution, but uncharacterized and/or protein: 3af6, 3iem
+Unknown reason for detecting no nts: 3t3n, 4rcm (contains single nt)
+Nts labeled as oligonucleotide aptamers: 4r8i
+Contains pyrimidinyl peptides: 2kmj
