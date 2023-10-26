@@ -92,5 +92,4 @@ def getInteractions(protein, rna, prefix):
             result.append("{}:{}:{}:{}".format(pchname, presname, presid[1], ss)) #'A:LEU:269:H'
         
         interactions["{}:{}:{}:{}".format(chname, resname, resid[1], int_type)] = result
-    print(interactions)
     return interactions, secondary_structure_dict

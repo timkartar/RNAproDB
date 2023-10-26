@@ -17,15 +17,20 @@ def run_script(request):
     if request.method == "GET":
         # Define the path to your script
         pdbid = request.GET.get('pdbid')
-        
+        subgraph_nodes = request.GET.get('subgraph')
+
         if not pdbid:
             return JsonResponse({"message": "Missing pdbid parameter."}, status=400)
 
-        
         # script_path = "/home/raktim/rnaprodb/rnaprodb/rna_vis.py"
-        script_path = "./rna_vis.py"
-        script_path2 = "./get_subgraph.py"
-        result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
+        # script_path = "./rna_vis.py"
+        result = None
+        if subgraph_nodes:
+            script_path = "./get_subgraph.py"
+            result = subprocess.run(["python", script_path, pdbid, subgraph_nodes], capture_output=True, text=True)
+        else:
+            script_path = "./rna_vis.py"
+            result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
 
         # You can capture the stdout or stderr for further use if needed
         output = result.stdout
@@ -33,7 +38,6 @@ def run_script(request):
 
         # Split the output by line breaks
         lines = output.strip().split('\n')
-
 
         # Find the JSON line (starting from the end)
         json_output = None
@@ -54,7 +58,6 @@ def run_script(request):
 
             # Use PyPDB to get title
             pdb_info = get_info(pdbid)
-
 
             response_data = {
                 'file_url': '/{}.tmp.cif.html'.format(pdbid), 
