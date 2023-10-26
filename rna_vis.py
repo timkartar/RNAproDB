@@ -82,3 +82,7 @@ d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pa
 final_json = d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 final_json_str = json.dumps(final_json)
 print(final_json_str)
+
+# Generate file for subgraph testing
+with open('{}/output/{}.json'.format(home, prefix), 'w') as outfile:
+    json.dump(final_json, outfile)

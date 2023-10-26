@@ -1063,6 +1063,8 @@ def edges2G(edge_properties: dict, G: nx.Graph = None) -> nx.Graph:
                    label_fontsize=edge_properties[edge]['label_fontsize'],
                    edge_width=edge_properties[edge]['edge_width'],
                    my_type=edge_properties[edge]['my_type'],
+                    source_id=edge_properties[edge]['source_id'],
+                    target_id=edge_properties[edge]['target_id'],
                    )
     return G
 
