@@ -8,7 +8,7 @@ Start with pre-computed JSON first, JSON dumps to file
 """
 Search for JSON in output folder
 """
-import os
+import os, sys
 import json
 import networkx as nx
 
@@ -73,22 +73,24 @@ def update_subgraph_edge_indices(subgraph, node_index_mapping):
         edge_data['source'] = node_index_mapping[u]
         edge_data['target'] = node_index_mapping[v]
 
-data = readJSON('1ivs')
-G = json_to_nx(data)
-user_nodes = ["C:955", "A:646"]
-subgraph_nodes = get_neighbors_within_distance(G,user_nodes)
-# print(subgraph_nodes)
-subgraph_edges = [(u, v) for u, v in G.edges() if u in subgraph_nodes and v in subgraph_nodes]
-# print(subgraph_edges) 
-subgraph = G.subgraph(subgraph_nodes).edge_subgraph(subgraph_edges)
-# print(subgraph.edges())
-node_index_mapping = create_node_index_mapping(subgraph.nodes())
-# print(subgraph['C:917']['C:918'])
-update_subgraph_edge_indices(subgraph,node_index_mapping)
-# print(subgraph['C:917']['C:918'])
-# print(node_index_mapping)
-subgraph_json = nx_to_json(subgraph, node_index_mapping)
-# print(subgraph_json)
-final_json_str = json.dumps(subgraph_json)
-final_json_str = json.dumps(final_json_str)
-print(final_json_str)
+if __name__ == "__main__":
+    data = readJSON(sys.argv[1])
+    G = json_to_nx(data)
+    user_nodes = ["C:955", "A:646"]
+    #user_nodes = ["C:6", "J:25"]
+    subgraph_nodes = get_neighbors_within_distance(G,user_nodes)
+    # print(subgraph_nodes)
+    subgraph_edges = [(u, v) for u, v in G.edges() if u in subgraph_nodes and v in subgraph_nodes]
+    # print(subgraph_edges) 
+    subgraph = G.subgraph(subgraph_nodes).edge_subgraph(subgraph_edges)
+    # print(subgraph.edges())
+    node_index_mapping = create_node_index_mapping(subgraph.nodes())
+    # print(subgraph['C:917']['C:918'])
+    update_subgraph_edge_indices(subgraph,node_index_mapping)
+    # print(subgraph['C:917']['C:918'])
+    # print(node_index_mapping)
+    subgraph_json = nx_to_json(subgraph, node_index_mapping)
+    # print(subgraph_json)
+    final_json_str = json.dumps(subgraph_json)
+    final_json_str = json.dumps(final_json_str)
+    print(final_json_str)
