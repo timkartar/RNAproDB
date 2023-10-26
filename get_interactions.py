@@ -38,13 +38,16 @@ def check_interaction_type(resname, atomname):
     "G": ["N3", "C2"],
     "U": ["O2"]
     }
-    if atomname in MAJOR_GROOVE_ATOMS[resname]:
-        return "major"
-    elif atomname in MINOR_GROOVE_ATOMS[resname]:
-        return "minor"
-    elif "'" in atomname or "P" in atomname:
-        return "backbone"
-    else:
+    try:
+        if atomname in MAJOR_GROOVE_ATOMS[resname]:
+            return "major"
+        elif atomname in MINOR_GROOVE_ATOMS[resname]:
+            return "minor"
+        elif "'" in atomname or "P" in atomname:
+            return "backbone"
+        else:
+            return "other"
+    except:
         return "other"
 
 """
@@ -52,7 +55,10 @@ Returns dict of interactions of nucleotide with pchnaem, presname, presid[1]
 """
 def getInteractions(protein, rna, prefix):
     interactions = {}
-    ns = Nsearch(list(protein.get_atoms()))
+    patoms = list(protein.get_atoms())
+    if len(patoms) == 0:
+        return interactions, {} 
+    ns = Nsearch(patoms)
     interactions = {} 
     cut_off = 4
 
@@ -69,6 +75,9 @@ def getInteractions(protein, rna, prefix):
         atomname = atom.name
         
         
+        if(resname in ["HOH","CA"]): #TODO hack for lab meeting
+            continue
+        
         neighbors = ns.search(atom.coord, radius=cut_off, level="R")
         result = []
         int_type = check_interaction_type(resname, atomname)
@@ -83,4 +92,5 @@ def getInteractions(protein, rna, prefix):
             result.append("{}:{}:{}:{}".format(pchname, presname, presid[1], ss)) #'A:LEU:269:H'
         
         interactions["{}:{}:{}:{}".format(chname, resname, resid[1], int_type)] = result
+    print(interactions)
     return interactions, secondary_structure_dict

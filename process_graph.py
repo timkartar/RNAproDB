@@ -18,7 +18,10 @@ def parse_edge(node_id):
 def processNodes(node_properties):
     for node in node_properties:
         parsed_node = parse_node(node) # ('p'/'n', name, position, chain, ss(protein only))
-        name = parsed_node[1]
+        try:
+            name = parsed_node[1]
+        except:
+            print(parsed_node, node)
         pos = str(parsed_node[2])
         chain = parsed_node[3]
 
