@@ -22,7 +22,7 @@ def create_node_index_mapping(nodes):
 
 
 def readJSON(pdbid):
-    with open('{}/output/{}.json'.format(home, pdbid), 'r') as infile:
+    with open('{}/output/{}_graph.json'.format(home, pdbid), 'r') as infile:
         data_string = infile.read()
     first_encode_data = json.loads(data_string)
     data = json.loads(first_encode_data)
@@ -52,7 +52,7 @@ def get_neighbors_within_distance(G, nodes, distance=2):
     nodes_set = set(nodes)
     for _ in range(distance):
         for node in list(nodes_set):
-            nodes_set = nodes_set.union(set(G.neighbors(node)))
+            nodes_set = nodes_set.union(set(G.neighbors(node))) # will break if node not in graph!!! Handle this later
             nodes_set = nodes_set.union(set(G.predecessors(node)))
     return nodes_set
 
@@ -76,22 +76,20 @@ def update_subgraph_edge_indices(subgraph, node_index_mapping):
 
 
 if __name__ == "__main__":
-    data = readJSON(sys.argv[1]) # assumes pre-computed JSON file
-    G = json_to_nx(data)
+    data = readJSON(sys.argv[1]) # assumes pre-computed JSON file, reads in pdbid
+    G = json_to_nx(data) # convert json graph to nx
     user_nodes = sys.argv[2].split(",")
-    subgraph_nodes = get_neighbors_within_distance(G,user_nodes)
-    # print(subgraph_nodes)
-    subgraph_edges = [(u, v) for u, v in G.edges() if u in subgraph_nodes and v in subgraph_nodes]
-    # print(subgraph_edges) 
-    subgraph = G.subgraph(subgraph_nodes).edge_subgraph(subgraph_edges)
-    # print(subgraph.edges())
-    node_index_mapping = create_node_index_mapping(subgraph.nodes())
-    # print(subgraph['C:917']['C:918'])
-    update_subgraph_edge_indices(subgraph,node_index_mapping)
-    # print(subgraph['C:917']['C:918'])
-    # print(node_index_mapping)
-    subgraph_json = nx_to_json(subgraph, node_index_mapping)
-    # print(subgraph_json)
+    user_nodes = list(filter(None, user_nodes)) #filter empty nodes
+
+    subgraph_nodes = get_neighbors_within_distance(G,user_nodes) #list of nodes that should be in subgraph
+    subgraph_edges = [(u, v) for u, v in G.edges() if u in subgraph_nodes and v in subgraph_nodes] # get the edges
+    subgraph = G.subgraph(subgraph_nodes).edge_subgraph(subgraph_edges) #generate the new subgraph
+    
+    # each node for d3 must have a unique numerical index
+    node_index_mapping = create_node_index_mapping(subgraph.nodes()) # compute the unique mapping for each subgraph node
+    update_subgraph_edge_indices(subgraph,node_index_mapping) # update the graph to have a new source/target label
+
+    subgraph_json = nx_to_json(subgraph, node_index_mapping) # convert nx back to JSON
     final_json_str = json.dumps(subgraph_json)
     final_json_str = json.dumps(final_json_str)
-    print(final_json_str)
+    print(final_json_str) #use console output
