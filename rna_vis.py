@@ -84,5 +84,5 @@ final_json_str = json.dumps(final_json)
 print(final_json_str)
 
 # Generate file for subgraph testing
-with open('{}/output/{}.json'.format(home, prefix), 'w') as outfile:
+with open('{}/output/{}_graph.json'.format(home, prefix), 'w') as outfile:
     json.dump(final_json, outfile)
