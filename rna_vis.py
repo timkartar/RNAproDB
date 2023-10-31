@@ -84,11 +84,13 @@ d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pa
 # click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click
 final_json = d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 print(final_json)
-final_json_str = json.dumps(final_json)
-# print(final_json_str)
+final_json_object = json.loads(final_json)
+ss_json = processSS(ss)
+final_json_object["ss"] = ss_json
+final_json_object = json.dumps(final_json_object)
+print(final_json_object)
+
 
 # Generate file for subgraph testing
 with open('{}/output/{}_graph.json'.format(home, prefix), 'w') as outfile:
-    json.dump(final_json, outfile)
-
-ss_json = processSS(ss)
+    json.dump(final_json_object, outfile)
