@@ -83,7 +83,7 @@ d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pa
 # d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 # click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click
 final_json = d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
-print(final_json)
+# print(final_json)
 final_json_object = json.loads(final_json)
 ss_json = processSS(ss)
 final_json_object["ss"] = ss_json
