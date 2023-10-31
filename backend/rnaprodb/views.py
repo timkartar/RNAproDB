@@ -25,49 +25,49 @@ def run_script(request):
         # script_path = "/home/raktim/rnaprodb/rnaprodb/rna_vis.py"
         # script_path = "./rna_vis.py"
         result = None
+        json_output = None
         if subgraph_nodes:
             script_path = "./get_subgraph.py"
             result = subprocess.run(["python", script_path, pdbid, subgraph_nodes], capture_output=True, text=True)
-        else:
-            script_path = "./rna_vis.py"
-            result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
 
-        # You can capture the stdout or stderr for further use if needed
-        output = result.stdout
-        errors = result.stderr
+            # You can capture the stdout or stderr for further use if needed
+            output = result.stdout
+            errors = result.stderr
 
-        # Split the output by line breaks
-        lines = output.strip().split('\n')
+            # Split the output by line breaks
+            lines = output.strip().split('\n')
 
-        # Find the JSON line (starting from the end)
-        json_output = None
-        for line in lines:
-            if line.startswith("'\"{"):
-                break
-        json_output = line
+            # Find the JSON line (starting from the end)
+            for line in lines:
+                if line.startswith("'\"{"):
+                    break
+            json_output = line
 
-        if not json_output:
-            return JsonResponse({"message": "Error: No valid JSON found in the script's output."})
+            if not json_output:
+                return JsonResponse({"message": "Error: No valid JSON found in the script's output."})
+            
+            try:
+                json_output = json.loads(json_output)
+            except json.JSONDecodeError:
+                return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
+            
+            if result.returncode != 0:
+                return JsonResponse({"message": "Error running script.", "error": errors})
+        else: # full graph!
+            # script_path = "./rna_vis.py"
+            with open("./output/{}_graph.json".format(pdbid), 'r') as json_file:
+                json_output = json.load(json_file)
 
-        try:
-            json_output = json.loads(json_output)
-        except json.JSONDecodeError:
-            return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
+        # Use PyPDB to get title
+        pdb_info = get_info(pdbid)
 
-        if result.returncode == 0:
-
-            # Use PyPDB to get title
-            pdb_info = get_info(pdbid)
-
-            response_data = {
-                'file_url': '/{}.tmp.cif.html'.format(pdbid), 
-                "message": "Script ran successfully!",
-                "title": pdb_info['citation'][0]['title'],
-                'protein_name': (pdb_info['struct']['title']),#.capitalize().replace('rna', 'RNA'),
-                "output": json_output  # Use the parsed JSON data here
-            }
-            return JsonResponse(response_data)
-        else:
-            return JsonResponse({"message": "Error running script.", "error": errors})
-    
+        response_data = {
+            'file_url': '/{}.tmp.cif.html'.format(pdbid), 
+            "message": "Script ran successfully!",
+            "title": pdb_info['citation'][0]['title'],
+            'protein_name': (pdb_info['struct']['title']),#.capitalize().replace('rna', 'RNA'),
+            "output": json_output  # Use the parsed JSON data here
+        }
+        return JsonResponse(response_data)
+        
     return JsonResponse({"message": "Invalid request method."}, status=405)

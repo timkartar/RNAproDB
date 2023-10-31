@@ -22,11 +22,11 @@ def create_node_index_mapping(nodes):
 
 
 def readJSON(pdbid):
-    with open('{}/output/{}_graph.json'.format(home, pdbid), 'r') as infile:
-        data_string = infile.read()
-    first_encode_data = json.loads(data_string)
-    data = json.loads(first_encode_data)
-    return data
+    # with open('{}/output/{}_graph.json'.format(home, pdbid), 'r') as infile:
+    #     data_string = infile.read()
+    with open("{}/output/{}_graph.json".format(home,pdbid), 'r') as infile:
+        json_output = json.load(infile)
+        return json_output
 
 def json_to_nx(data):
     # Create a directed graph using NetworkX

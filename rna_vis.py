@@ -93,4 +93,4 @@ print(final_json_object)
 
 # Generate file for subgraph testing
 with open('{}/output/{}_graph.json'.format(home, prefix), 'w') as outfile:
-    json.dump(final_json_object, outfile)
+    outfile.write(final_json_object)
