@@ -91,5 +91,4 @@ if __name__ == "__main__":
 
     subgraph_json = nx_to_json(subgraph, node_index_mapping) # convert nx back to JSON
     final_json_str = json.dumps(subgraph_json)
-    final_json_str = json.dumps(final_json_str)
     print(final_json_str) #use console output

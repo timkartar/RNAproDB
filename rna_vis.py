@@ -13,7 +13,7 @@ from process_graph import processEdges, processNodes
 import json
 from hbond_extractor import hbondExtractor, labelHbondEdges
 import sys
-from get_ss import getSS
+from get_ss import getSS, processSS
 
 parser = MMCIFParser()
 
@@ -32,8 +32,7 @@ structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(structure) # split RNA and protein from structure
 
 ss = getSS(prefix)
-
-print(ss)
+# print(ss)
 
 with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
    data = json.load(FH, object_pairs_hook=collections.OrderedDict) 
@@ -84,9 +83,12 @@ d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pa
 # d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 # click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click
 final_json = d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
+print(final_json)
 final_json_str = json.dumps(final_json)
-print(final_json_str)
+# print(final_json_str)
 
 # Generate file for subgraph testing
 with open('{}/output/{}_graph.json'.format(home, prefix), 'w') as outfile:
     json.dump(final_json, outfile)
+
+ss_json = processSS(ss)
