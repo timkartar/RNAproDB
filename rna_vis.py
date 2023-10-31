@@ -13,6 +13,7 @@ from process_graph import processEdges, processNodes
 import json
 from hbond_extractor import hbondExtractor, labelHbondEdges
 import sys
+from get_ss import getSS
 
 parser = MMCIFParser()
 
@@ -30,6 +31,9 @@ pdb_file = "{}.tmp.cif".format(prefix)
 structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(structure) # split RNA and protein from structure
 
+ss = getSS(prefix)
+
+print(ss)
 
 with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
    data = json.load(FH, object_pairs_hook=collections.OrderedDict) 
