@@ -77,7 +77,7 @@ ss_json = processSS(ss)
 final_json_object["ss"] = ss_json
 final_json_object["chainsList"] = chains_list
 final_json_object = json.dumps(final_json_object)
-#print(final_json_object)
+print(final_json_object)
 
 
 # Generate file for subgraph testing
