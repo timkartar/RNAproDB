@@ -1,3 +1,4 @@
+from Bio import PDB
 """
 Input: ('p'/'nt', name, position, chain, ss (protein only))
 Returns text string from node tuple representation
@@ -46,3 +47,28 @@ d3to1 = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
         'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
         'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
         'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
+
+def getChains(structure):
+    chains_list = []
+
+    for model in structure: # assume one model since bio assembly
+        for chain in model:
+            chain_dict = {} # wrapper holding resiudes and ID
+            residue_list = [] # holds residues (name, pos, chain)
+            
+            chain_name = chain.get_id()
+                        
+            for residue in chain:
+                residue_dict = {}
+                residue_id = residue.get_id()[1]  # Gets the residue sequence number
+                residue_name = residue.get_resname()
+
+                residue_dict["name"] = residue_name
+                residue_dict["pos"] = residue_id
+                residue_dict["chain"] = chain_name
+                residue_list.append(residue_dict)
+
+            chain_dict["chainId"] = chain_name
+            chain_dict["residues"] = residue_list
+            chains_list.append(chain_dict)
+    return chains_list
