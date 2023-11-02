@@ -14,6 +14,7 @@ import json
 from hbond_extractor import hbondExtractor, labelHbondEdges
 import sys
 from get_ss import getSS, processSS
+from utilities import getChains
 
 parser = MMCIFParser()
 
@@ -31,6 +32,8 @@ pdb_file = "{}.tmp.cif".format(prefix)
 structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(structure) # split RNA and protein from structure
 
+chains_list = getChains(structure)
+
 ss = getSS(prefix)
 # print(ss)
 
@@ -46,22 +49,7 @@ hbond_set = hbondExtractor(data)
 interaction_types  = labelHbondEdges(interaction_types, hbond_set)
 
 all_edges = pairs + backbone_edges + interaction_edges + stacks
-# all_nodes = set()
-# for tuple in all_edges:
-#    if tuple[0] not in all_nodes:
-#       all_nodes.add(tuple[0])
-#    if tuple[1] not in all_nodes:
-#       all_nodes.add(tuple[1])
 
-# print(all_nodes)
-# df_nodes = pd.DataFrame(all_nodes, columns=['id'])
-# df_nodes_json = df_nodes.to_json(orient='records')
-# print(df_nodes_json)
-
-# df_links = pd.DataFrame(all_edges, columns=['source', 'target'])
-# df_links['weight'] = [20]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
-# df_links_json = df_links.to_json(orient='records')
-# print(df_links_json)
 d3 = d3graph(support=None, collision=0.5)
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
@@ -87,8 +75,9 @@ final_json = d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_s
 final_json_object = json.loads(final_json)
 ss_json = processSS(ss)
 final_json_object["ss"] = ss_json
+final_json_object["chainsList"] = chains_list
 final_json_object = json.dumps(final_json_object)
-#print(final_json_object)
+print(final_json_object)
 
 
 # Generate file for subgraph testing

@@ -55,8 +55,37 @@ def run_script(request):
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
             # script_path = "./rna_vis.py"
-            with open("./output/{}_graph.json".format(pdbid), 'r') as json_file:
-                json_output = json.load(json_file)
+            RUN_RNAVIS_FLAG = False
+            if(RUN_RNAVIS_FLAG):
+                script_path = "./rna_vis.py"
+                result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
+                
+                # You can capture the stdout or stderr for further use if needed
+                output = result.stdout
+                errors = result.stderr
+
+                # Split the output by line breaks
+                lines = output.strip().split('\n')
+
+                # Find the JSON line (starting from the end)
+                for line in lines:
+                    if line.startswith("'\"{"):
+                        break
+                json_output = line
+
+                if not json_output:
+                    return JsonResponse({"message": "Error: No valid JSON found in the script's output."})
+                
+                try:
+                    json_output = json.loads(json_output)
+                except json.JSONDecodeError:
+                    return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
+                
+                if result.returncode != 0:
+                    return JsonResponse({"message": "Error running script.", "error": errors})
+            else:
+                with open("./output/{}_graph.json".format(pdbid), 'r') as json_file:
+                    json_output = json.load(json_file)
 
         # Use PyPDB to get title
         pdb_info = get_info(pdbid)

@@ -27,5 +27,5 @@ def processSS(ss):
     # second tuple is ss
     ss_json_object["ssList"] = ss_json_list
     ss_json_object['numChains'] = num_chains
-    print(ss_json_object)
+    # print(ss_json_object)
     return ss_json_object
