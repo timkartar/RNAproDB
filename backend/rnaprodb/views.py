@@ -55,7 +55,7 @@ def run_script(request):
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
             # script_path = "./rna_vis.py"
-            RUN_RNAVIS_FLAG = False
+            RUN_RNAVIS_FLAG = True
             if(RUN_RNAVIS_FLAG):
                 script_path = "./rna_vis.py"
                 result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
