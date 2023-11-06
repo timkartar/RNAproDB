@@ -3,9 +3,15 @@ import numpy as np
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 
-def getChainsAndPca(structure):
+def getChainsAndPca(structure, interaction_edges):
     chains_list = []
     all_centroids = []
+
+    aa_set = set() # which amino acids interact
+    for edge in interaction_edges:
+        split_edge = edge[1].split(":") #('C:C:973', 'A:LEU:278:H')
+        aa_set.add("{}:{}".format(split_edge[0], split_edge[2]))
+
 
     for model in structure: # assume one model since bio assembly
         for chain in model:
@@ -24,7 +30,11 @@ def getChainsAndPca(structure):
                 residue_dict["chain"] = chain_name
                 residue_dict["is_aa"] = PDB.is_aa(residue)
 
-                if not residue_dict["is_aa"]:
+                rnaprodbid = "{}:{}".format(residue_dict["chain"], residue_dict['pos'])
+
+
+                if not residue_dict["is_aa"] or rnaprodbid in aa_set:
+                # if rnaprodbid in aa_set:
                     # Code below is to calculate centroid for use in PCA
                     atoms = [atom.get_vector() for atom in residue]
                     atom_coords = np.array([list(atom) for atom in atoms])
@@ -42,7 +52,7 @@ def getChainsAndPca(structure):
     centroids_array = np.array(all_centroids)
     # Perform PCA to reduce to 2D
     pca = PCA(n_components=2)
-    SCALAR = 1000
+    SCALAR = 20
     reduced_centroids = pca.fit_transform(centroids_array) * SCALAR
     # print(reduced_centroids)
     # add the pca to chains_list
@@ -55,10 +65,13 @@ def getChainsAndPca(structure):
     # plt.show()
     centroid_rnaprodb_map = {}
 
+
+   
+
     for chain in chains_list:
         for residue in chain["residues"]:
             rnaprodbid = "{}:{}".format(residue["chain"], residue['pos'])
-            if not residue["is_aa"]: # only 
+            if not residue["is_aa"] or rnaprodbid in aa_set: # only nts and interacting residues
                 residue["xpos"] = reduced_centroids[i][0]
                 residue["ypos"] = reduced_centroids[i][1]
                 centroid_rnaprodb_map[rnaprodbid] = reduced_centroids[i]

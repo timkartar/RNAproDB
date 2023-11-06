@@ -32,7 +32,6 @@ pdb_file = "{}.tmp.cif".format(prefix)
 structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(structure) # split RNA and protein from structure
 
-chains_list, centroid_rnaprodb_map = getChainsAndPca(structure)
 ss = getSS(prefix)
 # print(ss)
 
@@ -60,8 +59,12 @@ d3.graph(adjmat)
 
 d3.set_edge_properties(directed=True) # setting earlier to then update?
 
+chains_list, centroid_rnaprodb_map = getChainsAndPca(structure, interaction_edges)
+
+
+
 d3.node_properties = processNodes(d3.node_properties)
-ADD_PCA = False
+ADD_PCA = True
 if(ADD_PCA):
    d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map)
 
