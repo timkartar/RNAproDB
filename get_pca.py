@@ -6,6 +6,7 @@ import matplotlib.pyplot as plt
 def getChainsAndPca(structure, interaction_edges):
     chains_list = []
     all_centroids = []
+    rna_centroids = []
 
     aa_set = set() # which amino acids interact
     for edge in interaction_edges:
@@ -33,15 +34,21 @@ def getChainsAndPca(structure, interaction_edges):
                 rnaprodbid = "{}:{}".format(residue_dict["chain"], residue_dict['pos'])
 
 
-                if not residue_dict["is_aa"] or rnaprodbid in aa_set:
+                if not residue_dict["is_aa"]:
                 # if rnaprodbid in aa_set:
                     # Code below is to calculate centroid for use in PCA
                     atoms = [atom.get_vector() for atom in residue]
                     atom_coords = np.array([list(atom) for atom in atoms])
                     # Compute the mean (x,y,z) - the centroid of the residue
                     centroid = np.mean(atom_coords, axis=0)
+                    rna_centroids.append(centroid)
                     all_centroids.append(centroid)
-                
+                elif rnaprodbid in aa_set:
+                    atoms = [atom.get_vector() for atom in residue]
+                    atom_coords = np.array([list(atom) for atom in atoms])
+                    # Compute the mean (x,y,z) - the centroid of the residue
+                    centroid = np.mean(atom_coords, axis=0)
+                    all_centroids.append(centroid)
 
                 residue_list.append(residue_dict)
 
@@ -49,11 +56,12 @@ def getChainsAndPca(structure, interaction_edges):
             chain_dict["residues"] = residue_list
             chains_list.append(chain_dict)
 
-    centroids_array = np.array(all_centroids)
+    rna_centroids_array = np.array(rna_centroids)
     # Perform PCA to reduce to 2D
     pca = PCA(n_components=2)
     SCALAR = 20
-    reduced_centroids = pca.fit_transform(centroids_array) * SCALAR
+    pca.fit(rna_centroids_array)
+    reduced_centroids = pca.transform(np.array(all_centroids)) * SCALAR
 
     reduced_centroids = reduced_centroids - np.mean(reduced_centroids, axis=0)
     # print(reduced_centroids)
