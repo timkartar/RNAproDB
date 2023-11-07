@@ -79,6 +79,13 @@ final_json_object = json.loads(final_json)
 ss_json = processSS(ss)
 final_json_object["ss"] = ss_json
 final_json_object["chainsList"] = chains_list
+
+for edge in final_json_object["links"]:
+   del edge['weight']
+   del edge['weight_scaled']
+   del edge['edge_distance']
+   del edge['edge_weight']
+
 final_json_object = json.dumps(final_json_object)
 print(final_json_object)
 

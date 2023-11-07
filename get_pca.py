@@ -54,6 +54,8 @@ def getChainsAndPca(structure, interaction_edges):
     pca = PCA(n_components=2)
     SCALAR = 20
     reduced_centroids = pca.fit_transform(centroids_array) * SCALAR
+
+    reduced_centroids = reduced_centroids - np.mean(reduced_centroids, axis=0)
     # print(reduced_centroids)
     # add the pca to chains_list
     i = 0
