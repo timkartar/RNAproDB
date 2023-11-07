@@ -14,7 +14,7 @@ import json
 from hbond_extractor import hbondExtractor, labelHbondEdges
 import sys
 from get_ss import getSS, processSS
-from utilities import getChains
+from get_pca import getChainsAndPca, addPcaToGraph
 
 parser = MMCIFParser()
 
@@ -31,8 +31,6 @@ if len(sys.argv) > 1:
 pdb_file = "{}.tmp.cif".format(prefix)
 structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(structure) # split RNA and protein from structure
-
-chains_list = getChains(structure)
 
 ss = getSS(prefix)
 # print(ss)
@@ -61,11 +59,16 @@ d3.graph(adjmat)
 
 d3.set_edge_properties(directed=True) # setting earlier to then update?
 
+chains_list, centroid_rnaprodb_map = getChainsAndPca(structure, interaction_edges)
 
-# can probably pre-compute, then add to the dataframe and use that?
-# iterate through nodes to change colors, label, etc.
+
 
 d3.node_properties = processNodes(d3.node_properties)
+ADD_PCA = True
+if(ADD_PCA):
+   d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map)
+
+
 d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types)
 
 # d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
@@ -76,10 +79,15 @@ final_json_object = json.loads(final_json)
 ss_json = processSS(ss)
 final_json_object["ss"] = ss_json
 final_json_object["chainsList"] = chains_list
+
+for edge in final_json_object["links"]:
+   del edge['weight']
+   del edge['weight_scaled']
+   del edge['edge_distance']
+   del edge['edge_weight']
+
 final_json_object = json.dumps(final_json_object)
 print(final_json_object)
 
-
-# Generate file for subgraph testing
 with open('{}/output/{}_graph.json'.format(home, prefix), 'w') as outfile:
     outfile.write(final_json_object)

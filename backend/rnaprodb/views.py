@@ -55,7 +55,7 @@ def run_script(request):
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
             # script_path = "./rna_vis.py"
-            RUN_RNAVIS_FLAG = False
+            RUN_RNAVIS_FLAG = True
             if(RUN_RNAVIS_FLAG):
                 script_path = "./rna_vis.py"
                 result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
@@ -90,13 +90,27 @@ def run_script(request):
         # Use PyPDB to get title
         pdb_info = get_info(pdbid)
 
-        response_data = {
+        TOO_LARGE = False
+        response_data = None
+        if(TOO_LARGE and not subgraph_nodes):
+            new_json_output = {"chainsList": json_output['chainsList'], "ss": json_output["ss"]}
+            response_data = {
             'file_url': '/{}.tmp.cif.html'.format(pdbid), 
             "message": "Script ran successfully!",
             "title": pdb_info['citation'][0]['title'],
             'protein_name': (pdb_info['struct']['title']),#.capitalize().replace('rna', 'RNA'),
-            "output": json_output  # Use the parsed JSON data here
-        }
+            'too_large': True,
+            "output": new_json_output  # Use the parsed JSON data here  # MAKE THIS FASTER BY Separating out structure! Maybe compute chains dynamically here!!!
+            }
+        else:
+            response_data = {
+                'file_url': '/{}.tmp.cif.html'.format(pdbid), 
+                "message": "Script ran successfully!",
+                "title": pdb_info['citation'][0]['title'],
+                'protein_name': (pdb_info['struct']['title']),#.capitalize().replace('rna', 'RNA'),
+                'too_large': False,
+                "output": json_output  # Use the parsed JSON data here
+            }
         return JsonResponse(response_data)
         
     return JsonResponse({"message": "Invalid request method."}, status=405)
