@@ -2,6 +2,13 @@ from Bio import PDB
 import numpy as np
 #from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
+from scipy.spatial.transform import Rotation   
+
+def rot2eul(rotation_matrix):
+    ### first transform the matrix to euler angles
+    r =  Rotation.from_matrix(rotation_matrix)
+    angles = r.as_euler("zyx",degrees=False)
+    return angles
 
 def getChainsAndPca(structure, interaction_edges):
     chains_list = []
@@ -107,7 +114,9 @@ def getChainsAndPca(structure, interaction_edges):
     # print("Length of centroids")
     # print(len(reduced_centroids))
     # exit()
-    return chains_list, centroid_rnaprodb_map, Vt.T
+    r = rot2eul(Vt.T)
+    r = np.array(Vt.T.tolist() + [r.tolist()])
+    return chains_list, centroid_rnaprodb_map, r
     # return chains_list, centroid_rnaprodb_map, Vt
 
 
