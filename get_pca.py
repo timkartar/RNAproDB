@@ -73,10 +73,11 @@ def getChainsAndPca(structure, interaction_edges):
 
     U, S, Vt = np.linalg.svd(rna_centroids_array)
     v_rotated = all_centroids_array @ Vt.T 
+
     # Vt.T is the rotation matrix and its inverse is Vt (may
     # need either one)
-    reduced_centroids = v_rotated[:,:2] *SCALAR
-
+    reduced_centroids = v_rotated[:,:2] *SCALAR # first two dimensions
+    # reduced_centroids[:,0] = -1*reduced_centroids[:,0]
 
     reduced_centroids = reduced_centroids - np.mean(reduced_centroids, axis=0)
     # print(reduced_centroids)
@@ -106,7 +107,9 @@ def getChainsAndPca(structure, interaction_edges):
     # print("Length of centroids")
     # print(len(reduced_centroids))
     # exit()
-    return chains_list, centroid_rnaprodb_map
+    return chains_list, centroid_rnaprodb_map, Vt.T
+    # return chains_list, centroid_rnaprodb_map, Vt
+
 
 def addPcaToGraph(node_properties, centroid_rnaprodb_map):
     print(node_properties)

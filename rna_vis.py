@@ -59,7 +59,7 @@ d3.graph(adjmat)
 
 d3.set_edge_properties(directed=True) # setting earlier to then update?
 
-chains_list, centroid_rnaprodb_map = getChainsAndPca(structure, interaction_edges)
+chains_list, centroid_rnaprodb_map, rotationMatrix = getChainsAndPca(structure, interaction_edges)
 
 
 
@@ -79,6 +79,7 @@ final_json_object = json.loads(final_json)
 ss_json = processSS(ss)
 final_json_object["ss"] = ss_json
 final_json_object["chainsList"] = chains_list
+final_json_object["rotationMatrix"] = rotationMatrix.tolist() # used to orient NGLViewer camera to the PCA
 
 for edge in final_json_object["links"]:
    del edge['weight']
