@@ -1,6 +1,6 @@
 from Bio import PDB
 import numpy as np
-#from sklearn.decomposition import PCA
+from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation   
 
@@ -67,23 +67,26 @@ def getChainsAndPca(structure, interaction_edges):
     all_centroids_array = np.array(all_centroids)
     # Perform PCA to reduce to 2D
     SCALAR = 20
-    '''
+    
     pca = PCA(n_components=2)
     pca.fit(rna_centroids_array)
     reduced_centroids = pca.transform(np.array(all_centroids)) * SCALAR
-    '''
+    
     ## Alternative way that returns the rotation matrix
     ## We can send the rotation matrix to NGL viewer to set 
     ## the camera angle matching the explorer.
     ## var m = stage.viewerControls.getOrientation()
     ## stage.viewerControls.orient(m)
-
+    '''
     U, S, Vt = np.linalg.svd(rna_centroids_array)
     v_rotated = all_centroids_array @ Vt.T 
 
     # Vt.T is the rotation matrix and its inverse is Vt (may
     # need either one)
+    
     reduced_centroids = v_rotated[:,:2] *SCALAR # first two dimensions
+    '''
+    Vt = np.array([[0]*3]*3)
     # reduced_centroids[:,0] = -1*reduced_centroids[:,0]
 
     reduced_centroids = reduced_centroids - np.mean(reduced_centroids, axis=0)
