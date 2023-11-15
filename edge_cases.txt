@@ -15,3 +15,4 @@ Unknown reason for detecting no nts: 3t3n, 4rcm (contains single nt)
 Nts labeled as oligonucleotide aptamers: 4r8i
 Contains pyrimidinyl peptides: 2kmj
 highlight node not working: 8bgu
+8fjl, 3I/JCQ - SS not working
