@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rnaprodb',
     'corsheaders',
     'rest_framework',
+    'search',
 ]
 
 MIDDLEWARE = [
