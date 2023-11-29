@@ -17,10 +17,11 @@ def query_by_term(term: str) -> list:
    rna_protein_query = QueryGroup(queries = [query1, query2], logical_operator = LogicalOperator.AND)
    search_query = QueryGroup(queries = [rna_protein_query, search_operator], logical_operator = LogicalOperator.AND)
    return_type = ReturnType.ENTRY
-   with open('nakb_prna_ids.txt', 'r') as f:
+   with open('backend/search/nakb_prna_ids.txt', 'r') as f:
     nakb_ids = f.read().split(',')
    query_results = perform_search(search_query, return_type)
-   output_list = [entry.upper() for entry in nakb_ids if entry.upper() in set(query_results)]
+   output_list = [entry.lower() for entry in nakb_ids if entry.upper() in set(query_results)]
+   print("Output length: " + str(len(output_list)))
    return output_list
 
 
@@ -67,12 +68,6 @@ if __name__ == "__main__":
    end_time = time.time()
    print("Runtime for experimental: {:.2f} seconds".format(end_time - start_time))
    print("this is output from pypdb:" + str(len(pdb_ids_exp)))
-   with open('rcsb_pdb_ids_20231127152439.txt', 'r') as f:
-       pdb_ids = f.read().split(',')
-   with open('nakb_prna_ids.txt', 'r') as f:
-       nakb_ids = f.read().split(',')
-   print("this is output from rcsb:" + str(len(pdb_ids)))
-   print("this is matches bw rcsb and our nakb dataset: " + str(len([entry.upper() for entry in nakb_ids if entry.upper() in set(pdb_ids)])))
 
 
 

@@ -4,11 +4,13 @@ from rest_framework import status
 from django.http import JsonResponse
 from .models import pypdbObject
 from .serializers import pypdbSerializer
+from .pypdbSearch import *
 
 @api_view(['GET', 'POST'])
 def pdb_list(request, format=None):
     if request.method == 'GET':
-        pdbs = pypdbObject.objects.all() 
+        desired_ids = query_by_term("ribosome")
+        pdbs = pypdbObject.objects.filter(id__in=desired_ids)
         serializer = pypdbSerializer(pdbs, many=True)
         return Response(serializer.data)
     if request.method == 'POST':

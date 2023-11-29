@@ -51,25 +51,28 @@ if __name__ == '__main__':
         if item.endswith(".cif"):
             continue
         else:
-            prefix = item.split("-")[0]
-            info = pypdb.get_info(prefix)
-            
-            data = [prefix]
-            data.append(",".join(info['citation'][0]['rcsb_authors']))
-            data.append(info['citation'][0]['title'])
             try:
-                data.append(info['citation'][0]['year'])
-            except:
-                data.append("NULL")
-            try:
-                data.append(info['citation'][0]['pdbx_database_id_pub_med'])
-            except:
-                data.append("NULL")
-            try:
-                data.append(info['citation'][0]['pdbx_database_id_doi'])
-            except:
-                data.append("NULL")
-            add_data(conn, "Structures", data)
+                prefix = item.split("-")[0]
+                info = pypdb.get_info(prefix)
+                
+                data = [prefix]
+                data.append(",".join(info['citation'][0]['rcsb_authors']))
+                data.append(info['citation'][0]['title'].replace("\'", "single_quote"))
+                try:
+                    data.append(info['citation'][0]['year'])
+                except:
+                    data.append("NULL")
+                try:
+                    data.append(info['citation'][0]['pdbx_database_id_pub_med'])
+                except:
+                    data.append("NULL")
+                try:
+                    data.append(info['citation'][0]['pdbx_database_id_doi'])
+                except:
+                    data.append("NULL")
+                add_data(conn, "Structures", data)
+            except Exception as e:
+                print(e)
     
     conn.close()
             
