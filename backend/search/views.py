@@ -5,6 +5,32 @@ from django.http import JsonResponse
 from .models import pypdbObject
 from .serializers import pypdbSerializer
 from .pypdbSearch import *
+import json
+
+@api_view(['GET', 'POST'])
+def search_view(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        search_term = data.get('searchTerm')
+        min_resolution = data.get('minResolution')
+        max_resolution = data.get('maxResolution')
+        min_NA = data.get('minNA')  
+        max_NA = data.get('maxNA')
+        min_protein = data.get('minProtein')
+        max_protein = data.get('maxProtein')
+        experimental_modality = data.get('experimentalModality')
+        # Extract other parameters as needed
+
+        # Assume query_by_term is a function that can handle these parameters
+        desired_ids = query_by_term(search_term)
+        pdbs = pypdbObject.objects.filter(id__in=desired_ids)
+        serializer = pypdbSerializer(pdbs, many=True)
+        return JsonResponse(serializer.data, safe=False)
+
+    elif request.method == 'GET':
+        # Handle GET request if necessary
+        # For example, return a default set of data or an error message
+        return Response({"message": "GET requests are not supported on this endpoint"}, status=status.HTTP_405_METHOD_NOT_ALLOWED)
 
 @api_view(['GET', 'POST'])
 def pdb_list(request, format=None):

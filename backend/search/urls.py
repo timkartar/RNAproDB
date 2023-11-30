@@ -3,7 +3,7 @@ from . import views
 from rest_framework.urlpatterns import format_suffix_patterns
 
 urlpatterns = [
-    path('pypdb/', views.pdb_list),
+    path('pypdb/', views.search_view),
     path('pypdb/<str:id>/', views.pdb_detail),
 ]
 
