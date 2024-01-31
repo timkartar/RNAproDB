@@ -22,8 +22,6 @@ def run_script(request):
         if not pdbid:
             return JsonResponse({"message": "Missing pdbid parameter."}, status=400)
 
-        # script_path = "/home/raktim/rnaprodb/rnaprodb/rna_vis.py"
-        # script_path = "./rna_vis.py"
         result = None
         json_output = None
         if subgraph_nodes:
@@ -48,13 +46,13 @@ def run_script(request):
             
             try:
                 json_output = json.loads(json_output)
+                json_output['tooLarge'] = False
             except json.JSONDecodeError:
                 return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
             
             if result.returncode != 0:
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
-            # script_path = "./rna_vis.py"
             RUN_RNAVIS_FLAG = True
             if(RUN_RNAVIS_FLAG):
                 script_path = "./rna_vis.py"
@@ -91,16 +89,19 @@ def run_script(request):
         pdb_info = get_info(pdbid)
 
         TOO_LARGE = False
+        if(json_output['tooLarge']):
+            TOO_LARGE = True
+        
         response_data = None
         if(TOO_LARGE and not subgraph_nodes):
-            new_json_output = {"chainsList": json_output['chainsList'], "ss": json_output["ss"]}
+            # new_json_output = {"chainsList": json_output['chainsList'], "ss": json_output["ss"]}
             response_data = {
             'file_url': '/{}.tmp.cif.html'.format(pdbid), 
             "message": "Script ran successfully!",
             "title": pdb_info['citation'][0]['title'],
             'protein_name': (pdb_info['struct']['title']),#.capitalize().replace('rna', 'RNA'),
-            'too_large': True,
-            "output": new_json_output  # Use the parsed JSON data here  # MAKE THIS FASTER BY Separating out structure! Maybe compute chains dynamically here!!!
+            'tooLarge': True,
+            "output": json_output
             }
         else:
             response_data = {
@@ -108,7 +109,7 @@ def run_script(request):
                 "message": "Script ran successfully!",
                 "title": pdb_info['citation'][0]['title'],
                 'protein_name': (pdb_info['struct']['title']),#.capitalize().replace('rna', 'RNA'),
-                'too_large': False,
+                'tooLarge': False,
                 "output": json_output  # Use the parsed JSON data here
             }
         return JsonResponse(response_data)

@@ -15,11 +15,10 @@ from hbond_extractor import hbondExtractor, labelHbondEdges
 import sys
 from get_ss import getSS, processSS
 from get_pca import getChainsAndPca, addPcaToGraph
+from get_num_nucleotides import count_nucleotides_slow, count_nucleotides_fast
 
 parser = MMCIFParser()
-
-#update: no need to change anymore
-home =  os.path.dirname(os.path.abspath(__file__)) #change this line only 
+home =  os.path.dirname(os.path.abspath(__file__))
 
 pdb_path = "{}/dssr_output/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
@@ -29,6 +28,13 @@ if len(sys.argv) > 1:
    prefix = sys.argv[1]
 
 pdb_file = "{}.tmp.cif".format(prefix)
+TOO_LARGE = False
+
+# is too large flag. If too large, this script still pre-processes, but will flag it for views.py to know that a subgraph must be selected.
+num_nts = count_nucleotides_fast(os.path.join(pdb_path, pdb_file))
+if(num_nts > 100):
+   TOO_LARGE = True
+
 structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 protein, rna = splitEntities(structure) # split RNA and protein from structure
 
@@ -80,6 +86,8 @@ ss_json = processSS(ss)
 final_json_object["ss"] = ss_json
 final_json_object["chainsList"] = chains_list
 final_json_object["rotationMatrix"] = rotationMatrix.tolist() # used to orient NGLViewer camera to the PCA
+final_json_object["tooLarge"] = TOO_LARGE
+
 
 for edge in final_json_object["links"]:
    del edge['weight']
