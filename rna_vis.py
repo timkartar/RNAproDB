@@ -15,6 +15,8 @@ from hbond_extractor import hbondExtractor, labelHbondEdges
 import sys
 from get_ss import getSS, processSS
 from get_pca import getChainsAndPca, addPcaToGraph
+from get_rnascape import addRNAscapeToGraph
+from get_viennarna import addViennaToGraph
 from get_num_nucleotides import count_nucleotides_slow, count_nucleotides_fast
 
 parser = MMCIFParser()
@@ -74,6 +76,11 @@ ADD_PCA = True
 if(ADD_PCA):
    d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map)
 
+##ADD RNAscape and ViennaRNA
+d3.node_properties = addRNAscapeToGraph(d3.node_properties, structure, data, prefix)
+d3.node_properties = addViennaToGraph(d3.node_properties, data, prefix)
+#except:
+#print("".join(["\n"]*100))
 
 d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types)
 

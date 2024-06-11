@@ -43,8 +43,9 @@ def count_nucleotides_fast(cif_file):
         nucleotide_count = count_nucleotides_slow(cif_file)
     return nucleotide_count
 
-# about 30 seconds!
+if __name__ == "__main__":
+    # about 30 seconds!
 
-# Replace 'your_file.cif' with the path to your CIF file
-file_path = '/home/aricohen/Desktop/django-react-rnaprodb/frontend/public/cifs/6gv4-assembly1.cif'
-nucleotides = count_nucleotides_fast(file_path)
+    # Replace 'your_file.cif' with the path to your CIF file
+    file_path = '/home/aricohen/Desktop/django-react-rnaprodb/frontend/public/cifs/6gv4-assembly1.cif'
+    nucleotides = count_nucleotides_fast(file_path)
