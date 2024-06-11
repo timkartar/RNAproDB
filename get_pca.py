@@ -14,6 +14,7 @@ def getChainsAndPca(structure, interaction_edges):
     chains_list = []
     all_centroids = []
     rna_centroids = []
+    centroids_3d = {}
 
     aa_set = set() # which amino acids interact
     for edge in interaction_edges:
@@ -50,12 +51,14 @@ def getChainsAndPca(structure, interaction_edges):
                     centroid = np.mean(atom_coords, axis=0)
                     rna_centroids.append(centroid)
                     all_centroids.append(centroid)
+                    centroids_3d[rnaprodbid] = centroid
                 elif rnaprodbid in aa_set:
                     atoms = [atom.get_vector() for atom in residue]
                     atom_coords = np.array([list(atom) for atom in atoms])
                     # Compute the mean (x,y,z) - the centroid of the residue
                     centroid = np.mean(atom_coords, axis=0)
                     all_centroids.append(centroid)
+                    centroids_3d[rnaprodbid] = centroid
 
                 residue_list.append(residue_dict)
 
@@ -119,11 +122,11 @@ def getChainsAndPca(structure, interaction_edges):
     # exit()
     r = rot2eul(Vt.T)
     r = np.array(Vt.T.tolist() + [r.tolist()])
-    return chains_list, centroid_rnaprodb_map, r
+    return chains_list, centroid_rnaprodb_map, r, centroids_3d
     # return chains_list, centroid_rnaprodb_map, Vt
 
 
-def addPcaToGraph(node_properties, centroid_rnaprodb_map):
+def addPcaToGraph(node_properties, centroid_rnaprodb_map, centroids_3d):
     print(node_properties)
     for node_id, node in node_properties.items():
         print(node)
@@ -131,5 +134,8 @@ def addPcaToGraph(node_properties, centroid_rnaprodb_map):
         if node['rnaprodb_id'] in centroid_rnaprodb_map: # node has a centroid computed for it!
             node['x'] = centroid_rnaprodb_map[node['rnaprodb_id']][0]
             node['y'] = centroid_rnaprodb_map[node['rnaprodb_id']][1]
+            node['3dx'] = centroids_3d[node['rnaprodb_id']][0]
+            node['3dy'] = centroids_3d[node['rnaprodb_id']][1]
+            node['3dz'] = centroids_3d[node['rnaprodb_id']][2]
     return node_properties
 

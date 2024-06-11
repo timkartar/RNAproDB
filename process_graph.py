@@ -1,4 +1,5 @@
 from utilities import node_to_text, parse_node, d3to1
+import numpy as np
 
 nt_colors = {'A': '#FF9896',#'#90cc84',
     'C': '#DBDB8D',#'#AEC7E8',
@@ -71,7 +72,7 @@ def check_wc_pairing(edge_tuple):
         return True
     return False
 
-def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_types):
+def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_types, centroids_3d):
     for edge in edge_properties:
         first_node,sec_node = parse_edge(edge)
 
@@ -79,6 +80,21 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
         edge_properties[edge]['source_id'] = "{}:{}".format(first_node[3], first_node[2]) # chain:#
         edge_properties[edge]['target_id'] = "{}:{}".format(sec_node[3], sec_node[2]) # chain:#
 
+        # IF BOTH OF THEM ARE IN THE centroids_3d, compute distance. Otherwise, set it to null. Then, check whether they have a distance later
+        if edge_properties[edge]['source_id'] in centroids_3d and edge_properties[edge]['target_id'] in centroids_3d:
+            print("YA YEE YA")
+            centroid_source = centroids_3d[edge_properties[edge]['source_id']]
+            centroid_target = centroids_3d[edge_properties[edge]['target_id']]
+
+            # Convert centroids to numpy arrays
+            source_coords = np.array([centroid_source[0], centroid_source[1], centroid_source[2]])
+            target_coords = np.array([centroid_target[0], centroid_target[1], centroid_target[2]])
+
+            distance = np.linalg.norm(source_coords - target_coords)
+            print(distance)
+            edge_properties[edge]['distance_3d'] = distance
+        else:
+            edge_properties[edge]['distance_3d'] = None
 
         edge_properties[edge]['my_type'] = 'none'
         edge_properties[edge]['marker_end'] = ''

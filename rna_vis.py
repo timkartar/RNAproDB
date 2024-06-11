@@ -15,6 +15,8 @@ from hbond_extractor import hbondExtractor, labelHbondEdges
 import sys
 from get_ss import getSS, processSS
 from get_pca import getChainsAndPca, addPcaToGraph
+from get_rnascape import addRNAscapeToGraph
+from get_viennarna import addViennaToGraph
 from get_num_nucleotides import count_nucleotides_slow, count_nucleotides_fast
 from get_lw import getLW
 
@@ -23,7 +25,7 @@ home =  os.path.dirname(os.path.abspath(__file__))
 
 pdb_path = "{}/dssr_output/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
-prefix = '1ivs'
+prefix = '7vnv'
 
 if len(sys.argv) > 1:
    prefix = sys.argv[1]
@@ -68,17 +70,27 @@ d3.graph(adjmat)
 
 d3.set_edge_properties(directed=True) # setting earlier to then update?
 
-chains_list, centroid_rnaprodb_map, rotationMatrix = getChainsAndPca(structure, interaction_edges)
+chains_list, centroid_rnaprodb_map, rotationMatrix, centroids_3d = getChainsAndPca(structure, interaction_edges)
 
 
 
 d3.node_properties = processNodes(d3.node_properties)
 ADD_PCA = True
 if(ADD_PCA):
-   d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map)
+   d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map, centroids_3d)
 
+##ADD RNAscape and ViennaRNA
+try:
+   d3.node_properties = addRNAscapeToGraph(d3.node_properties, structure, data, prefix)
+except Exception as e:
+   pass
+try:
+   d3.node_properties = addViennaToGraph(d3.node_properties, data, prefix)
+except Exception as e:
+   pass
+#print("".join(["\n"]*100))
 
-d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types)
+d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types, centroids_3d)
 
 # d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 # click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click

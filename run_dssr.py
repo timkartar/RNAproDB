@@ -20,6 +20,8 @@ def runDSSR(structure, quiet=True, prefix='rna', tmpdir=''):
     if not os.path.exists(outpath):
         os.makedirs(outpath)
     if not isinstance(structure, str):
+        print("prefix")
+        print(prefix)
         file_name = "{}/{}.tmp.cif".format(outpath, prefix)
         structure.save(file_name)
     else:
