@@ -16,10 +16,14 @@ def runDSSR(structure, quiet=True, prefix='rna', tmpdir=''):
     prefix: string
         The file prefix.
     """
-    outpath = "/home/raktim/rnaprodb/rnaprodb/dssr_output/{}".format(tmpdir)
+    outpath = "/home/aricohen/Desktop/django-react-rnaprodb/rnaprodb_dev/dssr_output/{}".format(tmpdir)
+    print("outpath")
+    print(outpath)
     if not os.path.exists(outpath):
         os.makedirs(outpath)
     if not isinstance(structure, str):
+        print("prefix")
+        print(prefix)
         file_name = "{}/{}.tmp.cif".format(outpath, prefix)
         structure.save(file_name)
     else:
@@ -47,7 +51,7 @@ if __name__ == "__main__":
     
     #update: no need to change anymore
     home =  os.path.dirname(os.path.abspath(__file__)) #change this line only 
-    pdb_path = "/home/raktim/rnaprodb/data/cifs/"
+    pdb_path = "/home/aricohen/Desktop/django-react-rnaprodb/rnaprodb_dev/data/cifs/"
     
     # pdb_file = "8fvi-assembly1.cif"
     
@@ -57,7 +61,7 @@ if __name__ == "__main__":
         pdb_file = item #"{}-assembly1.cif".format(prefix)
         
         prefix = pdb_file.split("-")[0]
-        if os.path.exists("/home/raktim/rnaprodb/rnaprodb/dssr_output/{}-dssr.json".format(prefix)):
+        if os.path.exists("/home/aricohen/Desktop/django-react-rnaprodb/rnaprodb_dev/dssr_output/{}-dssr.json".format(prefix)):
             print("here")
             print("{}-already exists".format(prefix))
             continue

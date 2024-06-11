@@ -24,7 +24,7 @@ home =  os.path.dirname(os.path.abspath(__file__))
 
 pdb_path = "{}/dssr_output/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
-prefix = '1ivs'
+prefix = '7vnv'
 
 if len(sys.argv) > 1:
    prefix = sys.argv[1]
@@ -77,9 +77,14 @@ if(ADD_PCA):
    d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map, centroids_3d)
 
 ##ADD RNAscape and ViennaRNA
-d3.node_properties = addRNAscapeToGraph(d3.node_properties, structure, data, prefix)
-d3.node_properties = addViennaToGraph(d3.node_properties, data, prefix)
-#except:
+try:
+   d3.node_properties = addRNAscapeToGraph(d3.node_properties, structure, data, prefix)
+except Exception as e:
+   pass
+try:
+   d3.node_properties = addViennaToGraph(d3.node_properties, data, prefix)
+except Exception as e:
+   pass
 #print("".join(["\n"]*100))
 
 d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types, centroids_3d)

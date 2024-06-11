@@ -23,5 +23,7 @@ def addRNAscapeToGraph(node_properties, structure, data, prefix):
             idx = rnaprodb_ids.index(node['rnaprodb_id'])
             node['rnascape_x'] = rnascape_coords[idx][0]
             node['rnascape_y'] = rnascape_coords[idx][1]
+            # node['x'] = rnascape_coords[idx][0]
+            # node['y'] = rnascape_coords[idx][1]
     return node_properties
 
