@@ -16,6 +16,7 @@ import sys
 from get_ss import getSS, processSS
 from get_pca import getChainsAndPca, addPcaToGraph
 from get_num_nucleotides import count_nucleotides_slow, count_nucleotides_fast
+from get_lw import getLW
 
 parser = MMCIFParser()
 home =  os.path.dirname(os.path.abspath(__file__))
@@ -32,7 +33,7 @@ TOO_LARGE = False
 
 # is too large flag. If too large, this script still pre-processes, but will flag it for views.py to know that a subgraph must be selected.
 num_nts = count_nucleotides_fast(os.path.join(pdb_path, pdb_file))
-if(num_nts > 100):
+if(num_nts > 500):
    TOO_LARGE = True
 
 structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
@@ -47,6 +48,8 @@ with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
 
 protein_interactions,ss_dict = getInteractions(protein, rna, prefix)
 pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(data, protein_interactions, ss_dict)
+lw_values = getLW(data)
+print(lw_values)
 
 #update: added functions to extract all H-bond interactions from dssr and to add H-bond labels to interaction_types object
 hbond_set = hbondExtractor(data)
@@ -88,6 +91,15 @@ final_json_object["chainsList"] = chains_list
 final_json_object["rotationMatrix"] = rotationMatrix.tolist() # used to orient NGLViewer camera to the PCA
 final_json_object["tooLarge"] = TOO_LARGE
 
+for edge in final_json_object["links"]:
+    edge_tuple = (edge["source_id"], edge["target_id"])
+    print(edge_tuple)
+    print(lw_values)
+    if edge_tuple in lw_values:
+        print("FOUND " + str(edge_tuple))
+        edge["LW"] = lw_values[edge_tuple]
+    else:
+        edge["LW"] = None
 
 for edge in final_json_object["links"]:
    del edge['weight']

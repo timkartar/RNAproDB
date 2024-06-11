@@ -13,7 +13,6 @@ import json
 import networkx as nx
 
 home =  os.path.dirname(os.path.abspath(__file__)) #change this line only 
-
 pdb_path = "{}/output/".format(home)
 
 # for use in generating source and target labels

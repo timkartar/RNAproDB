@@ -27,6 +27,7 @@ Returns ('p'/'n', name, position, chain, ss (protein only))
 ASSUMES: proteins are represented by 3 letter code, and nucleotides by one letter!
 """
 def parse_node(node_id):
+    print(f"Parsing node_id: {node_id}")
     temp_split = node_id.split(':')
     # Is a protein
     if(is_a_protein(node_id)):

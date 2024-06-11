@@ -41,8 +41,7 @@ def query_by_protein(min_protein:float, max_protein:float, queries: list):
 def query_by_experimental_modality(modality: list, queries: list):
    modality_query = text_operators.InOperator(
       attribute="rcsb_entry_info.experimental_method",
-      values=modality,
-      negation=False)
+      values=modality)
    queries.append(modality_query)
 
 def search(additional_queries: list) -> list:
@@ -103,7 +102,7 @@ if __name__ == "__main__":
 #    end_time = time.time()
 #    print("Runtime for control: {:.2f} seconds".format(end_time - start_time))
    start_time = time.time()
-   pdb_ids_exp = search([['term', 'ribosome'], ['resolution', [0, 3]]])
+   pdb_ids_exp = search([['term', 'ribosome'], ['experimental_modality', ['EM', 'X-ray']]])
    end_time = time.time()
    print("Runtime for experimental: {:.2f} seconds".format(end_time - start_time))
    print("this is output from pypdb:" + str(len(pdb_ids_exp)))

@@ -54,7 +54,6 @@ if __name__ == '__main__':
             try:
                 prefix = item.split("-")[0]
                 info = pypdb.get_info(prefix)
-                
                 data = [prefix]
                 data.append(",".join(info['citation'][0]['rcsb_authors']))
                 data.append(info['citation'][0]['title'].replace("\'", "single_quote"))

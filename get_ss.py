@@ -2,7 +2,7 @@ import os, sys, json
 import subprocess
 
 def getSS(prefix):
-    subprocess.run(["x3dna-dssr","-i=../rnaprodb_frontend/public/cifs/{}-assembly1.cif".format(prefix),"--nested"])
+    subprocess.run(["x3dna-dssr","-i=../frontend_master/public/cifs/{}-assembly1.cif".format(prefix),"--nested"])
     l = open("dssr-2ndstrs.dbn","r").readlines()
     seq = l[1].strip().split("&")
     sec = l[2].strip().split("&")
