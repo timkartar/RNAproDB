@@ -29,16 +29,19 @@ ASSUMES: proteins are represented by 3 letter code, and nucleotides by one lette
 def parse_node(node_id):
     print(f"Parsing node_id: {node_id}")
     temp_split = node_id.split(':')
+    print(temp_split)
     # Is a protein
-    if(is_a_protein(node_id)):
+    if (temp_split[1] in ['ZN','NA','MG']):
+        return ('n', temp_split[1], temp_split[2], temp_split[0])
+    elif(len(temp_split[1]) == 1 or (len(temp_split[1]) == 3 and temp_split[1] not in d3to1.keys())): #Is a nucleotide
+        return ('n', temp_split[1], temp_split[2], temp_split[0])
+    elif(is_a_protein(node_id)):
         #check if has secondary structure
         # if len(temp_split) == 3: # no secondary structure!
         #     # print(node_id)
         #     return ('p', temp_split[1], temp_split[2], temp_split[0], "Unknown")
         # else:
         return ('p', temp_split[1], temp_split[2], temp_split[0], temp_split[3])
-    elif(len(temp_split[1]) == 1): #Is a nucleotide
-        return ('n', temp_split[1], temp_split[2], temp_split[0])
     else: #ERROR
         print("Error parsing node!")
         return None

@@ -25,7 +25,6 @@ home =  os.path.dirname(os.path.abspath(__file__))
 
 pdb_path = "{}/dssr_output/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
-prefix = '7vnv'
 
 if len(sys.argv) > 1:
    prefix = sys.argv[1]

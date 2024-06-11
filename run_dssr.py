@@ -8,6 +8,9 @@ from clean_rna import cleanRNA
 import os, sys
 from tqdm import tqdm
 
+backend =  os.path.dirname(os.path.abspath(__file__))
+frontend = backend + "/../rnaprodb_frontend/"
+
 def runDSSR(structure, quiet=True, prefix='rna', tmpdir=''):
     """Run DSSR on given PDB file.
     
@@ -16,7 +19,7 @@ def runDSSR(structure, quiet=True, prefix='rna', tmpdir=''):
     prefix: string
         The file prefix.
     """
-    outpath = "/mnt/c/Users/hosse/Desktop/Github/backend_master/dssr_output/{}".format(tmpdir)
+    outpath = backend + "/dssr_output/{}".format(tmpdir)
     if not os.path.exists(outpath):
         os.makedirs(outpath)
     if not isinstance(structure, str):
@@ -27,15 +30,15 @@ def runDSSR(structure, quiet=True, prefix='rna', tmpdir=''):
     else:
         file_name = structure
     
-    args = ["/mnt/c/Users/hosse/Desktop/Github/DeepPBS/dependencies/bin/x3dna-dssr", f"--i={file_name}", "--o=/mnt/c/Users/hosse/Desktop/Github/backend_master/dssr_output/{}-dssr.json".format(pdb_id), "--json", "--more", "--idstr=long", "--non-pair"]
+    args = ["x3dna-dssr", f"--i={file_name}", "--o={}/dssr_output/{}-dssr.json".format(backend, pdb_id), "--json", "--more", "--idstr=long", "--non-pair"]
     if quiet:
         FNULL = open(os.devnull, 'w')
         subprocess.call(args, stdout=FNULL, stderr=FNULL)
-        subprocess.call(["/mnt/c/Users/hosse/Desktop/Github/DeepPBS/dependencies/bin/x3dna-dssr", "--cleanup"],stdout=FNULL, stderr=FNULL)
+        subprocess.call(["x3dna-dssr", "--cleanup"],stdout=FNULL, stderr=FNULL)
         FNULL.close()
     else:
         subprocess.call(args)
-        subprocess.call(["/mnt/c/Users/hosse/Desktop/Github/DeepPBS/dependencies/bin/x3dna-dssr", "--cleanup"])
+        subprocess.call(["x3dna-dssr", "--cleanup"])
     
     with open("{}/{}-dssr.json".format(outpath, prefix)) as FH:
         DSSR = json.load(FH, object_pairs_hook=collections.OrderedDict)
@@ -48,15 +51,15 @@ if __name__ == "__main__":
     pdb_id = sys.argv[1]
     
     #update: no need to change anymore
-    # home =  os.path.dirname(os.path.abspath(__file__)) #change this line only 
-    pdb_path = "/mnt/c/Users/hosse/Desktop/Github/frontend_master/public/cifs/"
+    # home =  os.path.dirname(os.path.abspath(__file__)) #change this line only
+    pdb_path = frontend + "/public/cifs/"
     # pdb_file = f"{pdb_id}-assembly1.cif"
     
-    for item in tqdm(open(f"/mnt/c/Users/hosse/Desktop/Github/frontend_master/public/cifs/{pdb_id}-assembly1.cif","r").readlines()):
+    for item in tqdm(open(frontend + "/public/cifs/{}-assembly1.cif".format(pdb_id),"r").readlines()):
         item = item.strip()
         #f = os.path.join(cifdir, fname)
         pdb_file = item #"{}-assembly1.cif".format(prefix)
-        if os.path.exists("/mnt/c/Users/hosse/Desktop/Github/backend_master/dssr_output/{}-dssr.json".format(pdb_id)):
+        if os.path.exists(backend + "/dssr_output/{}-dssr.json".format(pdb_id)):
             print("here")
             print("{}-already exists".format(pdb_id))
             continue

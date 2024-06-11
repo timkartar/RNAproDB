@@ -23,8 +23,13 @@ def processNodes(node_properties):
             name = parsed_node[1]
         except:
             print(parsed_node, node)
+        
+        if parsed_node[0] == 'n':
+            if name not in nt_colors.keys(): ##ignore anything that is not A,C,G,U
+                continue
         pos = str(parsed_node[2])
         chain = parsed_node[3]
+        
 
         # global changes
         node_properties[node]['size'] = 25 # original 20

@@ -8,8 +8,10 @@ import sqlite3
 import subprocess
 import os
 
+backend =  os.path.dirname(os.path.abspath(__file__))
+frontend = "/home/raktim/rnaprodb/rnaprodb_frontend/"
 def get_pdb_file(pdb_id):
-    base_script_path = '/mnt/c/Users/hosse/Desktop/Github/frontend_master'
+    base_script_path = frontend
     pdb_id = pdb_id.strip().upper()
     if not pdb_id.isalnum():
         return 'error', 'Bad PDB ID'
@@ -40,7 +42,7 @@ def process_pdb(pbd_id):
         f.seek(0)
         f.writelines(lines)
         f.truncate()  
-    with open('/mnt/c/Users/hosse/Desktop/Github/frontend_master/public/ids.txt', 'r+') as f:
+    with open(frontend + '/public/ids.txt', 'r+') as f:
         lines = f.readlines()
         text_to_append = pbd_id + ','
         if lines:
@@ -80,7 +82,7 @@ def populate_db(pdb_id):
 
 def run_django_migrations():
     try:
-        manage_py_path = '/mnt/c/Users/hosse/Desktop/Github/backend_master/backend/manage.py'
+        manage_py_path = backend + '/backend/manage.py'
         subprocess.run(['python', manage_py_path, 'makemigrations'], check=True)
 
         subprocess.run(['python', manage_py_path, 'migrate'], check=True)
@@ -110,11 +112,12 @@ def check_pdb(pdb_id):
     process_pdb(pdb_id)
     populate_db(pdb_id)
     run_django_migrations()
-    subprocess.run(['python', '/mnt/c/Users/hosse/Desktop/Github/backend_master/rna_vis.py', pdb_id], check=True)
+    subprocess.run(['python', backend + '/rna_vis.py', pdb_id], check=True)
     return 'new PDB has been added to database'
 
 if __name__ == "__main__":
-    pdb_id = '1fjg'
+    import sys
+    pdb_id = sys.argv[1]
     print(check_pdb(pdb_id))
 
     
