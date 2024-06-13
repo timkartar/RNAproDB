@@ -162,6 +162,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
             edge_properties[edge]['edge_width'] = 2
         
         elif edge_tuple in pairs:
+            edge_properties[edge]['color'] = '#4169E1'
             if not check_wc_pairing(edge_tuple):
                 edge_properties[edge]['color'] = '#F2936D'
             # edge_properties[edge]['marker_end'] = 'square'
