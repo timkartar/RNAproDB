@@ -49,7 +49,7 @@ ASSUMES: proteins are represented by 3 letter code, and nucleotides by one lette
 def parse_node(node_id):
     #print(f"Parsing node_id: {node_id}")
     temp_split = node_id.split(':')
-    print(temp_split)
+    #print(temp_split)
     # Is a protein
     if (temp_split[1] in ['ZN','NA','MG']):
         return ('', temp_split[1], temp_split[2], temp_split[0])
