@@ -1,14 +1,15 @@
 import os, sys, json
 import subprocess
 
-def getSS(prefix):
-    subprocess.run(["x3dna-dssr","-i=../rnaprodb_frontend/public/cifs/{}-assembly1.cif".format(prefix),"--nested"])
-    try:
-        l = open("dssr-2ndstrs.dbn","r").readlines()
-        seq = l[1].strip().split("&")
-        sec = l[2].strip().split("&")
-    except Exception as e:
-        l,seq,sec = [],[],[]
+def getSS(prefix, data):
+    #subprocess.run(["x3dna-dssr","-i=../rnaprodb_frontend/public/cifs/{}-assembly1.cif".format(prefix),"--nested"])
+    #try:
+    #print(json.dumps(data, indent=4))
+    l = ["",data["dbn"]["all_chains"]["bseq"], data["dbn"]["all_chains"]["sstr"]]
+    seq = l[1].strip().split("&")
+    sec = l[2].strip().split("&")
+    #except:
+    #    return [],[]
     return seq, sec
 
 # Return JSON of ss and some metadata

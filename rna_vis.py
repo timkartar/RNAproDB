@@ -20,16 +20,18 @@ from get_viennarna import addViennaToGraph
 from get_num_nucleotides import count_nucleotides_slow, count_nucleotides_fast
 from get_lw import getLW
 
-parser = MMCIFParser()
+parser = MMCIFParser(QUIET=True)
 home =  os.path.dirname(os.path.abspath(__file__))
+backend =  os.path.dirname(os.path.abspath(__file__))
+frontend = backend + "/../rnaprodb_frontend/"
 
-pdb_path = "{}/dssr_output/".format(home)
+pdb_path = frontend + "/public/cifs/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
 
 if len(sys.argv) > 1:
    prefix = sys.argv[1]
 
-pdb_file = "{}.tmp.cif".format(prefix)
+pdb_file = "{}-assembly1.cif".format(prefix)
 TOO_LARGE = False
 
 # is too large flag. If too large, this script still pre-processes, but will flag it for views.py to know that a subgraph must be selected.
@@ -37,21 +39,34 @@ num_nts = count_nucleotides_fast(os.path.join(pdb_path, pdb_file))
 if(num_nts > 500):
    TOO_LARGE = True
 
-structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
+#structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
+
+structure = parser.get_structure(prefix, os.path.join(pdb_path, pdb_file))
 protein, rna = splitEntities(structure) # split RNA and protein from structure
 
-ss = getSS(prefix)
-# print(ss)
+data = runDSSR(structure, quiet=True, prefix=prefix, tmpdir="")
+#for residue in structure.get_residues():
+#    print(residue.get_id())
+ss = getSS(prefix, data)
+#print(ss)
 
-with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
-   data = json.load(FH, object_pairs_hook=collections.OrderedDict) 
+#with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
+#   data = json.load(FH, object_pairs_hook=collections.OrderedDict) 
 
 
 protein_interactions,ss_dict = getInteractions(protein, rna, prefix)
+#for item in protein_interactions:
+#    if "PSU" in protein_interactions[item]:
+#        print(item, protein_interactions[item])
+#print(protein_interactions)
 pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(data, protein_interactions, ss_dict)
-lw_values = getLW(data)
-print(lw_values)
+#for item in interaction_edges:
+#    print(item)
+#    if "PSU" in item[0] or "PSU" in item[1]:
+#        print("WHOAAAA")
+#exit()
 
+lw_values = getLW(data)
 #update: added functions to extract all H-bond interactions from dssr and to add H-bond labels to interaction_types object
 hbond_set = hbondExtractor(data)
 interaction_types  = labelHbondEdges(interaction_types, hbond_set)
@@ -74,23 +89,25 @@ chains_list, centroid_rnaprodb_map, rotationMatrix, centroids_3d = getChainsAndP
 
 
 d3.node_properties = processNodes(d3.node_properties)
+#for node in d3.node_properties:
+#    print(node, d3.node_properties[node])
 ADD_PCA = True
 if(ADD_PCA):
    d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map, centroids_3d)
 
-##ADD RNAscape and ViennaRNA
-try:
-   d3.node_properties = addRNAscapeToGraph(d3.node_properties, structure, data, prefix)
-except Exception as e:
-   pass
-try:
-   d3.node_properties = addViennaToGraph(d3.node_properties, data, prefix)
-except Exception as e:
-   pass
-#print("".join(["\n"]*100))
-
 d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types, centroids_3d)
 
+##ADD RNAscape and ViennaRNA
+try:
+   d3.node_properties = addRNAscapeToGraph(d3.node_properties, d3.edge_properties, structure, data, prefix)
+except Exception as e:
+   pass
+try:
+   d3.node_properties = addViennaToGraph(d3.node_properties, d3.edge_properties, data, prefix)
+except Exception as e:
+   pass
+
+#
 # d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 # click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click
 final_json = d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)

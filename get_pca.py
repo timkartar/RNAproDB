@@ -21,7 +21,6 @@ def getChainsAndPca(structure, interaction_edges):
         split_edge = edge[1].split(":") #('C:C:973', 'A:LEU:278:H')
         aa_set.add("{}:{}".format(split_edge[0], split_edge[2]))
 
-
     for model in structure: # assume one model since bio assembly
         for chain in model:
             chain_dict = {} # wrapper holding resiudes and ID
@@ -30,6 +29,8 @@ def getChainsAndPca(structure, interaction_edges):
             chain_name = chain.get_id()
                         
             for residue in chain:
+                if residue.get_resname() in ['HOH']:
+                    continue
                 residue_dict = {}
                 residue_id = residue.get_id()[1]  # Gets the residue sequence number
                 residue_name = residue.get_resname()
