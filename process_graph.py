@@ -1,10 +1,16 @@
 from utilities import node_to_text, parse_node, d3to1
 import numpy as np
+from split_entities import chem_components
 
 nt_colors = {'A': '#FF9896',#'#90cc84',
     'C': '#DBDB8D',#'#AEC7E8',
     'G': '#90cc84',#'#DBDB8D',
-    'U': '#AEC7E8'#'#FF9896'
+    'U': '#AEC7E8',#'#FF9896',
+    'T': '#AEC7E8',#'#FF9896',
+    'DA': '#FF9896',#'#90cc84',
+    'DC': '#DBDB8D',#'#AEC7E8',
+    'DG': '#90cc84',#'#DBDB8D',
+    'DT': '#AEC7E8'#'#FF9896'    
 }
 
 """
@@ -17,16 +23,31 @@ def parse_edge(node_id):
     return first_node,sec_node
 
 def processNodes(node_properties):
-    for node in node_properties:
+    node_keys = list(node_properties.keys())
+    for node in node_keys:
         parsed_node = parse_node(node)  # ('p'/'n', name, position, chain, ss(protein only))
         try:
-            name = parsed_node[1]
+            name = "{}".format(parsed_node[1])
+            print(name, type(name))
         except:
-            print(parsed_node, node)
-        
+            pass
+        if parsed_node[0] == 'x':
+            continue
         if parsed_node[0] == 'n':
-            if name not in nt_colors.keys(): ##ignore anything that is not A,C,G,U
+            if name not in nt_colors.keys() and name not in chem_components.keys(): ##ignore anything that is not A,C,G,U
+                #print(name)
                 continue
+            elif name not in nt_colors.keys():
+                #print(name)
+                #print(name, node, node_properties[node])
+                newname = "{}".format(chem_components[name])
+                #newnode = node.replace(name, newname)
+                #node_properties[newnode] = node_properties[node]
+                #del node_properties[node]
+                name = newname
+                #node = newnode
+                #print(name, node, node_properties[node])
+
         pos = str(parsed_node[2])
         chain = parsed_node[3]
         
@@ -41,10 +62,26 @@ def processNodes(node_properties):
         node_properties[node]['rnaprodb_id'] = "{}:{}".format(chain, pos)
 
         if(parsed_node[0] == 'n'): # is a nucleotide
-            node_properties[node]['color']= nt_colors[name] #use nt color scheme
-            tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
+            try:
+                node_properties[node]['color']= nt_colors[name] #use nt color scheme
+            except:
+                try:
+                    node_properties[node]['color']= nt_colors[chem_components[name]]
+                except:
+                    node_properties[node]['color']="X"
+            
+            name = "{}".format(name)
+            if name in nt_colors.keys(): ## WEIRD FIX BUT OK FOR NOW
+                tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
+            elif name in chem_components.keys():
+                tooltip = 'Nucleotide: ' + "{}".format(chem_components[name]) +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
+
+            #tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
             node_properties[node]['shape'] = 'circle' #is detected in  d3graphscript.js
-            node_properties[node]['label']= name # empty label, use tooltip instead
+            if name in nt_colors.keys():
+                node_properties[node]['label']= name # empty label, use tooltip instead
+            elif name in chem_components.keys():
+                node_properties[node]['label']= chem_components[name] # empty label, use tooltip instead
             node_properties[node]['fontsize']= 25
 
         else: # is protein residue
@@ -65,6 +102,7 @@ def processNodes(node_properties):
                 node_properties[node]['color']= '#e8e8e8'
             elif(ss == "Unknown"): #Unknown
                 node_properties[node]['color']= 'red'
+            
             tooltip = 'Residue: ' + name +"\nPosition: " + pos + "\nChain: " + chain + "\nSec. Structure: " + ss
         node_properties[node]['tooltip']= tooltip
     return node_properties
@@ -96,10 +134,10 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
             target_coords = np.array([centroid_target[0], centroid_target[1], centroid_target[2]])
 
             distance = np.linalg.norm(source_coords - target_coords)
-            print(distance)
+            #print(distance)
             edge_properties[edge]['distance_3d'] = distance
         else:
-            edge_properties[edge]['distance_3d'] = None
+            edge_properties[edge]['distance_3d'] = 9999 ## DISTANCE Nan
 
         edge_properties[edge]['my_type'] = 'none'
         edge_properties[edge]['marker_end'] = ''

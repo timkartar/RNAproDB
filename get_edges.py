@@ -15,15 +15,29 @@ def get_stacking_interactions(dssr, ss_dict):
                 first_nucleotide = dssr_id_to_text(nts_long_split[i])
                 sec_nucleotide = dssr_id_to_text(nts_long_split[i+1])
                 
+                #if "PSU" in first_nucleotide:
+                #    print("Hereee")
+                #if "PSU" in sec_nucleotide:
+                #   print("Thereee")
                 if(is_a_protein(first_nucleotide)):
+                    #if "PSU" in first_nucleotide:
+                    #    print("Heree2")
                     chid = first_nucleotide.split(":")[0]
                     protein_num = first_nucleotide.split(":")[2] # gets residue #!
-                    ss = ss_dict[chid + ":" + protein_num]
+                    try:
+                        ss = ss_dict[chid + ":" + protein_num]
+                    except:
+                        ss= 'X'
                     first_nucleotide = first_nucleotide + ":{}".format(ss) # append ss to the protein residue
                 if(is_a_protein(sec_nucleotide)):
+                    #if "PSU" in sec_nucleotide:
+                    #    print("Theree2")
                     chid = sec_nucleotide.split(":")[0]
                     protein_num = sec_nucleotide.split(":")[2] # gets residue #!
-                    ss = ss_dict[chid + ":" + protein_num]
+                    try:
+                        ss = ss_dict[chid + ":" + protein_num]
+                    except:
+                        ss = 'X'
                     sec_nucleotide = sec_nucleotide + ":{}".format(ss) # append ss to the protein residue
 
                 stack_interactions.append((first_nucleotide, sec_nucleotide))

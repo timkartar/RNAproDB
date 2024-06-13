@@ -7,6 +7,9 @@ from split_entities import splitEntities
 from clean_rna import cleanRNA
 import os, sys
 from tqdm import tqdm
+from Bio.PDB import PDBIO, MMCIFIO, PDBParser, MMCIFParser
+
+parser= MMCIFParser()
 
 backend =  os.path.dirname(os.path.abspath(__file__))
 frontend = backend + "/../rnaprodb_frontend/"
@@ -19,18 +22,20 @@ def runDSSR(structure, quiet=True, prefix='rna', tmpdir=''):
     prefix: string
         The file prefix.
     """
+    pdbpath = frontend + "/public/cifs/{}".format(tmpdir)
     outpath = backend + "/dssr_output/{}".format(tmpdir)
     if not os.path.exists(outpath):
         os.makedirs(outpath)
     if not isinstance(structure, str):
-        print("prefix")
-        print(prefix)
-        file_name = "{}/{}.tmp.cif".format(outpath, prefix)
-        structure.save(file_name)
+        #print("prefix")
+        #print(prefix)
+        file_name = "{}/{}-assembly1.cif".format(pdbpath, prefix)
+        #structure.save(file_name)
     else:
         file_name = structure
     
-    args = ["x3dna-dssr", f"--i={file_name}", "--o={}/dssr_output/{}-dssr.json".format(backend, pdb_id), "--json", "--more", "--idstr=long", "--non-pair"]
+    args = ["x3dna-dssr", f"--i={file_name}", "--o={}/dssr_output/{}-dssr.json".format(backend,
+        prefix), "--json", "--more", "--idstr=long", "--non-pair", "--nested"]
     if quiet:
         FNULL = open(os.devnull, 'w')
         subprocess.call(args, stdout=FNULL, stderr=FNULL)
@@ -66,20 +71,23 @@ if __name__ == "__main__":
         
         #try:
         print("there")
-        original_structure = StructureData(os.path.join(pdb_path, f'{pdb_id}-assembly1.cif'), name="co_crystal")
-        protein, rna = splitEntities(original_structure) # split RNA and protein from structure
+        original_structure = parser.get_structure(pdb_id,pdb_path)
+        #original_structure = StructureData(os.path.join(pdb_path, f'{pdb_id}-assembly1.cif'), name="co_crystal")
 
         # NOTE: here we save the cleaned temporary file before processing it in runDSSR. For larger files, this poses a challenge.
         #rna = cleanRNA(rna)
 
-
+        '''
+        #protein, rna = splitEntities(original_structure) # split RNA and protein from structure
         full = rna[0]
         for chain in protein.get_chains():
             while chain.id in [i.id for i in full.child_list]:
                 chain.id = chain.id+chain.id
             full.add(chain)
         full = StructureData(full)
-        data = runDSSR(full, quiet=True, prefix=pdb_id, tmpdir="")
+        '''
+        #data = runDSSR(full, quiet=True, prefix=pdb_id, tmpdir="")
+        data = runDSSR(original_structure, quiet=True, prefix=pdb_id, tmpdir="")
         #except Exception as e:
         #    print(prefix, e)
 

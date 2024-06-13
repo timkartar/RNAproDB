@@ -2,7 +2,7 @@ from Bio.PDB import NeighborSearch as Nsearch
 from pymol import cmd
 from pymol import stored
 import sys
-
+from utilities import nt_colors, chem_components
 """
 NOTE: ONLY WORKS ON PDB FILES FOR NOW!
 """
@@ -54,6 +54,8 @@ def check_interaction_type(resname, atomname):
 Returns dict of interactions of nucleotide with pchnaem, presname, presid[1]
 """
 def getInteractions(protein, rna, prefix):
+    #for res in protein.get_residues():
+    #    print(res.get_full_id())
     interactions = {}
     patoms = list(protein.get_atoms())
     if len(patoms) == 0:
@@ -75,9 +77,10 @@ def getInteractions(protein, rna, prefix):
         atomname = atom.name
         
         
-        if(resname in ["HOH","CA"]): #TODO hack for lab meeting
+        if(resname in ["HOH","CA","NA","MG","ZN","ATP"]): #TODO hack for lab meeting
             continue
-        
+        if resname not in nt_colors.keys() and resname not in chem_components.keys():
+            continue
         neighbors = ns.search(atom.coord, radius=cut_off, level="R")
         result = []
         int_type = check_interaction_type(resname, atomname)

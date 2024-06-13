@@ -21,10 +21,10 @@ def addRNAscapeToGraph(node_properties, edge_properties, structure, data, prefix
     for node_id, node in node_properties.items():
         if node['rnaprodb_id'] in rnaprodb_ids: # node has a centroid computed for it!
             idx = rnaprodb_ids.index(node['rnaprodb_id'])
-            node['rnascape_x'] = rnascape_coords[idx][0]
-            node['rnascape_y'] = rnascape_coords[idx][1]
-            #node['x'] = rnascape_coords[idx][0]*scale
-            #node['y'] = rnascape_coords[idx][1]*scale
+            #node['rnascape_x'] = rnascape_coords[idx][0]
+            #node['rnascape_y'] = rnascape_coords[idx][1]
+            node['x'] = rnascape_coords[idx][0]*scale
+            node['y'] = rnascape_coords[idx][1]*scale
     for edge_id, edge in edge_properties.items():
         print(edge_id, edge)
         if edge['source_id'] in rnaprodb_ids and edge['target_id'] not in rnaprodb_ids:
@@ -46,7 +46,6 @@ def addRNAscapeToGraph(node_properties, edge_properties, structure, data, prefix
         node_properties[edge_id[1-idx]]['rnascape_x'] = prot_coords[0]
         node_properties[edge_id[1-idx]]['rnascape_y'] = prot_coords[1]
         
-        print(node_properties[edge_id[1-idx]])
 
     return node_properties
 
