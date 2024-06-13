@@ -104,8 +104,6 @@ final_json_object["tooLarge"] = TOO_LARGE
 
 for edge in final_json_object["links"]:
     edge_tuple = (edge["source_id"], edge["target_id"])
-    print(edge_tuple)
-    print(lw_values)
     if edge_tuple in lw_values:
         print("FOUND " + str(edge_tuple))
         edge["LW"] = lw_values[edge_tuple]

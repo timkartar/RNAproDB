@@ -131,8 +131,6 @@ def addPcaToGraph(node_properties, centroid_rnaprodb_map, centroids_3d):
     for node_id, node in node_properties.items():
         if 'rnaprodb_id' not in node.keys(): ##TODO
             continue
-        print(node)
-        print(node['rnaprodb_id'])
         if node['rnaprodb_id'] in centroid_rnaprodb_map: # node has a centroid computed for it!
             node['x'] = centroid_rnaprodb_map[node['rnaprodb_id']][0]
             node['y'] = centroid_rnaprodb_map[node['rnaprodb_id']][1]
