@@ -6,12 +6,6 @@ from scipy.spatial.transform import Rotation
 from dnaprodb_rnascape.rnascape import rnascape
 
 
-def rot2eul(rotation_matrix):
-    ### first transform the matrix to euler angles
-    r =  Rotation.from_matrix(rotation_matrix)
-    angles = r.as_euler("zyx",degrees=False)
-    return angles
-
 def addRNAscapeToGraph(node_properties, edge_properties, structure, data, prefix, scale=30):
     model = structure[0]
     rnascape_coords, markers, ids, chids, dssrids, dssrout, prefix = rnascape(prefix, model,
@@ -64,7 +58,7 @@ def addRNAscapeToGraph(node_properties, edge_properties, structure, data, prefix
         if np.linalg.norm(nuc_coords - prot_coords) > 30:
             anchor = nuc_coords# or nuc_coords
             prot_coords = anchor + (30*(anchor - prot_coords)/np.linalg.norm(anchor -prot_coords))
-        prot_coords = force_bound(prot_coords, bounds)
+        #prot_coords = force_bound(prot_coords, bounds)
         #node_properties[edge_id[1-idx]]['x'] = prot_coords[0]
         #node_properties[edge_id[1-idx]]['y'] = prot_coords[1]
         node_properties[edge_id[1-idx]]['rnascape_x'] = prot_coords[0]
