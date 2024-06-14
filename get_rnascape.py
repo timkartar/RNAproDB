@@ -7,6 +7,7 @@ from dnaprodb_rnascape.rnascape import rnascape
 
 
 def addRNAscapeToGraph(node_properties, edge_properties, structure, data, prefix, scale=30):
+    np.random.seed(0)
     model = structure[0]
     rnascape_coords, markers, ids, chids, dssrids, dssrout, prefix = rnascape(prefix, model,
                     data, cond_bulging=False, mFIG_PATH="./rnascape/output/processed_images/", mDSSR_PATH =
@@ -20,6 +21,10 @@ def addRNAscapeToGraph(node_properties, edge_properties, structure, data, prefix
             node['rnascape_y'] = rnascape_coords[idx][1]*scale
             #node['x'] = rnascape_coords[idx][0]*scale
             #node['y'] = rnascape_coords[idx][1]*scale
+            if [node['rnascape_x'],node['rnascape_y']] in centers:
+                rand = [np.random.random()*10,np.random.random()*10]
+                node['rnascape_x'] += rand[0]
+                node['rnascape_y'] += rand[1]
             centers.append([node['rnascape_x'],node['rnascape_y']])
     centers = np.array(centers)
     centroid = np.mean(centers, axis=0)
@@ -28,7 +33,6 @@ def addRNAscapeToGraph(node_properties, edge_properties, structure, data, prefix
 
     pro_updated = []
     shuf_edges = list(edge_properties.keys())
-    np.random.seed(0)
     np.random.shuffle(shuf_edges)
     for edge_id in shuf_edges:
         edge = edge_properties[edge_id]

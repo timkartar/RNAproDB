@@ -121,20 +121,18 @@ for node in nodes:
 d3.node_properties = addRNAscapeToGraph(d3.node_properties, d3.edge_properties, structure, data, prefix)
 d3.node_properties = addViennaToGraph(d3.node_properties, d3.edge_properties, data, prefix)
 
-coord_type = "rnascape" ## DUMMY REPLACE FOR TESTING / COMMENT OUT AND MAKE OPTION IN FRONTEND
+coord_type = "pca" ## DUMMY REPLACE FOR TESTING / COMMENT OUT AND MAKE OPTION IN FRONTEND
 if coord_type == "pca":
     #for node in d3.node_properties:
     #    print("pca", d3.node_properties[node])
     pass
 if coord_type == "rnascape":
     for node in d3.node_properties:
-        try:
-            d3.node_properties[node]['x'] = d3.node_properties[node]['rnascape_x']
-        except:
-            print(d3.node_properties[node])
+        d3.node_properties[node]['x'] = d3.node_properties[node]['rnascape_x']
         d3.node_properties[node]['y'] = d3.node_properties[node]['rnascape_y']
         #print("rnascape", d3.node_properties[node])
         #print(d3.node_properties[node])
+#exit()
 if coord_type == "viennarna":
     for node in d3.node_properties:
         d3.node_properties[node]['x'] = d3.node_properties[node]['viennarna_x']
