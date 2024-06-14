@@ -19,6 +19,7 @@ from get_rnascape import addRNAscapeToGraph
 from get_viennarna import addViennaToGraph
 from get_num_nucleotides import count_nucleotides_slow, count_nucleotides_fast
 from get_lw import getLW
+from get_whbonds import runHBplus
 
 parser = MMCIFParser(QUIET=True)
 home =  os.path.dirname(os.path.abspath(__file__))
@@ -32,12 +33,17 @@ if len(sys.argv) > 1:
    prefix = sys.argv[1]
 
 pdb_file = "{}-assembly1.cif".format(prefix)
+
 TOO_LARGE = False
 
 #structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 
 structure = parser.get_structure(prefix, os.path.join(pdb_path, pdb_file))
 protein, rna = splitEntities(structure) # split RNA and protein from structure
+#water_hbonds = runHBplus(pdb_path, "{}-assembly1".format(prefix), structure)
+
+#print(water_hbonds)
+#exit()
 
 data = runDSSR(structure, quiet=True, prefix=prefix, tmpdir="")
 #for residue in structure.get_residues():
@@ -110,7 +116,6 @@ for node in nodes:
 ##ADD RNAscape and ViennaRNA
 d3.node_properties = addRNAscapeToGraph(d3.node_properties, d3.edge_properties, structure, data, prefix)
 d3.node_properties = addViennaToGraph(d3.node_properties, d3.edge_properties, data, prefix)
-
 
 coord_type = "rnascape" ## DUMMY REPLACE FOR TESTING / COMMENT OUT AND MAKE OPTION IN FRONTEND
 if coord_type == "pca":
