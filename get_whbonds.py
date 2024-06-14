@@ -7,6 +7,7 @@ import subprocess
 import re
 from Bio.PDB import PDBIO
 io = PDBIO()
+backend =  os.path.dirname(os.path.abspath(__file__))
 def runHBplus(path, prefix, structure):
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     chain_map = {}
@@ -23,7 +24,7 @@ def runHBplus(path, prefix, structure):
 
     io.set_structure(structure)
     io.save('{}.pdb'.format(prefix))
-    rc = subprocess.call(['hbplus', '-h', '3.0', '-d', '3.5', '{}.pdb'.format(prefix),
+    rc = subprocess.call(['{}/external/hbplus'.format(backend), '-h', '3.0', '-d', '3.5', '{}.pdb'.format(prefix),
         '{}.pdb'.format(prefix)])#, stdout=FNULL, stderr=FNULL)
 
     water_hbonds = []
