@@ -40,7 +40,7 @@ TOO_LARGE = False
 
 structure = parser.get_structure(prefix, os.path.join(pdb_path, pdb_file))
 protein, rna = splitEntities(structure) # split RNA and protein from structure
-#water_hbonds = runHBplus(pdb_path, "{}-assembly1".format(prefix), structure)
+water_hbonds = runHBplus(pdb_path, "{}-assembly1".format(prefix), structure)
 
 #print(water_hbonds)
 #exit()
