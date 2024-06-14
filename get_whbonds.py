@@ -23,11 +23,8 @@ def runHBplus(path, prefix, structure):
 
     io.set_structure(structure)
     io.save('{}.pdb'.format(prefix))
-    FNULL = open(os.devnull, 'w')
     rc = subprocess.call(['hbplus', '-h', '3.0', '-d', '3.5', '{}.pdb'.format(prefix),
-        '{}.pdb'.format(prefix)], stdout=FNULL, stderr=FNULL)
-    #print(rc)
-    FNULL.close()
+        '{}.pdb'.format(prefix)])#, stdout=FNULL, stderr=FNULL)
 
     water_hbonds = []
     HB = open('{}.hb2'.format(prefix),'r').readlines()
@@ -59,7 +56,6 @@ def runHBplus(path, prefix, structure):
         items["dist"] = dist
 
         if (d_resn == "HOH") != (a_resn == "HOH"):
-            print(d_resn, a_resn)
             water_hbonds.append(items)
         else:
             pass
