@@ -23,7 +23,7 @@ from get_lw import getLW
 parser = MMCIFParser(QUIET=True)
 home =  os.path.dirname(os.path.abspath(__file__))
 backend =  os.path.dirname(os.path.abspath(__file__))
-frontend = backend + "/../frontend_master/"
+frontend = backend + "/../rnaprodb_frontend/"
 
 pdb_path = frontend + "public/cifs/".format(home)
 # pdb_file = "8fvi-assembly1.cif"
