@@ -15,9 +15,9 @@ def get_stacking_interactions(dssr, ss_dict):
                 first_nucleotide = dssr_id_to_text(nts_long_split[i])
                 sec_nucleotide = dssr_id_to_text(nts_long_split[i+1])
                 
-                #if "PSU" in first_nucleotide:
+                #if "SAM" in first_nucleotide:
                 #    print("Hereee")
-                #if "PSU" in sec_nucleotide:
+                #if "SAM" in sec_nucleotide:
                 #   print("Thereee")
                 if(is_a_protein(first_nucleotide)):
                     #if "PSU" in first_nucleotide:
@@ -97,7 +97,6 @@ def getEdges(dssr, protein_interactions, ss_dict):
     
     # print(interaction_edges) #('C:C', 'A:PRO:277:H')
     stacks = get_stacking_interactions(dssr, ss_dict)
-
     return pairs,backbone_edges, interaction_edges, interaction_types, stacks
 
 

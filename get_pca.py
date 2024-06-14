@@ -128,7 +128,7 @@ def getChainsAndPca(structure, interaction_edges):
 
 
 def addPcaToGraph(node_properties, centroid_rnaprodb_map, centroids_3d):
-    print(node_properties)
+    #print(node_properties)
     for node_id, node in node_properties.items():
         if 'rnaprodb_id' not in node.keys(): ##TODO
             continue

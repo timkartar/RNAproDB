@@ -10,7 +10,8 @@ nt_colors = {'A': '#FF9896',#'#90cc84',
     'DA': '#FF9896',#'#90cc84',
     'DC': '#DBDB8D',#'#AEC7E8',
     'DG': '#90cc84',#'#DBDB8D',
-    'DT': '#AEC7E8'#'#FF9896'    
+    'DT': '#AEC7E8',#'#FF9896',
+    'X': '#ffffff' 
 }
 
 """
@@ -28,10 +29,12 @@ def processNodes(node_properties):
         parsed_node = parse_node(node)  # ('p'/'n', name, position, chain, ss(protein only))
         try:
             name = "{}".format(parsed_node[1])
-            print(name, type(name))
+            #print(name, type(name))
         except:
             pass
+        #print(name,  parsed_node[0])
         if parsed_node[0] == 'x':
+            del node_properties[node]
             continue
         if parsed_node[0] == 'n':
             if name not in nt_colors.keys() and name not in chem_components.keys(): ##ignore anything that is not A,C,G,U
@@ -125,7 +128,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
 
         # IF BOTH OF THEM ARE IN THE centroids_3d, compute distance. Otherwise, set it to null. Then, check whether they have a distance later
         if edge_properties[edge]['source_id'] in centroids_3d and edge_properties[edge]['target_id'] in centroids_3d:
-            print("YA YEE YA")
+            #print("YA YEE YA")
             centroid_source = centroids_3d[edge_properties[edge]['source_id']]
             centroid_target = centroids_3d[edge_properties[edge]['target_id']]
 
@@ -145,7 +148,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
         if edge_tuple in backbone_edges: #is a backbone edge. NOTE change to iterate through backbone edges instead!
             edge_properties[edge]['marker_start'] = ''
             # edge_properties[edge]['marker_end'] = 'arrow' # already set in set edge properties
-            edge_properties[edge]['color'] = '#000000'#'#605f5f' # works!
+            edge_properties[edge]['color'] = '#605f5f'#'#605f5f' # works!
             # edge_properties[edge]['label_color'] = 'red'
             # edge_properties[edge]['label_fontsize'] = 8
             # edge_properties[edge]['marker_color'] = 'red' # BROKEN!
@@ -159,6 +162,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
             edge_properties[edge]['edge_width'] = 2
         
         elif edge_tuple in pairs:
+            edge_properties[edge]['color'] = '#4169E1'
             if not check_wc_pairing(edge_tuple):
                 edge_properties[edge]['color'] = '#F2936D'
             # edge_properties[edge]['marker_end'] = 'square'

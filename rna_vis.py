@@ -56,8 +56,8 @@ ss = getSS(prefix, data)
 
 protein_interactions,ss_dict = getInteractions(protein, rna, prefix)
 #for item in protein_interactions:
-#    if "PSU" in protein_interactions[item]:
-#        print(item, protein_interactions[item])
+    #if "HIS" in protein_interactions[item]:
+    #print(item, protein_interactions[item])
 #print(protein_interactions)
 pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(data, protein_interactions, ss_dict)
 #for item in interaction_edges:
@@ -72,7 +72,6 @@ hbond_set = hbondExtractor(data)
 interaction_types  = labelHbondEdges(interaction_types, hbond_set)
 
 all_edges = pairs + backbone_edges + interaction_edges + stacks
-
 d3 = d3graph(support=None, collision=0.5)
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
@@ -97,16 +96,46 @@ if(ADD_PCA):
 
 d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types, centroids_3d)
 
-##ADD RNAscape and ViennaRNA
-try:
-   d3.node_properties = addRNAscapeToGraph(d3.node_properties, d3.edge_properties, structure, data, prefix)
-except Exception as e:
-   pass
-try:
-   d3.node_properties = addViennaToGraph(d3.node_properties, d3.edge_properties, data, prefix)
-except Exception as e:
-   pass
 
+edges = list(d3.edge_properties.keys())
+for edge in edges:
+    if edge[0] not in d3.node_properties.keys() or edge[1] not in d3.node_properties.keys() :
+        del d3.edge_properties[edge]
+
+nodes = list(d3.node_properties.keys())
+for node in nodes:
+    if "Residue" not in d3.node_properties[node]['tooltip']:
+        continue
+    has_edge = False
+    for edge in d3.edge_properties:
+        if node in edge:
+            has_edge = True
+            break
+    if has_edge == False:
+        del d3.node_properties[node]
+##ADD RNAscape and ViennaRNA
+d3.node_properties = addRNAscapeToGraph(d3.node_properties, d3.edge_properties, structure, data, prefix)
+d3.node_properties = addViennaToGraph(d3.node_properties, d3.edge_properties, data, prefix)
+
+
+coord_type = "rnascape" ## DUMMY REPLACE FOR TESTING / COMMENT OUT AND MAKE OPTION IN FRONTEND
+if coord_type == "pca":
+    #for node in d3.node_properties:
+    #    print("pca", d3.node_properties[node])
+    pass
+if coord_type == "rnascape":
+    for node in d3.node_properties:
+        #try:
+        d3.node_properties[node]['x'] = d3.node_properties[node]['rnascape_x']
+        #print(e, d3.node_properties[node])
+        d3.node_properties[node]['y'] = d3.node_properties[node]['rnascape_y']
+        #print("rnascape", d3.node_properties[node])
+        #print(d3.node_properties[node])
+if coord_type == "viennarna":
+    for node in d3.node_properties:
+        d3.node_properties[node]['x'] = d3.node_properties[node]['viennarna_x']
+        d3.node_properties[node]['y'] = d3.node_properties[node]['viennarna_y']
+    
 #
 # d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 # click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click
@@ -122,7 +151,7 @@ final_json_object["tooLarge"] = TOO_LARGE
 for edge in final_json_object["links"]:
     edge_tuple = (edge["source_id"], edge["target_id"])
     if edge_tuple in lw_values:
-        print("FOUND " + str(edge_tuple))
+        #print("FOUND " + str(edge_tuple))
         edge["LW"] = lw_values[edge_tuple]
     else:
         edge["LW"] = None
