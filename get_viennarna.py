@@ -60,7 +60,7 @@ def addViennaToGraph(node_properties, edge_properties, data, prefix, scale = 5):
             return coord
         if np.linalg.norm(nuc_coords - prot_coords) > 20:
             anchor = nuc_coords# or nuc_coords
-            prot_coords = anchor + (20*(anchor - prot_coords)/np.linalg.norm(anchor -prot_coords))
+            #prot_coords = anchor + (20*(anchor - prot_coords)/np.linalg.norm(anchor -prot_coords))
         prot_coords = force_bound(prot_coords, bounds)
         node_properties[edge_id[1-idx]]['viennarna_x'] = prot_coords[0]
         node_properties[edge_id[1-idx]]['viennarna_y'] = prot_coords[1]
