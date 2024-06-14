@@ -128,13 +128,11 @@ if coord_type == "pca":
     pass
 if coord_type == "rnascape":
     for node in d3.node_properties:
-        try:
-            d3.node_properties[node]['x'] = d3.node_properties[node]['rnascape_x']
-        except:
-            print(d3.node_properties[node])
+        d3.node_properties[node]['x'] = d3.node_properties[node]['rnascape_x']
         d3.node_properties[node]['y'] = d3.node_properties[node]['rnascape_y']
         #print("rnascape", d3.node_properties[node])
         #print(d3.node_properties[node])
+#exit()
 if coord_type == "viennarna":
     for node in d3.node_properties:
         d3.node_properties[node]['x'] = d3.node_properties[node]['viennarna_x']
