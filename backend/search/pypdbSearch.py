@@ -44,6 +44,16 @@ def query_by_experimental_modality(modality: list, queries: list):
       values=modality)
    queries.append(modality_query)
 
+def query_by_year(min_year:int, max_year:int, queries: list):
+   year_query = text_operators.RangeOperator(
+      attribute="rcsb_primary_citation.year",
+      from_value=min_year,
+      to_value=max_year,
+      include_lower=False,
+      include_upper=False,
+      negation=False)
+   queries.append(year_query)
+
 def search(additional_queries: list) -> list:
    queries = []
    queries.append(pypdb.text_operators.ComparisonOperator(value = 0, attribute = "rcsb_assembly_info.polymer_entity_count_RNA", comparison_type = pypdb.text_operators.ComparisonType.GREATER))
@@ -59,6 +69,8 @@ def search(additional_queries: list) -> list:
          query_by_protein(i[1][0], i[1][1], queries)
       elif i[0] == "experimental_modality":
          query_by_experimental_modality(i[1], queries)
+      elif i[0] == "year":
+         query_by_year(i[1][0], i[1][1], queries)
 
    results = perform_search_with_graph(
    query_object=QueryGroup(

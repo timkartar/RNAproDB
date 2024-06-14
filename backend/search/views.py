@@ -21,6 +21,8 @@ def search_view(request):
             min_protein = data.get('minProtein')
             max_protein = data.get('maxProtein')
             experimental_modality = data.get('experimentalModality')
+            min_year = data.get('minYear')
+            max_year = data.get('maxYear')
             # Extract other parameters as needed
 
             additional_queries = []
@@ -34,6 +36,8 @@ def search_view(request):
                 additional_queries.append(['protein', [min_protein, max_protein]])
             if experimental_modality:
                additional_queries.append(['experimental_modality', experimental_modality])
+            if min_year and max_year:
+                additional_queries.append(['year', [min_year, max_year]])
             desired_ids = search(additional_queries)
             pdbs = pypdbObject.objects.filter(id__in=desired_ids)
             serializer = pypdbSerializer(pdbs, many=True)
