@@ -66,7 +66,6 @@ pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(da
 #        print("WHOAAAA")
 #exit()
 
-lw_values = getLW(data)
 #update: added functions to extract all H-bond interactions from dssr and to add H-bond labels to interaction_types object
 hbond_set = hbondExtractor(data)
 interaction_types  = labelHbondEdges(interaction_types, hbond_set)
@@ -148,13 +147,44 @@ final_json_object["chainsList"] = chains_list
 final_json_object["rotationMatrix"] = rotationMatrix.tolist() # used to orient NGLViewer camera to the PCA
 final_json_object["tooLarge"] = TOO_LARGE
 
+# extract LW annotations
+lw_values = getLW(data)
+
+def flip_lw_value(lw):
+    if len(lw) == 3:
+        return lw[0] + lw[2] + lw[1]
+    return lw
+
+processed_edges = set()
+
 for edge in final_json_object["links"]:
-    edge_tuple = (edge["source_id"], edge["target_id"])
-    if edge_tuple in lw_values:
-        #print("FOUND " + str(edge_tuple))
-        edge["LW"] = lw_values[edge_tuple]
-    else:
-        edge["LW"] = None
+    if edge["my_type"] == "pair":
+        source_num = int(edge["source_id"].split(':')[1])
+        target_num = int(edge["target_id"].split(':')[1])
+
+        if source_num < target_num:
+            edge_tuple = (edge["source_id"], edge["target_id"])
+            reverse_lw = False
+        else:
+            edge_tuple = (edge["target_id"], edge["source_id"])
+            reverse_lw = True
+
+        if edge_tuple in processed_edges:
+            # print("Skipping already processed edge:", edge_tuple)
+            continue
+
+        processed_edges.add(edge_tuple)
+
+        if edge_tuple in lw_values:
+            lw_value = lw_values[edge_tuple]
+            if reverse_lw:
+                lw_value = flip_lw_value(lw_value)
+            edge["LW"] = lw_value
+      #       print("ADDING LW FOR:", edge_tuple, "WITH VALUE:", lw_value)
+      #   else:
+      #       print("LW NOT FOUND FOR", edge_tuple, "IN ORIGINAL ORDER")
+
+
 
 for edge in final_json_object["links"]:
    del edge['weight']
