@@ -34,11 +34,6 @@ if len(sys.argv) > 1:
 pdb_file = "{}-assembly1.cif".format(prefix)
 TOO_LARGE = False
 
-# is too large flag. If too large, this script still pre-processes, but will flag it for views.py to know that a subgraph must be selected.
-num_nts = count_nucleotides_fast(os.path.join(pdb_path, pdb_file))
-if(num_nts > 500):
-   TOO_LARGE = True
-
 #structure = StructureData(os.path.join(pdb_path, pdb_file), name="co_crystal")
 
 structure = parser.get_structure(prefix, os.path.join(pdb_path, pdb_file))
