@@ -61,15 +61,16 @@ ss = getSS(prefix, data)
 
 
 protein_interactions,ss_dict = getInteractions(protein, rna, prefix)
-#for item in protein_interactions:
-    #if "HIS" in protein_interactions[item]:
-    #print(item, protein_interactions[item])
 #print(protein_interactions)
+#for item in protein_interactions:
+#    #if "HIS" in protein_interactions[item]:
+#    print(item, protein_interactions[item])
+#exit()
 pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(data, protein_interactions, ss_dict)
-#for item in interaction_edges:
+#for item in pairs:
 #    print(item)
-#    if "PSU" in item[0] or "PSU" in item[1]:
-#        print("WHOAAAA")
+#    #if "PSU" in item[0] or "PSU" in item[1]:
+#    #    print("WHOAAAA")
 #exit()
 
 #update: added functions to extract all H-bond interactions from dssr and to add H-bond labels to interaction_types object
@@ -82,6 +83,11 @@ df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
 adjmat = vec2adjmat(df['source'], df['target'], weight=df['weight'])
 
+#for item in all_edges:
+#    print(item)
+#    #if "PSU" in item[0] or "PSU" in item[1]:
+#    #    print("WHOAAAA")
+#exit()
 ###############################################################
 
 d3.graph(adjmat)
@@ -93,8 +99,6 @@ chains_list, centroid_rnaprodb_map, rotationMatrix, centroids_3d = getChainsAndP
 
 
 d3.node_properties = processNodes(d3.node_properties)
-#for node in d3.node_properties:
-#    print(node, d3.node_properties[node])
 ADD_PCA = True
 if(ADD_PCA):
    d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map, centroids_3d)
@@ -129,9 +133,10 @@ if coord_type == "pca":
     pass
 if coord_type == "rnascape":
     for node in d3.node_properties:
-        #try:
-        d3.node_properties[node]['x'] = d3.node_properties[node]['rnascape_x']
-        #print(e, d3.node_properties[node])
+        try:
+            d3.node_properties[node]['x'] = d3.node_properties[node]['rnascape_x']
+        except:
+            print(d3.node_properties[node])
         d3.node_properties[node]['y'] = d3.node_properties[node]['rnascape_y']
         #print("rnascape", d3.node_properties[node])
         #print(d3.node_properties[node])
@@ -139,7 +144,13 @@ if coord_type == "viennarna":
     for node in d3.node_properties:
         d3.node_properties[node]['x'] = d3.node_properties[node]['viennarna_x']
         d3.node_properties[node]['y'] = d3.node_properties[node]['viennarna_y']
-    
+'''   
+for node in d3.node_properties:
+    print(node, d3.node_properties[node])
+
+for edge in d3.edge_properties:
+    print(edge, d3.edge_properties[edge])
+'''
 #
 # d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 # click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click

@@ -14,8 +14,8 @@ nt_colors = {'A': '#FF9896',#'#90cc84',
     'DA': '#FF9896',#'#90cc84',
     'DC': '#DBDB8D',#'#AEC7E8',
     'DG': '#90cc84',#'#DBDB8D',
-    'DT': '#AEC7E8'#'#FF9896'
-
+    'DT': '#AEC7E8',#'#FF9896'
+    'X': '#ffffff'
 }
 
 """
@@ -53,9 +53,7 @@ def parse_node(node_id):
     # Is a protein
     if (temp_split[1] in ['ZN','NA','MG']):
         return ('', temp_split[1], temp_split[2], temp_split[0])
-    elif(temp_split[1] in nt_colors.keys() or temp_split[1] in chem_components.keys()): #Is a nucleotide
-        if temp_split[1] == "5MU":
-            print(('n', temp_split[1], temp_split[2], temp_split[0]))
+    elif(temp_split[1] in nt_colors.keys() or (temp_split[1] in chem_components.keys() and str(chem_components[temp_split[1]]) in nt_colors.keys())): #Is a nucleotide
         return ('n', temp_split[1], temp_split[2], temp_split[0])
     elif(is_a_protein(node_id)):
         #check if has secondary structure

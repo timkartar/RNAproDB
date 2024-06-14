@@ -71,7 +71,7 @@ def processNodes(node_properties):
                 try:
                     node_properties[node]['color']= nt_colors[chem_components[name]]
                 except:
-                    node_properties[node]['color']="X"
+                    node_properties[node]['color']="#ffffff"
             
             name = "{}".format(name)
             if name in nt_colors.keys(): ## WEIRD FIX BUT OK FOR NOW
