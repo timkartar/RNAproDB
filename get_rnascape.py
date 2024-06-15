@@ -12,7 +12,7 @@ def addRNAscapeToGraph(node_properties, edge_properties, structure, data, prefix
     rnascape_coords, markers, ids, chids, dssrids, dssrout, prefix = rnascape(prefix, model,
                     data, cond_bulging=False, mFIG_PATH="./rnascape/output/processed_images/", mDSSR_PATH =
                 'x3dna-dssr')
-    rnaprodb_ids = ["{}:{}".format(chids[i],ids[i][1]) for i in range(len(ids))]
+    rnaprodb_ids = ["{}:{}:{}".format(chids[i],ids[i][1], ids[i][2].replace(" ","")) for i in range(len(ids))]
     centers = []
     for node_id, node in node_properties.items():
         if node['rnaprodb_id'] in rnaprodb_ids: # node has a centroid computed for it!
@@ -50,9 +50,9 @@ def addRNAscapeToGraph(node_properties, edge_properties, structure, data, prefix
             node_properties[edge_id[idx]]['rnascape_y']])
         try:
             prot_coords = np.array([node_properties[edge_id[1-idx]]['x'], node_properties[edge_id[1-idx]]['y']])
-        except:
+        except Exception as e:
+            #print(edge_id[1-idx])
             continue
-        
         def force_bound(coord, bounds, relax = 1.1):
             buonds = bounds*relax
             if coord[0] < bounds[0] and coord[0] > bounds [1] and coord[1] < bounds[2] and coord[1] > bounds [3]:

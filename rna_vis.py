@@ -49,7 +49,6 @@ data = runDSSR(structure, quiet=True, prefix=prefix, tmpdir="")
 #for residue in structure.get_residues():
 #    print(residue.get_id())
 ss = getSS(prefix, data)
-#print(ss)
 
 #with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
 #   data = json.load(FH, object_pairs_hook=collections.OrderedDict) 
@@ -73,6 +72,10 @@ hbond_set = hbondExtractor(data)
 interaction_types  = labelHbondEdges(interaction_types, hbond_set)
 
 all_edges = pairs + backbone_edges + interaction_edges + stacks
+
+#for edge in stacks:
+#    print(edge)
+#exit()
 d3 = d3graph(support=None, collision=0.5)
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
 df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
@@ -94,10 +97,13 @@ chains_list, centroid_rnaprodb_map, rotationMatrix, centroids_3d = getChainsAndP
 
 
 d3.node_properties = processNodes(d3.node_properties)
+#for item in d3.node_properties:
+#    print(item, d3.node_properties[item])
+#exit()
+
 ADD_PCA = True
 if(ADD_PCA):
-   d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map, centroids_3d)
-
+    d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map, centroids_3d)
 d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types, centroids_3d)
 
 
@@ -119,16 +125,23 @@ for node in nodes:
         del d3.node_properties[node]
 ##ADD RNAscape and ViennaRNA
 d3.node_properties = addRNAscapeToGraph(d3.node_properties, d3.edge_properties, structure, data, prefix)
+
+#for item in d3.node_properties:
+#    try:
+#        print(item, d3.node_properties[item]['rnascape_x'])
+#    except:
+#        print(item)
+#exit()
 d3.node_properties = addViennaToGraph(d3.node_properties, d3.edge_properties, data, prefix)
 
 #coord_type = "viennarna" ## DUMMY REPLACE FOR TESTING / COMMENT OUT AND MAKE OPTION IN FRONTEND
 #if coord_type == "pca":
 for node in d3.node_properties:
+    print(node, d3.node_properties[node])
     if 'x' not in d3.node_properties[node].keys():
         continue
     d3.node_properties[node]['pca_x'] = d3.node_properties[node]['x']
     d3.node_properties[node]['pca_y'] = d3.node_properties[node]['y']
-
     #for node in d3.node_properties:
     #    print("pca", d3.node_properties[node])
     #pass

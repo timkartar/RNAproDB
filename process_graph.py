@@ -1,7 +1,6 @@
 from utilities import node_to_text, parse_node, d3to1
 import numpy as np
 from split_entities import chem_components
-
 nt_colors = {'A': '#FF9896',#'#90cc84',
     'C': '#DBDB8D',#'#AEC7E8',
     'G': '#90cc84',#'#DBDB8D',
@@ -27,6 +26,7 @@ def processNodes(node_properties):
     node_keys = list(node_properties.keys())
     for node in node_keys:
         parsed_node = parse_node(node)  # ('p'/'n', name, position, chain, ss(protein only))
+        icode = '' 
         try:
             name = "{}".format(parsed_node[1])
             #print(name, type(name))
@@ -37,6 +37,7 @@ def processNodes(node_properties):
             del node_properties[node]
             continue
         if parsed_node[0] == 'n':
+            #print(parsed_node)
             if name not in nt_colors.keys() and name not in chem_components.keys(): ##ignore anything that is not A,C,G,U
                 #print(name)
                 continue
@@ -50,7 +51,7 @@ def processNodes(node_properties):
                 name = newname
                 #node = newnode
                 #print(name, node, node_properties[node])
-
+            icode = parsed_node[4]
         pos = str(parsed_node[2])
         chain = parsed_node[3]
         
@@ -61,8 +62,8 @@ def processNodes(node_properties):
         node_properties[node]['edge_size']= 1 # original 5
         node_properties[node]['fontcolor']= 'black'
 
-        #ID of chain:number
-        node_properties[node]['rnaprodb_id'] = "{}:{}".format(chain, pos)
+        #ID of chain:number:icode
+        node_properties[node]['rnaprodb_id'] = "{}:{}:{}".format(chain, pos, icode)
 
         if(parsed_node[0] == 'n'): # is a nucleotide
             try:
@@ -75,9 +76,9 @@ def processNodes(node_properties):
             
             name = "{}".format(name)
             if name in nt_colors.keys(): ## WEIRD FIX BUT OK FOR NOW
-                tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
+                tooltip = 'Nucleotide: ' + name +"\nPosition: {}{}".format(pos, icode) + "\nChain: " + parsed_node[3]
             elif name in chem_components.keys():
-                tooltip = 'Nucleotide: ' + "{}".format(chem_components[name]) +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
+                tooltip = 'Nucleotide: ' + "{}".format(chem_components[name]) +"\nPosition: {}{}".format(pos, icode) + "\nChain: " + parsed_node[3]
 
             #tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
             node_properties[node]['shape'] = 'circle' #is detected in  d3graphscript.js
@@ -94,7 +95,7 @@ def processNodes(node_properties):
             else:
                 one_letter_code = "X"
             node_properties[node]['fontsize']= 15
-            ss = parsed_node[4]
+            ss = parsed_node[5]
             node_properties[node]['size'] = 30 # original 5
             node_properties[node]['color']= '#c6c6c6' #use gray by default
             node_properties[node]['label']= one_letter_code
@@ -119,12 +120,15 @@ def check_wc_pairing(edge_tuple):
     return False
 
 def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_types, centroids_3d):
-    for edge in edge_properties:
+    edges = list(edge_properties.keys())
+    for edge in edges:
         first_node,sec_node = parse_edge(edge)
-
+        if first_node[0] == 'x' or sec_node[0] == 'x': #IGNORE NON STANDARD NON NUCLEOTIDES
+            del edge_properties[edge]
+            continue
         #global ids for each
-        edge_properties[edge]['source_id'] = "{}:{}".format(first_node[3], first_node[2]) # chain:#
-        edge_properties[edge]['target_id'] = "{}:{}".format(sec_node[3], sec_node[2]) # chain:#
+        edge_properties[edge]['source_id'] = "{}:{}:{}".format(first_node[3], first_node[2], first_node[4]) # chain:#
+        edge_properties[edge]['target_id'] = "{}:{}:{}".format(sec_node[3], sec_node[2], sec_node[4]) # chain:#
 
         # IF BOTH OF THEM ARE IN THE centroids_3d, compute distance. Otherwise, set it to null. Then, check whether they have a distance later
         if edge_properties[edge]['source_id'] in centroids_3d and edge_properties[edge]['target_id'] in centroids_3d:
@@ -192,6 +196,5 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
                 edge_properties[edge]['color'] = 'black' #for now
             if "hbond" in types:
                 edge_properties[edge]['my_type'] = 'protein_rna_hbond'
-
 
     return edge_properties

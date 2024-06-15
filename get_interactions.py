@@ -133,5 +133,5 @@ def getInteractions(protein, rna, prefix):
                 ss = 'X' #pymol couldn't return
             result.append("{}:{}:{}:{}".format(pchname, presname, presid[1], ss)) #'A:LEU:269:H'
         
-        interactions["{}:{}:{}:{}".format(chname, resname, resid[1], int_type)] = result
+        interactions["{}:{}:{}:{}:{}".format(chname, resname, resid[1], resid[2].replace(" ",""), int_type)] = result
     return interactions, secondary_structure_dict

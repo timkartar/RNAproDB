@@ -31,7 +31,7 @@ def node_to_text(node):
 Returns rnaprodb nucleotide text string (A:B:C) from dssr id (1..C.C.955.) representation
 """
 def dssr_id_to_text(dssr_id):
-    return ":".join(dssr_id.split(".")[2:-1])
+    return ":".join(dssr_id.split(".")[2:])#-1])
 
 """
 Checks if node_id (A:B:C) is a protein
@@ -52,16 +52,16 @@ def parse_node(node_id):
     #print(temp_split)
     # Is a protein
     if (temp_split[1] in ['ZN','NA','MG']):
-        return ('', temp_split[1], temp_split[2], temp_split[0])
+        return ('x', temp_split[1], temp_split[2], temp_split[0], ' ')
     elif(temp_split[1] in nt_colors.keys() or (temp_split[1] in chem_components.keys() and str(chem_components[temp_split[1]]) in nt_colors.keys())): #Is a nucleotide
-        return ('n', temp_split[1], temp_split[2], temp_split[0])
+        return ('n', temp_split[1], temp_split[2], temp_split[0], temp_split[3])
     elif(is_a_protein(node_id)):
         #check if has secondary structure
         # if len(temp_split) == 3: # no secondary structure!
         #     # print(node_id)
         #     return ('p', temp_split[1], temp_split[2], temp_split[0], "Unknown")
         # else:
-        return ('p', temp_split[1], temp_split[2], temp_split[0], temp_split[3])
+        return ('p', temp_split[1], temp_split[2], temp_split[0], '', temp_split[3])
     else: #ERROR
         return ('x', temp_split[1], temp_split[2], temp_split[0])
         print("Error parsing node!")
