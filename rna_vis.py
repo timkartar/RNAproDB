@@ -124,6 +124,8 @@ d3.node_properties = addViennaToGraph(d3.node_properties, d3.edge_properties, da
 #coord_type = "viennarna" ## DUMMY REPLACE FOR TESTING / COMMENT OUT AND MAKE OPTION IN FRONTEND
 #if coord_type == "pca":
 for node in d3.node_properties:
+    if 'x' not in d3.node_properties[node].keys():
+        continue
     d3.node_properties[node]['pca_x'] = d3.node_properties[node]['x']
     d3.node_properties[node]['pca_y'] = d3.node_properties[node]['y']
 
