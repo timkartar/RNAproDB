@@ -9,11 +9,13 @@ def extract_first_letter_and_last_number(s):
 
 def getLW(dssr):
     lw_dict = {}
+    if 'pairs' not in dssr.keys():
+        return lw_dict
     for pair in dssr['pairs']:
         nt1_result = extract_first_letter_and_last_number(pair['nt1'])
         nt2_result = extract_first_letter_and_last_number(pair['nt2'])
         lw_dict[(nt1_result, nt2_result)] = pair['LW']
-    print(lw_dict)
+    #print(lw_dict)
     return lw_dict
 
 

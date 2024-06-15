@@ -48,7 +48,10 @@ def addRNAscapeToGraph(node_properties, edge_properties, structure, data, prefix
             continue
         nuc_coords = np.array([node_properties[edge_id[idx]]['rnascape_x'],
             node_properties[edge_id[idx]]['rnascape_y']])
-        prot_coords = np.array([node_properties[edge_id[1-idx]]['x'], node_properties[edge_id[1-idx]]['y']])
+        try:
+            prot_coords = np.array([node_properties[edge_id[1-idx]]['x'], node_properties[edge_id[1-idx]]['y']])
+        except:
+            continue
         
         def force_bound(coord, bounds, relax = 1.1):
             buonds = bounds*relax

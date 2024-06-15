@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation   
+np.random.seed(0)
 
 def rot2eul(rotation_matrix):
     ### first transform the matrix to euler angles
@@ -132,9 +133,19 @@ def addPcaToGraph(node_properties, centroid_rnaprodb_map, centroids_3d):
     for node_id, node in node_properties.items():
         if 'rnaprodb_id' not in node.keys(): ##TODO
             continue
+        coords = []
         if node['rnaprodb_id'] in centroid_rnaprodb_map: # node has a centroid computed for it!
             node['x'] = centroid_rnaprodb_map[node['rnaprodb_id']][0]
             node['y'] = centroid_rnaprodb_map[node['rnaprodb_id']][1]
+            '''
+            if [node['x'], node['y']] in coords:
+                print(node_id, [node['x'], node['y']])
+                rand =  [np.random.random()*10,np.random.random()*10]
+                node['x'] += rand[0]
+                node['y'] += rand[1]
+            '''
+            coords.append([node['x'], node['y']])
+
             node['3dx'] = centroids_3d[node['rnaprodb_id']][0]
             node['3dy'] = centroids_3d[node['rnaprodb_id']][1]
             node['3dz'] = centroids_3d[node['rnaprodb_id']][2]
