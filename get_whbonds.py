@@ -6,11 +6,13 @@ import subprocess
 #from dnaprodb_utils import log, getHash, getID, getCM
 import re
 from Bio.PDB import PDBIO
+import copy
 io = PDBIO()
 backend =  os.path.dirname(os.path.abspath(__file__))
 def runHBplus(path, prefix, structure):
     alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
     chain_map = {}
+    structure = copy.deepcopy(structure)
     for chain in structure.get_chains():
         if len(chain.id) == 1:
             chain_map[chain.id] = chain.id
