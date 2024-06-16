@@ -49,8 +49,8 @@ def query_by_year(min_year:int, max_year:int, queries: list):
       attribute="rcsb_primary_citation.year",
       from_value=min_year,
       to_value=max_year,
-      include_lower=False,
-      include_upper=False,
+      include_lower=True,
+      include_upper=True,
       negation=False)
    queries.append(year_query)
 

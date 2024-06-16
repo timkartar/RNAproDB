@@ -114,7 +114,7 @@ for node in nodes:
     for edge in d3.edge_properties:
         if node in edge:
             has_edge = True
-            break
+            break   
     if has_edge == False:
         del d3.node_properties[node]
 ##ADD RNAscape and ViennaRNA
