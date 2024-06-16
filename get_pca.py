@@ -3,6 +3,7 @@ import numpy as np
 from sklearn.decomposition import PCA
 import matplotlib.pyplot as plt
 from scipy.spatial.transform import Rotation   
+from utilities import chem_components, nt_colors
 np.random.seed(0)
 
 def rot2eul(rotation_matrix):
@@ -10,7 +11,15 @@ def rot2eul(rotation_matrix):
     r =  Rotation.from_matrix(rotation_matrix)
     angles = r.as_euler("zyx",degrees=False)
     return angles
-
+def is_aa(residue, res):
+    if res in chem_components.keys():
+        return False
+    if res in nt_colors.keys():
+        return False
+    if PDB.is_aa(residue):
+        return True
+    else:
+        return False
 def getChainsAndPca(structure, interaction_edges):
     chains_list = []
     all_centroids = []
@@ -20,8 +29,7 @@ def getChainsAndPca(structure, interaction_edges):
     aa_set = set() # which amino acids interact
     for edge in interaction_edges:
         split_edge = edge[1].split(":") #('C:C:973', 'A:LEU:278:H')
-        aa_set.add("{}:{}".format(split_edge[0], split_edge[2]))
-
+        aa_set.add("{}:{}:{}".format(split_edge[0], split_edge[2], '')) ##ASSUME NO ICODE FOR PROTEIN
     for model in structure: # assume one model since bio assembly
         for chain in model:
             chain_dict = {} # wrapper holding resiudes and ID
@@ -39,11 +47,10 @@ def getChainsAndPca(structure, interaction_edges):
                 residue_dict["name"] = residue_name
                 residue_dict["pos"] = residue_id
                 residue_dict["chain"] = chain_name
-                residue_dict["is_aa"] = PDB.is_aa(residue)
-
-                rnaprodbid = "{}:{}".format(residue_dict["chain"], residue_dict['pos'])
-
-
+                residue_dict["is_aa"] = is_aa(residue, residue_name)
+                residue_dict["icode"] = residue.get_id()[2].replace(" ","")
+                
+                rnaprodbid = "{}:{}:{}".format(residue_dict["chain"], residue_dict['pos'], residue_dict["icode"])
                 if not residue_dict["is_aa"]:
                 # if rnaprodbid in aa_set:
                     # Code below is to calculate centroid for use in PCA
@@ -54,20 +61,21 @@ def getChainsAndPca(structure, interaction_edges):
                     rna_centroids.append(centroid)
                     all_centroids.append(centroid)
                     centroids_3d[rnaprodbid] = centroid
-                elif rnaprodbid in aa_set:
+                if rnaprodbid in aa_set:
                     atoms = [atom.get_vector() for atom in residue]
                     atom_coords = np.array([list(atom) for atom in atoms])
                     # Compute the mean (x,y,z) - the centroid of the residue
                     centroid = np.mean(atom_coords, axis=0)
                     all_centroids.append(centroid)
                     centroids_3d[rnaprodbid] = centroid
-
+                else:
+                    pass
+                
                 residue_list.append(residue_dict)
-
+            
             chain_dict["chainId"] = chain_name
             chain_dict["residues"] = residue_list
             chains_list.append(chain_dict)
-
     rna_centroids_array = np.array(rna_centroids)
     all_centroids_array = np.array(all_centroids)
     # Perform PCA to reduce to 2D
@@ -111,7 +119,7 @@ def getChainsAndPca(structure, interaction_edges):
 
     for chain in chains_list:
         for residue in chain["residues"]:
-            rnaprodbid = "{}:{}".format(residue["chain"], residue['pos'])
+            rnaprodbid = "{}:{}:{}".format(residue["chain"], residue['pos'], residue['icode'])
             if not residue["is_aa"] or rnaprodbid in aa_set: # only nts and interacting residues
                 residue["xpos"] = reduced_centroids[i][0]
                 residue["ypos"] = reduced_centroids[i][1]
@@ -129,7 +137,6 @@ def getChainsAndPca(structure, interaction_edges):
 
 
 def addPcaToGraph(node_properties, centroid_rnaprodb_map, centroids_3d):
-    #print(node_properties)
     for node_id, node in node_properties.items():
         if 'rnaprodb_id' not in node.keys(): ##TODO
             continue
@@ -149,5 +156,7 @@ def addPcaToGraph(node_properties, centroid_rnaprodb_map, centroids_3d):
             node['3dx'] = centroids_3d[node['rnaprodb_id']][0]
             node['3dy'] = centroids_3d[node['rnaprodb_id']][1]
             node['3dz'] = centroids_3d[node['rnaprodb_id']][2]
+        else:
+            print(node_id, "not in centroid_rnaprodb_map")
     return node_properties
 

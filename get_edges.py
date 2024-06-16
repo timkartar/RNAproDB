@@ -12,34 +12,27 @@ def get_stacking_interactions(dssr, ss_dict):
         num_nts = stack["num_nts"]
         for i,nt in enumerate(nts_long_split):
             if i != (num_nts - 1): # not last nt in stack, proceed
+                #print(nts_long_split[i], nts_long_split[i+1])
                 first_nucleotide = dssr_id_to_text(nts_long_split[i])
                 sec_nucleotide = dssr_id_to_text(nts_long_split[i+1])
                 
-                #if "SAM" in first_nucleotide:
-                #    print("Hereee")
-                #if "SAM" in sec_nucleotide:
-                #   print("Thereee")
                 if(is_a_protein(first_nucleotide)):
-                    #if "PSU" in first_nucleotide:
-                    #    print("Heree2")
                     chid = first_nucleotide.split(":")[0]
                     protein_num = first_nucleotide.split(":")[2] # gets residue #!
                     try:
                         ss = ss_dict[chid + ":" + protein_num]
                     except:
                         ss= 'X'
-                    first_nucleotide = first_nucleotide + ":{}".format(ss) # append ss to the protein residue
+                    first_nucleotide = first_nucleotide + "{}".format(ss) # append ss to the protein residue
                 if(is_a_protein(sec_nucleotide)):
-                    #if "PSU" in sec_nucleotide:
-                    #    print("Theree2")
                     chid = sec_nucleotide.split(":")[0]
                     protein_num = sec_nucleotide.split(":")[2] # gets residue #!
                     try:
                         ss = ss_dict[chid + ":" + protein_num]
                     except:
                         ss = 'X'
-                    sec_nucleotide = sec_nucleotide + ":{}".format(ss) # append ss to the protein residue
-
+                    sec_nucleotide = sec_nucleotide + "{}".format(ss) # append ss to the protein residue
+                
                 stack_interactions.append((first_nucleotide, sec_nucleotide))
     return stack_interactions
 
@@ -71,14 +64,14 @@ def getEdges(dssr, protein_interactions, ss_dict):
             pair_edge = (nt_id, nt_id)
         pairs.append(pair_edge)
 
-        #backbone edges
+        #backbone edges 
         if i != (num_nts-1): # if not last nucleotide
             nt_next = dssr_id_to_text(dssr["nts"][i+1].get("nt_id"))
             c1 = nt_id.split(":")[0]
             c2 = nt_next.split(":")[0]
             if c1 == c2: # on same chain
                 backbone_edges.append((nt_id, nt_next))
-        
+    
     interaction_edges = []
     interaction_types = {}
     for key, val in protein_interactions.items():
@@ -91,10 +84,8 @@ def getEdges(dssr, protein_interactions, ss_dict):
             else:
                 interaction_types[(nt,v)].add(key.split(":")[-1])
     
-    #print(interaction_types)
-    
     interaction_edges = list(set(interaction_edges))
-    
+    #print(interaction_edges, interaction_types)
     # print(interaction_edges) #('C:C', 'A:PRO:277:H')
     stacks = get_stacking_interactions(dssr, ss_dict)
     return pairs,backbone_edges, interaction_edges, interaction_types, stacks

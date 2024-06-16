@@ -12,7 +12,7 @@ def addViennaToGraph(node_properties, edge_properties, data, prefix, scale = 5):
     dbn = []
     rnaprodb_ids = []
     for nt in data['nts']:
-        rnaprodb_ids += ["{}:{}".format(nt["chain_name"],nt["nt_resnum"])]
+        rnaprodb_ids += ["{}:{}:{}".format(nt["chain_name"],nt["nt_resnum"],nt['nt_id'].split(".")[-1])]
         dbn += [nt["dbn"]]
     coords = RNA.get_xy_coordinates("".join(dbn))
     centers = []
