@@ -12,7 +12,7 @@ def get_stacking_interactions(dssr, ss_dict):
         num_nts = stack["num_nts"]
         for i,nt in enumerate(nts_long_split):
             if i != (num_nts - 1): # not last nt in stack, proceed
-                print(nts_long_split[i], nts_long_split[i+1])
+                #print(nts_long_split[i], nts_long_split[i+1])
                 first_nucleotide = dssr_id_to_text(nts_long_split[i])
                 sec_nucleotide = dssr_id_to_text(nts_long_split[i+1])
                 

@@ -35,8 +35,8 @@ def getProteinSecStructure(protein, prefix):
         for key in dssp_dict.keys():
             chid = key[0]
             resnum = str(key[1][1])
-            icode = key[1][2]
-            residue_seq_to_ss[":".join([chid, resnum])] = dssp_dict[key][1]
+            icode = "" #key[1][2].replace(" ","") FOR NOW
+            residue_seq_to_ss[":".join([chid, resnum, icode])] = dssp_dict[key][1]
         return residue_seq_to_ss
         #exit()
     except:
@@ -124,14 +124,15 @@ def getInteractions(protein, rna, prefix):
         for item in neighbors:
             pchname = item.get_parent().id
             presid = item.get_id()
+            picode  = "" #item.get_id()[2] for now
             presname = item.get_resname()
             #print(secondary_structure_dict)
             #exit()
             try:
-                ss = secondary_structure_dict[pchname + ":" + str(presid[1])]
+                ss = secondary_structure_dict[pchname + ":" + str(presid[1]) + ":" + picode]
             except:
                 ss = 'X' #pymol couldn't return
-            result.append("{}:{}:{}:{}".format(pchname, presname, presid[1], ss)) #'A:LEU:269:H'
+            result.append("{}:{}:{}:{}".format(pchname, presname, presid[1], ss)) #'A:LEU:269:H' #REMOVED ss from this id
         
         interactions["{}:{}:{}:{}:{}".format(chname, resname, resid[1], resid[2].replace(" ",""), int_type)] = result
     return interactions, secondary_structure_dict

@@ -30,7 +30,6 @@ def getChainsAndPca(structure, interaction_edges):
     for edge in interaction_edges:
         split_edge = edge[1].split(":") #('C:C:973', 'A:LEU:278:H')
         aa_set.add("{}:{}:{}".format(split_edge[0], split_edge[2], '')) ##ASSUME NO ICODE FOR PROTEIN
-
     for model in structure: # assume one model since bio assembly
         for chain in model:
             chain_dict = {} # wrapper holding resiudes and ID
@@ -52,8 +51,6 @@ def getChainsAndPca(structure, interaction_edges):
                 residue_dict["icode"] = residue.get_id()[2].replace(" ","")
                 
                 rnaprodbid = "{}:{}:{}".format(residue_dict["chain"], residue_dict['pos'], residue_dict["icode"])
-
-
                 if not residue_dict["is_aa"]:
                 # if rnaprodbid in aa_set:
                     # Code below is to calculate centroid for use in PCA
@@ -64,7 +61,7 @@ def getChainsAndPca(structure, interaction_edges):
                     rna_centroids.append(centroid)
                     all_centroids.append(centroid)
                     centroids_3d[rnaprodbid] = centroid
-                elif rnaprodbid in aa_set:
+                if rnaprodbid in aa_set:
                     atoms = [atom.get_vector() for atom in residue]
                     atom_coords = np.array([list(atom) for atom in atoms])
                     # Compute the mean (x,y,z) - the centroid of the residue
@@ -72,15 +69,13 @@ def getChainsAndPca(structure, interaction_edges):
                     all_centroids.append(centroid)
                     centroids_3d[rnaprodbid] = centroid
                 else:
-                    #print(residue_dict)
                     pass
                 
                 residue_list.append(residue_dict)
-
+            
             chain_dict["chainId"] = chain_name
             chain_dict["residues"] = residue_list
             chains_list.append(chain_dict)
-
     rna_centroids_array = np.array(rna_centroids)
     all_centroids_array = np.array(all_centroids)
     # Perform PCA to reduce to 2D

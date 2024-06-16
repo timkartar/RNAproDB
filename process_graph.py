@@ -129,6 +129,8 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
         #global ids for each
         edge_properties[edge]['source_id'] = "{}:{}:{}".format(first_node[3], first_node[2], first_node[4]) # chain:#
         edge_properties[edge]['target_id'] = "{}:{}:{}".format(sec_node[3], sec_node[2], sec_node[4]) # chain:#
+        edge_properties[edge]['source_type'] = first_node[0]
+        edge_properties[edge]['target_type'] = sec_node[0]
 
         # IF BOTH OF THEM ARE IN THE centroids_3d, compute distance. Otherwise, set it to null. Then, check whether they have a distance later
         if edge_properties[edge]['source_id'] in centroids_3d and edge_properties[edge]['target_id'] in centroids_3d:

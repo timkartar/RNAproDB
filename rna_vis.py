@@ -19,7 +19,7 @@ from get_rnascape import addRNAscapeToGraph
 from get_viennarna import addViennaToGraph
 from get_num_nucleotides import count_nucleotides_slow, count_nucleotides_fast
 from get_lw import getLW
-from get_whbonds import runHBplus
+from get_whbonds import getWHbonds #runHBplus
 
 parser = MMCIFParser(QUIET=True)
 home =  os.path.dirname(os.path.abspath(__file__))
@@ -40,8 +40,6 @@ TOO_LARGE = False
 
 structure = parser.get_structure(prefix, os.path.join(pdb_path, pdb_file))
 protein, rna = splitEntities(structure) # split RNA and protein from structure
-water_hbonds = runHBplus(pdb_path, "{}-assembly1".format(prefix), structure)
-
 #print(water_hbonds)
 #exit()
 
@@ -55,7 +53,6 @@ ss = getSS(prefix, data)
 
 
 protein_interactions,ss_dict = getInteractions(protein, rna, prefix)
-#print(protein_interactions)
 #for item in protein_interactions:
 #    #if "HIS" in protein_interactions[item]:
 #    print(item, protein_interactions[item])
@@ -70,15 +67,20 @@ pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(da
 #update: added functions to extract all H-bond interactions from dssr and to add H-bond labels to interaction_types object
 hbond_set = hbondExtractor(data)
 interaction_types  = labelHbondEdges(interaction_types, hbond_set)
+water_hbonds, interaction_types, whbond_data = getWHbonds(pdb_path, "{}-assembly1".format(prefix), structure, ss_dict,
+        interaction_types)
 
-all_edges = pairs + backbone_edges + interaction_edges + stacks
+#print(water_hbonds)
+all_edges = pairs + backbone_edges + interaction_edges + stacks + water_hbonds
 
-#for edge in stacks:
+#print(len(all_edges), len(list(set(all_edges)))) not same ??
+#exit()
+#for edge in all_edges:
 #    print(edge)
 #exit()
 d3 = d3graph(support=None, collision=0.5)
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
-df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) + [20]*(len(stacks))
+df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) +[20]*(len(stacks)) + [20]*len(water_hbonds)
 adjmat = vec2adjmat(df['source'], df['target'], weight=df['weight'])
 
 #for item in all_edges:
@@ -92,7 +94,8 @@ d3.graph(adjmat)
 
 d3.set_edge_properties(directed=True) # setting earlier to then update?
 
-chains_list, centroid_rnaprodb_map, rotationMatrix, centroids_3d = getChainsAndPca(structure, interaction_edges)
+chains_list, centroid_rnaprodb_map, rotationMatrix, centroids_3d = getChainsAndPca(structure,
+        interaction_edges + water_hbonds) # include only water mediated AAs in PCA
 
 
 
@@ -165,6 +168,8 @@ for node in d3.node_properties:
 for edge in d3.edge_properties:
     print(edge, d3.edge_properties[edge])
 '''
+
+###################################################
 #
 # d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 # click={'fill': None, 'stroke': '#F0F0F0', 'size': 2.5, 'stroke-width': 10} # add inside d3 show to highlight click
@@ -176,7 +181,7 @@ final_json_object["ss"] = ss_json
 final_json_object["chainsList"] = chains_list
 final_json_object["rotationMatrix"] = rotationMatrix.tolist() # used to orient NGLViewer camera to the PCA
 final_json_object["tooLarge"] = TOO_LARGE
-
+final_json_object["whbond_data"] = whbond_data
 # extract LW annotations
 lw_values = getLW(data)
 
