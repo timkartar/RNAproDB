@@ -32,6 +32,7 @@ def processNodes(node_properties):
             #print(name, type(name))
         except:
             pass
+        oldname = name
         #print(name,  parsed_node[0])
         if parsed_node[0] == 'x':
             del node_properties[node]
@@ -67,25 +68,30 @@ def processNodes(node_properties):
 
         if(parsed_node[0] == 'n'): # is a nucleotide
             try:
-                node_properties[node]['color']= nt_colors[name] #use nt color scheme
+                if oldname == name:
+                    node_properties[node]['color']= nt_colors[oldname] #use nt color scheme
+                else:
+                    node_properties[node]['color']= "#ffffff"
             except:
-                try:
-                    node_properties[node]['color']= nt_colors[chem_components[name]]
-                except:
-                    node_properties[node]['color']="#ffffff"
+                #try:
+                #    node_properties[node]['color']= nt_colors[chem_components[name]]
+                #except:
+                node_properties[node]['color']="#ffffff"
             
             name = "{}".format(name)
             if name in nt_colors.keys(): ## WEIRD FIX BUT OK FOR NOW
-                tooltip = 'Nucleotide: ' + name +"\nPosition: {}{}".format(pos, icode) + "\nChain: " + parsed_node[3]
-            elif name in chem_components.keys():
-                tooltip = 'Nucleotide: ' + "{}".format(chem_components[name]) +"\nPosition: {}{}".format(pos, icode) + "\nChain: " + parsed_node[3]
+                tooltip = 'Nucleotide: ' + oldname +"\nPosition: {}{}".format(pos, icode) + "\nChain: " + parsed_node[3]
+            #elif name in chem_components.keys():
+            #    tooltip = 'Nucleotide: ' + "{}".format(chem_components[name]) +"\nPosition: {}{}".format(pos, icode) + "\nChain: " + parsed_node[3]
 
             #tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
             node_properties[node]['shape'] = 'circle' #is detected in  d3graphscript.js
-            if name in nt_colors.keys():
+            if oldname in nt_colors.keys():
                 node_properties[node]['label']= name # empty label, use tooltip instead
-            elif name in chem_components.keys():
-                node_properties[node]['label']= chem_components[name] # empty label, use tooltip instead
+            elif oldname in chem_components.keys():
+                node_properties[node]['label']= name.lower() # empty label, use tooltip instead
+            else:
+                node_properties[node]['label']= 'x'
             node_properties[node]['fontsize']= 25
 
         else: # is protein residue

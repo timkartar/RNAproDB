@@ -2,6 +2,11 @@ from Bio.PDB import is_aa
 import numpy as np
 import os
 chem_components = dict(np.load(os.path.dirname(os.path.abspath(__file__)) + "/modified_parents.npz",allow_pickle=True))
+chem_components["AMP"] = "A"
+chem_components["CMP"] = "C"
+chem_components["GMP"] = "G"
+chem_components["TMP"] = "T"
+chem_components["UMP"] = "U"
 d3to1 = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
         'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
         'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
