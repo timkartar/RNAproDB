@@ -62,6 +62,7 @@ def processNodes(node_properties):
         node_properties[node]['opacity']= 1
         node_properties[node]['edge_size']= 1 # original 5
         node_properties[node]['fontcolor']= 'black'
+        node_properties[node]['icode']= icode
 
         #ID of chain:number:icode
         node_properties[node]['rnaprodb_id'] = "{}:{}:{}".format(chain, pos, icode)
@@ -106,6 +107,7 @@ def processNodes(node_properties):
             node_properties[node]['color']= '#c6c6c6' #use gray by default
             node_properties[node]['label']= one_letter_code
             node_properties[node]['shape'] = 'rect' # detect in the JS
+            node_properties[node]['icode']= icode
             if(ss == "H"): #Helix
                 node_properties[node]['color']= 'white'
             elif(ss == "S"): #sheet
