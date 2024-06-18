@@ -20,6 +20,7 @@ def run_script(request):
         pdbid = request.GET.get('pdbid')
         subgraph_nodes = request.GET.get('subgraph')
         algorithm = request.GET.get('algorithm')
+        isFirst = request.GET.get('isFirst', 'false').lower() == 'true'  # Correctly handle the 'isFirst' flag as boolean
 
         if not pdbid:
             return JsonResponse({"message": "Missing pdbid parameter."}, status=400)
@@ -70,34 +71,35 @@ def run_script(request):
             if result.returncode != 0:
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
-            RUN_RNAVIS_FLAG = True
+            RUN_RNAVIS_FLAG = True 
             if(RUN_RNAVIS_FLAG):
-                script_path = "./rna_vis.py"
-                result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
-                
-                # You can capture the stdout or stderr for further use if needed
-                output = result.stdout
-                errors = result.stderr
+                if isFirst:
+                    script_path = "./rna_vis.py"
+                    result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
+                    
+                    # You can capture the stdout or stderr for further use if needed
+                    output = result.stdout
+                    errors = result.stderr
 
-                # Split the output by line breaks
-                lines = output.strip().split('\n')
+                    # Split the output by line breaks
+                    lines = output.strip().split('\n')
 
-                # Find the JSON line (starting from the end)
-                for line in lines:
-                    if line.startswith("'\"{"):
-                        break
-                json_output = line
+                    # Find the JSON line (starting from the end)
+                    for line in lines:
+                        if line.startswith("'\"{"):
+                            break
+                    json_output = line
 
-                if not json_output:
-                    return JsonResponse({"message": "Error: No valid JSON found in the script's output."})
-                
-                try:
-                    json_output = json.loads(json_output)
-                except json.JSONDecodeError:
-                    return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
-                
-                if result.returncode != 0:
-                    return JsonResponse({"message": "Error running script.", "error": errors})
+                    if not json_output:
+                        return JsonResponse({"message": "Error: No valid JSON found in the script's output."})
+                    
+                    try:
+                        json_output = json.loads(json_output)
+                    except json.JSONDecodeError:
+                        return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
+                    
+                    if result.returncode != 0:
+                        return JsonResponse({"message": "Error running script.", "error": errors})
                 algorithm_script_path = "./get_algorithm.py"
                 result = subprocess.run(["python", algorithm_script_path, pdbid, algorithm], capture_output=True, text=True)
                 # Check if the first script ran successfully
