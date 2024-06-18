@@ -5,6 +5,7 @@ from .models import RNA
 from django.http import JsonResponse
 import subprocess
 import json
+import os
 from pypdb import get_info
 # Create your views here.
 
@@ -18,13 +19,29 @@ def run_script(request):
         # Define the path to your script
         pdbid = request.GET.get('pdbid')
         subgraph_nodes = request.GET.get('subgraph')
+        algorithm = request.GET.get('algorithm')
 
         if not pdbid:
             return JsonResponse({"message": "Missing pdbid parameter."}, status=400)
 
         result = None
         json_output = None
+        output_dir = "./output"
+
         if subgraph_nodes:
+            algorithm_script_path = "./get_algorithm.py"
+            result = subprocess.run(["python", algorithm_script_path, pdbid, algorithm], capture_output=True, text=True)
+            # Check if the first script ran successfully
+            if result.returncode == 0:
+                # Save the output from the first script
+                output_file_path = os.path.join(output_dir, "{}_algorithm_graph.json".format(pdbid))
+                with open(output_file_path, 'w') as file:
+                    file.write(result.stdout)
+            else:
+                # Handle errors from the first script
+                error_msg = f"Error running algorithm script: {result.stderr}"
+                return {"message": "Error running script", "error": error_msg}
+
             script_path = "./get_subgraph.py"
             result = subprocess.run(["python", script_path, pdbid, subgraph_nodes], capture_output=True, text=True)
 
@@ -81,10 +98,35 @@ def run_script(request):
                 
                 if result.returncode != 0:
                     return JsonResponse({"message": "Error running script.", "error": errors})
+                algorithm_script_path = "./get_algorithm.py"
+                result = subprocess.run(["python", algorithm_script_path, pdbid, algorithm], capture_output=True, text=True)
+                # Check if the first script ran successfully
+                if result.returncode == 0:
+                    # Save the output from the first script
+                    output_file_path = os.path.join(output_dir, "{}_algorithm_graph.json".format(pdbid))
+                    with open(output_file_path, 'w') as file:
+                        file.write(result.stdout)
+                else:
+                    # Handle errors from the first script
+                    error_msg = f"Error running algorithm script: {result.stderr}"
+                    return {"message": "Error running script", "error": error_msg}
+                with open("./output/{}_algorithm_graph.json".format(pdbid), 'r') as json_file:
+                    json_output = json.load(json_file)  
             else:
-                with open("./output/{}_graph.json".format(pdbid), 'r') as json_file:
-                    json_output = json.load(json_file)
-
+                algorithm_script_path = "./get_algorithm.py"
+                result = subprocess.run(["python", algorithm_script_path, pdbid, algorithm], capture_output=True, text=True)
+                # Check if the first script ran successfully
+                if result.returncode == 0:
+                    # Save the output from the first script
+                    output_file_path = os.path.join(output_dir, "{}_algorithm_graph.json".format(pdbid))
+                    with open(output_file_path, 'w') as file:
+                        file.write(result.stdout)
+                else:
+                    # Handle errors from the first script
+                    error_msg = f"Error running algorithm script: {result.stderr}"
+                    return {"message": "Error running script", "error": error_msg}
+                with open("./output/{}_algorithm_graph.json".format(pdbid), 'r') as json_file:
+                    json_output = json.load(json_file)       
         # Use PyPDB to get title
         pdb_info = get_info(pdbid)
 
