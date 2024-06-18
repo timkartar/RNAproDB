@@ -26,7 +26,15 @@ home =  os.path.dirname(os.path.abspath(__file__))
 backend =  os.path.dirname(os.path.abspath(__file__))
 frontend = backend + "/../rnaprodb_frontend/"
 
-pdb_path = frontend + "public/cifs/".format(home)
+pdb_path = frontend + "public/cifs/"
+
+if not os.path.exists(pdb_path + "{}-assembly1.cif".format(sys.argv[1])):
+    import subprocess, shutil
+    subprocess.run(["wget", "https://files.rcsb.org/download/{}-assembly1.cif.gz".format(sys.argv[1])])
+    subprocess.run(["gunzip","{}-assembly1.cif.gz".format(sys.argv[1])])
+    shutil.move("{}-assembly1.cif".format(sys.argv[1]), pdb_path + "{}-assembly1.cif".format(sys.argv[1]))
+    os.chmod(pdb_path + "{}-assembly1.cif".format(sys.argv[1]), 777)
+    #https://files.rcsb.org/download/4Z92-assembly1.cif.gz
 # pdb_file = "8fvi-assembly1.cif"
 
 if len(sys.argv) > 1:
@@ -46,8 +54,7 @@ protein, rna = splitEntities(structure) # split RNA and protein from structure
 data = runDSSR(structure, quiet=True, prefix=prefix, tmpdir="")
 #for residue in structure.get_residues():
 #    print(residue.get_id())
-ss = getSS(prefix, data)
-
+#ss = getSS(prefix, data)
 #with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
 #   data = json.load(FH, object_pairs_hook=collections.OrderedDict) 
 
@@ -66,7 +73,8 @@ pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(da
 
 #update: added functions to extract all H-bond interactions from dssr and to add H-bond labels to interaction_types object
 hbond_set = hbondExtractor(data)
-interaction_types  = labelHbondEdges(interaction_types, hbond_set)
+interaction_types  = labelHbondEdges(interaction_types, hbond_set, ss_dict)
+
 water_hbonds, interaction_types, whbond_data = getWHbonds(pdb_path, "{}-assembly1".format(prefix), structure, ss_dict,
         interaction_types)
 
@@ -109,7 +117,6 @@ if(ADD_PCA):
     d3.node_properties = addPcaToGraph(d3.node_properties, centroid_rnaprodb_map, centroids_3d)
 d3.edge_properties = processEdges(d3.edge_properties, backbone_edges, stacks, pairs, interaction_types, centroids_3d)
 
-
 edges = list(d3.edge_properties.keys())
 for edge in edges:
     if edge[0] not in d3.node_properties.keys() or edge[1] not in d3.node_properties.keys() :
@@ -140,7 +147,7 @@ d3.node_properties = addViennaToGraph(d3.node_properties, d3.edge_properties, da
 #coord_type = "viennarna" ## DUMMY REPLACE FOR TESTING / COMMENT OUT AND MAKE OPTION IN FRONTEND
 #if coord_type == "pca":
 for node in d3.node_properties:
-    print(node, d3.node_properties[node])
+    #print(node, d3.node_properties[node])
     if 'x' not in d3.node_properties[node].keys():
         continue
     d3.node_properties[node]['pca_x'] = d3.node_properties[node]['x']
@@ -176,8 +183,10 @@ for edge in d3.edge_properties:
 final_json = d3.show(filepath='{}/output/{}.html'.format(home, pdb_file), show_slider=False, showfig=False)
 # print(final_json)
 final_json_object = json.loads(final_json)
-ss_json = processSS(ss)
-final_json_object["ss"] = ss_json
+
+#ss_json = processSS(ss)
+#final_json_object["ss"] = ss_json
+
 final_json_object["chainsList"] = chains_list
 final_json_object["rotationMatrix"] = rotationMatrix.tolist() # used to orient NGLViewer camera to the PCA
 final_json_object["tooLarge"] = TOO_LARGE

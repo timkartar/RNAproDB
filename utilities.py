@@ -2,6 +2,11 @@ from Bio.PDB import is_aa
 import numpy as np
 import os
 chem_components = dict(np.load(os.path.dirname(os.path.abspath(__file__)) + "/modified_parents.npz",allow_pickle=True))
+chem_components["AMP"] = "A"
+chem_components["CMP"] = "C"
+chem_components["GMP"] = "G"
+chem_components["TMP"] = "T"
+chem_components["UMP"] = "U"
 d3to1 = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
         'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
         'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
@@ -23,9 +28,9 @@ Input: ('p'/'nt', name, position, chain, ss (protein only))
 Returns text string from node tuple representation
 """
 def node_to_text(node):
-    if len(node) == 5: # IS A PROTEIN
-        return node[3] + ":" + node[1] + ":" + node[2] + ":" + node[4]
-    return node[3] + ":" + node[1] + ":" + node[2] # is a NT
+    if len(node) == 6: # IS A PROTEIN
+        return node[3] + ":" + node[1] + ":" + node[2] + ":" + node[5]
+    return node[3] + ":" + node[1] + ":" + node[2] + ":" + node[4]# is a NT
 
 """
 Returns rnaprodb nucleotide text string (A:B:C) from dssr id (1..C.C.955.) representation

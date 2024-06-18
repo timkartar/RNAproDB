@@ -1,0 +1,93 @@
+{
+  "query": {
+    "type": "group",
+    "logical_operator": "and",
+    "nodes": [
+      {
+        "type": "terminal",
+        "service": "text",
+        "parameters": {
+          "attribute": "rcsb_accession_info.initial_release_date",
+          "operator": "greater",
+          "negation": false,
+          "value": "${release_date}"
+        }
+      },
+      {
+        "type": "terminal",
+        "service": "text",
+        "parameters": {
+          "attribute": "rcsb_assembly_info.polymer_monomer_count",
+          "operator": "less",
+          "negation": false,
+          "value": 10000
+        }
+      },
+     {
+        "type": "terminal",
+        "service": "text",
+        "parameters": {
+          "attribute": "rcsb_entry_info.molecular_weight",
+          "operator": "less",
+          "negation": false,
+          "value": 800
+        }
+      },
+
+      { 
+            "type": "terminal",
+            "service": "text",
+            "parameters": {
+              "attribute": "entity_poly.rcsb_entity_polymer_type",
+              "operator": "exact_match",
+              "negation": true,
+              "value": "Protein"
+            }
+          },
+      {
+        "type": "group",
+        "nodes": [
+          {
+            "type": "terminal",
+            "service": "text",
+            "parameters": {
+              "attribute": "entity_poly.rcsb_entity_polymer_type",
+              "operator": "exact_match",
+              "negation": false,
+              "value": "DNA"
+            }
+          },
+          {
+            "type": "terminal",
+            "service": "text",
+            "parameters": {
+              "attribute": "entity_poly.rcsb_entity_polymer_type",
+              "operator": "exact_match",
+              "negation": false,
+              "value": "RNA"
+            }
+          },
+          {
+            "type": "terminal",
+            "service": "text",
+            "parameters": {
+              "attribute": "entity_poly.rcsb_entity_polymer_type",
+              "operator": "exact_match",
+              "negation": false,
+              "value": "NA-hybrid"
+            }
+          }
+        ],
+        "logical_operator": "or"
+      }
+    ],
+    "label": "text"
+  },
+  "return_type": "entry",
+  "request_options": {
+    "return_all_hits": true,
+    "results_content_type": [
+      "experimental"
+    ]
+  }
+}

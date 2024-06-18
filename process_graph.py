@@ -32,6 +32,7 @@ def processNodes(node_properties):
             #print(name, type(name))
         except:
             pass
+        oldname = name
         #print(name,  parsed_node[0])
         if parsed_node[0] == 'x':
             del node_properties[node]
@@ -61,31 +62,37 @@ def processNodes(node_properties):
         node_properties[node]['opacity']= 1
         node_properties[node]['edge_size']= 1 # original 5
         node_properties[node]['fontcolor']= 'black'
+        node_properties[node]['icode']= icode
 
         #ID of chain:number:icode
         node_properties[node]['rnaprodb_id'] = "{}:{}:{}".format(chain, pos, icode)
 
         if(parsed_node[0] == 'n'): # is a nucleotide
             try:
-                node_properties[node]['color']= nt_colors[name] #use nt color scheme
+                if oldname == name:
+                    node_properties[node]['color']= nt_colors[oldname] #use nt color scheme
+                else:
+                    node_properties[node]['color']= "#ffffff"
             except:
-                try:
-                    node_properties[node]['color']= nt_colors[chem_components[name]]
-                except:
-                    node_properties[node]['color']="#ffffff"
+                #try:
+                #    node_properties[node]['color']= nt_colors[chem_components[name]]
+                #except:
+                node_properties[node]['color']="#ffffff"
             
             name = "{}".format(name)
             if name in nt_colors.keys(): ## WEIRD FIX BUT OK FOR NOW
-                tooltip = 'Nucleotide: ' + name +"\nPosition: {}{}".format(pos, icode) + "\nChain: " + parsed_node[3]
-            elif name in chem_components.keys():
-                tooltip = 'Nucleotide: ' + "{}".format(chem_components[name]) +"\nPosition: {}{}".format(pos, icode) + "\nChain: " + parsed_node[3]
+                tooltip = 'Nucleotide: ' + oldname +"\nPosition: {}{}".format(pos, icode) + "\nChain: " + parsed_node[3]
+            #elif name in chem_components.keys():
+            #    tooltip = 'Nucleotide: ' + "{}".format(chem_components[name]) +"\nPosition: {}{}".format(pos, icode) + "\nChain: " + parsed_node[3]
 
             #tooltip = 'Nucleotide: ' + name +"\nPosition: " + pos + "\nChain: " + parsed_node[3]
             node_properties[node]['shape'] = 'circle' #is detected in  d3graphscript.js
-            if name in nt_colors.keys():
+            if oldname in nt_colors.keys():
                 node_properties[node]['label']= name # empty label, use tooltip instead
-            elif name in chem_components.keys():
-                node_properties[node]['label']= chem_components[name] # empty label, use tooltip instead
+            elif oldname in chem_components.keys():
+                node_properties[node]['label']= name.lower() # empty label, use tooltip instead
+            else:
+                node_properties[node]['label']= 'x'
             node_properties[node]['fontsize']= 25
 
         else: # is protein residue
@@ -100,6 +107,7 @@ def processNodes(node_properties):
             node_properties[node]['color']= '#c6c6c6' #use gray by default
             node_properties[node]['label']= one_letter_code
             node_properties[node]['shape'] = 'rect' # detect in the JS
+            node_properties[node]['icode']= icode
             if(ss == "H"): #Helix
                 node_properties[node]['color']= 'white'
             elif(ss == "S"): #sheet
@@ -154,7 +162,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
         if edge_tuple in backbone_edges: #is a backbone edge. NOTE change to iterate through backbone edges instead!
             edge_properties[edge]['marker_start'] = ''
             # edge_properties[edge]['marker_end'] = 'arrow' # already set in set edge properties
-            edge_properties[edge]['color'] = '#605f5f'#'#605f5f' # works!
+            edge_properties[edge]['color'] = '#000000'#'#605f5f'#'#605f5f' # works!
             # edge_properties[edge]['label_color'] = 'red'
             # edge_properties[edge]['label_fontsize'] = 8
             # edge_properties[edge]['marker_color'] = 'red' # BROKEN!
