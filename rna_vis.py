@@ -55,7 +55,6 @@ data = runDSSR(structure, quiet=True, prefix=prefix, tmpdir="")
 #for residue in structure.get_residues():
 #    print(residue.get_id())
 ss = getSS(prefix, data)
-
 #with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
 #   data = json.load(FH, object_pairs_hook=collections.OrderedDict) 
 

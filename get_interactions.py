@@ -36,10 +36,12 @@ def getProteinSecStructure(protein, prefix):
             chid = key[0]
             resnum = str(key[1][1])
             icode = "" #key[1][2].replace(" ","") FOR NOW
-            residue_seq_to_ss[":".join([chid, resnum, icode])] = dssp_dict[key][1]
+            residue_seq_to_ss[":".join([chain_map[chid], resnum, icode])] = dssp_dict[key][1]
+        os.remove('{}-protein.pdb'.format(prefix))
         return residue_seq_to_ss
         #exit()
     except:
+        os.remove('{}-protein.pdb'.format(prefix))
         return {}
         
     '''
