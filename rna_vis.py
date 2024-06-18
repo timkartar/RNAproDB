@@ -13,7 +13,7 @@ from process_graph import processEdges, processNodes
 import json
 from hbond_extractor import hbondExtractor, labelHbondEdges
 import sys
-from get_ss import getSS, processSS
+from get_ss import getSS, processSS, dssrSS
 from get_pca import getChainsAndPca, addPcaToGraph
 from get_rnascape import addRNAscapeToGraph
 from get_viennarna import addViennaToGraph
@@ -52,6 +52,7 @@ protein, rna = splitEntities(structure) # split RNA and protein from structure
 #exit()
 
 data = runDSSR(structure, quiet=True, prefix=prefix, tmpdir="")
+dssrss = dssrSS(data)
 #for residue in structure.get_residues():
 #    print(residue.get_id())
 #ss = getSS(prefix, data)
@@ -236,8 +237,17 @@ for edge in final_json_object["links"]:
    del edge['edge_distance']
    del edge['edge_weight']
 
+
+from make_ss_graph import makeSSgraph
+ret = makeSSgraph(final_json_object, dssrss)
+
 final_json_object = json.dumps(final_json_object)
 print(final_json_object)
 
 with open('{}/output/{}_graph.json'.format(home, prefix), 'w') as outfile:
     outfile.write(final_json_object)
+
+with open('{}/output/{}_SSgraph.json'.format(home, prefix), 'w') as outfile:
+    json.dump(ret, outfile)
+
+
