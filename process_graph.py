@@ -162,7 +162,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
         if edge_tuple in backbone_edges: #is a backbone edge. NOTE change to iterate through backbone edges instead!
             edge_properties[edge]['marker_start'] = ''
             # edge_properties[edge]['marker_end'] = 'arrow' # already set in set edge properties
-            edge_properties[edge]['color'] = '#605f5f'#'#605f5f' # works!
+            edge_properties[edge]['color'] = '#000000'#'#605f5f'#'#605f5f' # works!
             # edge_properties[edge]['label_color'] = 'red'
             # edge_properties[edge]['label_fontsize'] = 8
             # edge_properties[edge]['marker_color'] = 'red' # BROKEN!

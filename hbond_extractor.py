@@ -10,7 +10,10 @@ def hbondExtractor(data) -> list:
             all_pair_info.add(pair_info_rev)
     return all_pair_info
 
-def labelHbondEdges(interaction_types_object: dict, hbonds_set: set) -> dict:
+def labelHbondEdges(interaction_types_object, hbonds_set, ss_dict) -> dict:
+    for hbond in hbonds_set:
+        spl1 = hbond[0].split(".")
+        spl2 = hbond[1].split(".")
     for pair, interactions in interaction_types_object.items():
         refined_pair = []
         for residue in pair:
