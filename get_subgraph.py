@@ -23,7 +23,7 @@ def create_node_index_mapping(nodes):
 def readJSON(pdbid):
     # with open('{}/output/{}_graph.json'.format(home, pdbid), 'r') as infile:
     #     data_string = infile.read()
-    with open("{}/output/{}_graph.json".format(home,pdbid), 'r') as infile:
+    with open("{}/output/{}_algorithm_graph.json".format(home,pdbid), 'r') as infile:
         json_output = json.load(infile)
         return json_output
 
