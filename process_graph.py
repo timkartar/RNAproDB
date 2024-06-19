@@ -1,3 +1,4 @@
+import json
 from utilities import node_to_text, parse_node, d3to1
 import numpy as np
 from split_entities import chem_components
@@ -25,6 +26,7 @@ def parse_edge(node_id):
 def processNodes(node_properties):
     node_keys = list(node_properties.keys())
     for node in node_keys:
+        tooltip_table = {}
         parsed_node = parse_node(node)  # ('p'/'n', name, position, chain, ss(protein only))
         icode = '' 
         try:
@@ -117,6 +119,14 @@ def processNodes(node_properties):
             
             tooltip = 'Residue: ' + name +"\nPosition: " + pos + "\nChain: " + chain + "\nSec. Structure: " + ss
         node_properties[node]['tooltip']= tooltip
+
+        # Set tooltip table
+        tooltip_table["Chain"] = chain
+        tooltip_table["Sec. Structure"] = ss
+        tooltip_table["Position"] = pos
+        tooltip_table["Letter Code"] = one_letter_code
+        tooltip_table["icode"] = icode        
+        node_properties[node]['tooltip_table']= json.dumps(tooltip_table)
     return node_properties
 
 def check_wc_pairing(edge_tuple):
@@ -130,6 +140,7 @@ def check_wc_pairing(edge_tuple):
 def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_types, centroids_3d):
     edges = list(edge_properties.keys())
     for edge in edges:
+        tooltip_table = {}
         first_node,sec_node = parse_edge(edge)
         if first_node[0] == 'x' or sec_node[0] == 'x': #IGNORE NON STANDARD NON NUCLEOTIDES
             del edge_properties[edge]
@@ -206,5 +217,15 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
                 edge_properties[edge]['color'] = 'black' #for now
             if "hbond" in types:
                 edge_properties[edge]['my_type'] = 'protein_rna_hbond'
-
+            # if "whbond" in types:
+            #     edge_properties[edge]['my_type'] = 'protein_rna_hbond'
+        if first_node[0] is None:
+            tooltip_table["Source Type"] = ""
+        else:
+            tooltip_table["Source Type"] = first_node[0]
+        if sec_node[0] is None:
+            tooltip_table["Target Type"] = ""
+        else:
+            tooltip_table["Target Type"] = sec_node[0]
+        edge_properties[edge]['tooltip_table'] = json.dumps(tooltip_table)
     return edge_properties
