@@ -217,8 +217,14 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
                 edge_properties[edge]['color'] = 'black' #for now
             if "hbond" in types:
                 edge_properties[edge]['my_type'] = 'protein_rna_hbond'
-            # if "whbond" in types:
-            #     edge_properties[edge]['my_type'] = 'protein_rna_hbond'
+            
+            # Water-mediated H bond logic, plan to refactor for multiple types and showing most important edges
+            if "whbond" in types:
+                edge_properties[edge]['is_whbond'] = True
+            else:
+                edge_properties[edge]['is_whbond'] = False
+        else:
+            edge_properties[edge]['is_whbond'] = False
         if first_node[0] is None:
             tooltip_table["Source Type"] = ""
         else:
