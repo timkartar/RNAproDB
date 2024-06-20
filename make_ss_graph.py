@@ -29,23 +29,28 @@ def makeSSgraph(json_obj, dssrss):
             json_edges.append((item['source_label'],item['target_label']))
 
     pos_dict = {}
+    id_dict = {}
     for item in json_obj['nodes']:
         pos_dict[item['name']] = [float(item['viennarna_x']),float(item['viennarna_y'])]
-
+        id_dict[item['name']] = item['rnaprodb_id']
  
     ssnodes_list = list(ssnodes.keys())
     for ssnode in ssnodes_list:
         coords = []
+        members = []
         for item in ssnodes[ssnode]:
             try:
                 coords.append(pos_dict[item])
+                members.append(id_dict[item])
             except:
                 continue
         if len(coords) == 0: 
             del ssnodes[ssnode]
+
         else:
             coords = np.mean(coords, axis=0)
-            ret["nodes"].append({"id": ssnode, 'x':str(coords[0]), 'y':str(coords[1])})
+            ret["nodes"].append({"id": ssnode, 'x':str(coords[0]), 'y':str(coords[1]),
+                'members':members})
     
     opposite_nodes = {}
     for key, val in ssnodes.items():
@@ -97,7 +102,7 @@ def makeSSgraph(json_obj, dssrss):
         
     for ssedge in ssedges:
         ret["links"].append({"source": ssedge[0], "target": ssedge[1]})
-
+    
     '''
     for item in json_obj['nodes']:
         name = item['name']
