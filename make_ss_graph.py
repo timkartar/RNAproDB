@@ -110,4 +110,4 @@ def makeSSgraph(json_obj, dssrss):
     '''     
     
     
-    return ret
+    return ret, opposite_nodes

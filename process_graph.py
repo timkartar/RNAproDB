@@ -2,6 +2,8 @@ import json
 from utilities import node_to_text, parse_node, d3to1
 import numpy as np
 from split_entities import chem_components
+import itertools
+
 nt_colors = {'A': '#FF9896',#'#90cc84',
     'C': '#DBDB8D',#'#AEC7E8',
     'G': '#90cc84',#'#DBDB8D',
@@ -26,7 +28,7 @@ def parse_edge(node_id):
 def processNodes(node_properties):
     node_keys = list(node_properties.keys())
     for node in node_keys:
-        tooltip_table = {}
+        #tooltip_table = {}
         parsed_node = parse_node(node)  # ('p'/'n', name, position, chain, ss(protein only))
         icode = '' 
         try:
@@ -120,6 +122,7 @@ def processNodes(node_properties):
             tooltip = 'Residue: ' + name +"\nPosition: " + pos + "\nChain: " + chain + "\nSec. Structure: " + ss
         node_properties[node]['tooltip']= tooltip
 
+        '''
         # Set tooltip table
         tooltip_table["Chain"] = chain
         tooltip_table["Sec. Structure"] = ss
@@ -127,12 +130,17 @@ def processNodes(node_properties):
         tooltip_table["Letter Code"] = one_letter_code
         tooltip_table["icode"] = icode        
         node_properties[node]['tooltip_table']= json.dumps(tooltip_table)
+        '''
     return node_properties
 
 def check_wc_pairing(edge_tuple):
     item1 = edge_tuple[0].split(":")[1]
     item2 = edge_tuple[1].split(":")[1]
-    wc_pairs = ['AU','GC','UA','CG']
+    
+    combs = list(itertools.product(['A','DA'],['T','DT','DU','U'])) + list(itertools.product(['C','DC'],['G','DG']))
+    wc_pairs = ["".join(list(item)) for item in combs] + ["".join(list(item)[::-1]) for item in combs]
+    #exit()
+    #wc_pairs = ['AU','GC','UA','CG']
     if (item1 + item2) in wc_pairs:
         return True
     return False
@@ -140,7 +148,7 @@ def check_wc_pairing(edge_tuple):
 def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_types, centroids_3d):
     edges = list(edge_properties.keys())
     for edge in edges:
-        tooltip_table = {}
+        #tooltip_table = {}
         first_node,sec_node = parse_edge(edge)
         if first_node[0] == 'x' or sec_node[0] == 'x': #IGNORE NON STANDARD NON NUCLEOTIDES
             del edge_properties[edge]
@@ -163,7 +171,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
 
             distance = np.linalg.norm(source_coords - target_coords)
             #print(distance)
-            edge_properties[edge]['distance_3d'] = distance
+            edge_properties[edge]['distance_3d'] = "{:.3f}".format(distance)
         else:
             edge_properties[edge]['distance_3d'] = 9999 ## DISTANCE Nan
 
@@ -225,6 +233,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
                 edge_properties[edge]['is_whbond'] = False
         else:
             edge_properties[edge]['is_whbond'] = False
+        '''
         if first_node[0] is None:
             tooltip_table["Source Type"] = ""
         else:
@@ -234,4 +243,5 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
         else:
             tooltip_table["Target Type"] = sec_node[0]
         edge_properties[edge]['tooltip_table'] = json.dumps(tooltip_table)
+        '''
     return edge_properties

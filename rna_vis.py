@@ -20,6 +20,8 @@ from get_viennarna import addViennaToGraph
 from get_num_nucleotides import count_nucleotides_slow, count_nucleotides_fast
 from get_lw import getLW
 from get_whbonds import getWHbonds #runHBplus
+from make_tooltip import makeTooltip
+from make_ss_graph import makeSSgraph
 
 parser = MMCIFParser(QUIET=True)
 home =  os.path.dirname(os.path.abspath(__file__))
@@ -73,8 +75,6 @@ pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(da
 #exit()
 
 #update: added functions to extract all H-bond interactions from dssr and to add H-bond labels to interaction_types object
-hbond_set = hbondExtractor(data)
-interaction_types  = labelHbondEdges(interaction_types, hbond_set, ss_dict)
 
 water_hbonds, interaction_types, whbond_data = getWHbonds(pdb_path, "{}-assembly1".format(prefix), structure, ss_dict,
         interaction_types)
@@ -82,6 +82,8 @@ water_hbonds, interaction_types, whbond_data = getWHbonds(pdb_path, "{}-assembly
 #print(water_hbonds)
 all_edges = pairs + backbone_edges + interaction_edges + stacks + water_hbonds
 
+hbond_set, hbond_data = hbondExtractor(data)
+interaction_types  = labelHbondEdges(interaction_types, hbond_set, ss_dict)
 #print(len(all_edges), len(list(set(all_edges)))) not same ??
 #exit()
 #for edge in all_edges:
@@ -169,13 +171,16 @@ if coord_type == "viennarna":
         d3.node_properties[node]['x'] = d3.node_properties[node]['viennarna_x']
         d3.node_properties[node]['y'] = d3.node_properties[node]['viennarna_y']
 
-   
+'''   
 for node in d3.node_properties:
-    print(node, d3.node_properties[node])
+    d3.node_properties[node]['tooltip_table'] = {}
 
 for edge in d3.edge_properties:
-    print(edge, d3.edge_properties[edge])
-'''
+    d3.edge_properties[edge]['tooltip_table'] = {}
+
+
+#d3.node_properties, d3.edge_properties = makeTooltip(d3.node_properties, ss_dict, d3.edge_properties,
+#        whbond_data, hbond_set)
 
 ###################################################
 #
@@ -232,14 +237,16 @@ for edge in final_json_object["links"]:
 
 
 for edge in final_json_object["links"]:
-   del edge['weight']
-   del edge['weight_scaled']
-   del edge['edge_distance']
-   del edge['edge_weight']
+    del edge['weight']
+    del edge['weight_scaled']
+    del edge['edge_distance']
+    del edge['edge_weight']
 
 
-from make_ss_graph import makeSSgraph
-ret = makeSSgraph(final_json_object, dssrss)
+
+ret, ntss_dict = makeSSgraph(final_json_object, dssrss)
+
+final_json_object = makeTooltip(final_json_object, ntss_dict, whbond_data, hbond_set, hbond_data)
 
 final_json_object = json.dumps(final_json_object)
 print(final_json_object)
