@@ -58,7 +58,10 @@ def processNodes(node_properties):
         pos = str(parsed_node[2])
         chain = parsed_node[3]
         
+        ss="None" # @Raktim
+        one_letter_code = "None"
 
+        
         # global changes
         node_properties[node]['size'] = 25 # original 20
         node_properties[node]['opacity']= 1

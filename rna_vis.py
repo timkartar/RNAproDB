@@ -241,6 +241,9 @@ for edge in final_json_object["links"]:
 from make_ss_graph import makeSSgraph
 ret = makeSSgraph(final_json_object, dssrss)
 
+final_json_object['ss_nodes'] = ret['nodes']
+final_json_object['ss_links'] = ret['links']
+
 final_json_object = json.dumps(final_json_object)
 print(final_json_object)
 
