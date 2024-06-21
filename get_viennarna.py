@@ -69,7 +69,7 @@ def addViennaToGraph(node_properties, edge_properties, data, prefix, scale = 5):
         c+=1
         edge = edge_properties[edge_id]
         edge['tertiary'] = False
-        if edge['my_type'] in ["pair", "other"]:
+        if edge['my_type'] in ["pair", "none"]:
             if edge['source_type'] == 'n' and edge['target_type'] == 'n':
                 cand = (edge['source_id'], edge['target_id'])
                 if cand not in ss_pairs:
