@@ -1,9 +1,10 @@
 import json
-from utilities import node_to_text, parse_node, d3to1
+from utilities import node_to_text, parse_node, d3to1, nt_colors
 import numpy as np
 from split_entities import chem_components
 import itertools
 
+"""
 nt_colors = {'A': '#FF9896',#'#90cc84',
     'C': '#DBDB8D',#'#AEC7E8',
     'G': '#90cc84',#'#DBDB8D',
@@ -15,6 +16,7 @@ nt_colors = {'A': '#FF9896',#'#90cc84',
     'DT': '#AEC7E8',#'#FF9896',
     'X': '#ffffff' 
 }
+"""
 
 """
 Returns (('p'/'n', name, position, chain),('p'/'n', name, position, chain))

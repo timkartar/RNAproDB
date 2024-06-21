@@ -16,10 +16,10 @@ nt_colors = {'A': '#FF9896',#'#90cc84',
     'G': '#90cc84',#'#DBDB8D',
     'U': '#AEC7E8',#'#FF9896',
     'T': '#AEC7E8',#'#FF9896',
-    'DA': '#FF9896',#'#90cc84',
-    'DC': '#DBDB8D',#'#AEC7E8',
-    'DG': '#90cc84',#'#DBDB8D',
-    'DT': '#AEC7E8',#'#FF9896'
+    'DA': '#FFcbc9',#'#90cc84',
+    'DC': '#ffffbf',#'#AEC7E8',
+    'DG': '#c3ffb7',#'#DBDB8D',
+    'DT': '#dffafb',#'#FF9896'
     'X': '#ffffff'
 }
 
