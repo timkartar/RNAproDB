@@ -1067,6 +1067,7 @@ def edges2G(edge_properties: dict, G: nx.Graph = None) -> nx.Graph:
                     source_id=edge_properties[edge]['source_id'],
                     target_id=edge_properties[edge]['target_id'],
                     #tooltip_table=edge_properties[edge]['tooltip_table'],
+                    tertiary=edge_properties[edge]['tertiary'],
                     is_whbond=edge_properties[edge]['is_whbond']
                    )
     return G

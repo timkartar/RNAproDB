@@ -193,6 +193,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
             edge_properties[edge]['edge_width'] = 6
         elif edge_tuple in stacks:
             edge_properties[edge]['marker_start'] = ''
+            edge_properties[edge]['stack'] = "stack"
             # edge_properties[edge]['my_type'] = 'link'
             # edge_properties[edge]['marker_end'] = 'square'
             edge_properties[edge]['edge_width'] = 2

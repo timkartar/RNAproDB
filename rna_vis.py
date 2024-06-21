@@ -242,8 +242,6 @@ for edge in final_json_object["links"]:
     del edge['edge_distance']
     del edge['edge_weight']
 
-
-
 ret, ntss_dict = makeSSgraph(final_json_object, dssrss)
 
 final_json_object = makeTooltip(final_json_object, ntss_dict, whbond_data, hbond_set, hbond_data)

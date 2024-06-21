@@ -31,7 +31,7 @@ def makeSSgraph(json_obj, dssrss):
     pos_dict = {}
     id_dict = {}
     for item in json_obj['nodes']:
-        pos_dict[item['name']] = [float(item['viennarna_x']),float(item['viennarna_y'])]
+        pos_dict[item['name']] = [float(item['pca_x']),float(item['pca_y'])]
         id_dict[item['name']] = item['rnaprodb_id']
  
     ssnodes_list = list(ssnodes.keys())
@@ -96,8 +96,8 @@ def makeSSgraph(json_obj, dssrss):
                             pass
             if hasEdge:
                 ret['nodes'].append({"id": "protein:" + name,
-                    'x': item['viennarna_x'],
-                    'y': item['viennarna_y']
+                    'x': item['pca_x'],
+                    'y': item['pca_y']
                     })
         
     for ssedge in ssedges:

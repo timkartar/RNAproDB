@@ -114,7 +114,10 @@ def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data):
         table['Chain'] = node['name'].split(":")[0]
         if "Nucleotide" in node['node_tooltip']:
             table['Residue number'] = "".join(node['name'].split(":")[2:])
-            table['Structural motif'] = ntss_dict[node['name']]
+            try:
+                table['Structural motif'] = ntss_dict[node['name']]
+            except:
+                pass
         else:
             table['Residue number'] = node['name'].split(":")[2]
             table['Structural motif'] = node['name'].split(":")[3]
