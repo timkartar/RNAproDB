@@ -59,7 +59,7 @@ def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data):
         table = {}
         table["Node1"] = edge['source_id']
         table["Node2"] = edge['target_id']
-        table["Distance3D"] = edge['distance_3d']
+        table["Centroid distance"] = edge['distance_3d']
         if edge['my_type'] == 'none':
             my_type = "other"
         else:
