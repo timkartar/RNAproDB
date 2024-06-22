@@ -20,10 +20,10 @@ def create_node_index_mapping(nodes):
     return {node: index for index, node in enumerate(nodes)}
 
 
-def readJSON(pdbid):
+def readJSON(pdbid, algorithm):
     # with open('{}/output/{}_graph.json'.format(home, pdbid), 'r') as infile:
     #     data_string = infile.read()
-    with open("{}/output/{}_algorithm_graph.json".format(home,pdbid), 'r') as infile:
+    with open("{}/output/{}_{}_graph.json".format(home,pdbid, algorithm), 'r') as infile:
         json_output = json.load(infile)
         return json_output
 
@@ -47,7 +47,7 @@ def json_to_nx(data):
 
     return G
 
-def get_neighbors_within_distance(G, nodes, distance=2):
+def get_neighbors_within_distance(G, nodes, distance=1):
     nodes_set = set(nodes)
     for _ in range(distance):
         for node in list(nodes_set):
@@ -75,10 +75,11 @@ def update_subgraph_edge_indices(subgraph, node_index_mapping):
 
 
 if __name__ == "__main__":
-    data = readJSON(sys.argv[1]) # assumes pre-computed JSON file, reads in pdbid
+    data = readJSON(sys.argv[1], sys.argv[3]) # assumes pre-computed JSON file, reads in pdbid
     G = json_to_nx(data) # convert json graph to nx
     user_nodes = sys.argv[2].split(",")
     user_nodes = list(filter(None, user_nodes)) #filter empty nodes
+    
 
     subgraph_nodes = get_neighbors_within_distance(G,user_nodes) #list of nodes that should be in subgraph
     subgraph_edges = [(u, v) for u, v in G.edges() if u in subgraph_nodes and v in subgraph_nodes] # get the edges

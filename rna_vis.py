@@ -249,13 +249,40 @@ final_json_object = makeTooltip(final_json_object, ntss_dict, whbond_data, hbond
 final_json_object['ss_nodes'] = ret['nodes']
 final_json_object['ss_links'] = ret['links']
 
-final_json_object = json.dumps(final_json_object)
-print(final_json_object)
+final_json_object_pca = json.dumps(final_json_object)
+print(final_json_object_pca)
 
-with open('{}/output/{}_graph.json'.format(home, prefix), 'w') as outfile:
-    outfile.write(final_json_object)
+# normal PCA
+with open('{}/output/{}_pca_graph.json'.format(home, prefix), 'w') as outfile:
+    outfile.write(final_json_object_pca)
 
+def convert_coordinates(data, algorithm):
+    if algorithm == "PCA" or algorithm == "None":
+        for node in data['nodes']:
+            node['x'] = node['pca_x']
+            node['y'] = node['pca_y']
+    elif algorithm == "RNAScape":
+        for node in data['nodes']:
+            node['x'] = node['rnascape_x']
+            node['y'] = node['rnascape_y']
+    elif algorithm == "SecondaryStructure":
+        for node in data['nodes']:
+            node['x'] = node['viennarna_x']
+            node['y'] = node['viennarna_y']
+    return data
+
+# rnascape
+final_json_object_rnascape = convert_coordinates(final_json_object, "RNAScape")
+final_json_object_rnascape = json.dumps(final_json_object_rnascape)
+with open('{}/output/{}_rnascape_graph.json'.format(home, prefix), 'w') as outfile:
+    outfile.write(final_json_object_rnascape)
+
+# ViennaRNA or sec struct
+final_json_object_viennarna = convert_coordinates(final_json_object, "SecondaryStructure")
+final_json_object_viennarna = json.dumps(final_json_object_viennarna)
+with open('{}/output/{}_viennarna_graph.json'.format(home, prefix), 'w') as outfile:
+    outfile.write(final_json_object_viennarna)
+
+# Coarse grain graph
 with open('{}/output/{}_SSgraph.json'.format(home, prefix), 'w') as outfile:
     json.dump(ret, outfile)
-
-

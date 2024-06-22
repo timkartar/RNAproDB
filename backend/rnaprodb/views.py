@@ -30,21 +30,8 @@ def run_script(request):
         output_dir = "./output"
 
         if subgraph_nodes:
-            algorithm_script_path = "./get_algorithm.py"
-            result = subprocess.run(["python", algorithm_script_path, pdbid, algorithm], capture_output=True, text=True)
-            # Check if the first script ran successfully
-            if result.returncode == 0:
-                # Save the output from the first script
-                output_file_path = os.path.join(output_dir, "{}_algorithm_graph.json".format(pdbid))
-                with open(output_file_path, 'w') as file:
-                    file.write(result.stdout)
-            else:
-                # Handle errors from the first script
-                error_msg = f"Error running algorithm script: {result.stderr}"
-                return {"message": "Error running script", "error": error_msg}
-
             script_path = "./get_subgraph.py"
-            result = subprocess.run(["python", script_path, pdbid, subgraph_nodes], capture_output=True, text=True)
+            result = subprocess.run(["python", script_path, pdbid, subgraph_nodes, algorithm], capture_output=True, text=True)
 
             # You can capture the stdout or stderr for further use if needed
             output = result.stdout
@@ -72,62 +59,40 @@ def run_script(request):
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
             RUN_RNAVIS_FLAG = True 
-            if(RUN_RNAVIS_FLAG):
-                if isFirst:
-                    script_path = "./rna_vis.py"
-                    result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
-                    
-                    # You can capture the stdout or stderr for further use if needed
-                    output = result.stdout
-                    errors = result.stderr
+            if(RUN_RNAVIS_FLAG and algorithm == "pca"):
+                script_path = "./rna_vis.py"
+                result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
+                
+                # You can capture the stdout or stderr for further use if needed
+                output = result.stdout
+                errors = result.stderr
 
-                    # Split the output by line breaks
-                    lines = output.strip().split('\n')
+                # Split the output by line breaks
+                lines = output.strip().split('\n')
 
-                    # Find the JSON line (starting from the end)
-                    for line in lines:
-                        if line.startswith("'\"{"):
-                            break
-                    json_output = line
+                # Find the JSON line (starting from the end)
+                for line in lines:
+                    if line.startswith("'\"{"):
+                        break
+                json_output = line
 
-                    if not json_output:
-                        return JsonResponse({"message": "Error: No valid JSON found in the script's output."})
-                    
-                    try:
-                        json_output = json.loads(json_output)
-                    except json.JSONDecodeError:
-                        return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
-                    
-                    if result.returncode != 0:
-                        return JsonResponse({"message": "Error running script.", "error": errors})
-                algorithm_script_path = "./get_algorithm.py"
-                result = subprocess.run(["python", algorithm_script_path, pdbid, algorithm], capture_output=True, text=True)
-                # Check if the first script ran successfully
-                if result.returncode == 0:
-                    # Save the output from the first script
-                    output_file_path = os.path.join(output_dir, "{}_algorithm_graph.json".format(pdbid))
-                    with open(output_file_path, 'w') as file:
-                        file.write(result.stdout)
-                else:
-                    # Handle errors from the first script
-                    error_msg = f"Error running algorithm script: {result.stderr}"
-                    return {"message": "Error running script", "error": error_msg}
-                with open("./output/{}_algorithm_graph.json".format(pdbid), 'r') as json_file:
+                if not json_output:
+                    return JsonResponse({"message": "Error: No valid JSON found in the script's output."})
+                
+                try:
+                    json_output = json.loads(json_output)
+                except json.JSONDecodeError:
+                    return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
+                
+                if result.returncode != 0:
+                    return JsonResponse({"message": "Error running script.", "error": errors})
+               
+                with open("./output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
                     json_output = json.load(json_file)  
+            
+            # DO NOT RUN RNA_VIS, FILES ALREADY THERE, meant for production
             else:
-                algorithm_script_path = "./get_algorithm.py"
-                result = subprocess.run(["python", algorithm_script_path, pdbid, algorithm], capture_output=True, text=True)
-                # Check if the first script ran successfully
-                if result.returncode == 0:
-                    # Save the output from the first script
-                    output_file_path = os.path.join(output_dir, "{}_algorithm_graph.json".format(pdbid))
-                    with open(output_file_path, 'w') as file:
-                        file.write(result.stdout)
-                else:
-                    # Handle errors from the first script
-                    error_msg = f"Error running algorithm script: {result.stderr}"
-                    return {"message": "Error running script", "error": error_msg}
-                with open("./output/{}_algorithm_graph.json".format(pdbid), 'r') as json_file:
+                with open("./output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
                     json_output = json.load(json_file)       
         # Use PyPDB to get title
         pdb_info = get_info(pdbid)
