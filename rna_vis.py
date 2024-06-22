@@ -33,7 +33,7 @@ pdb_path = frontend + "public/cifs/"
 if not os.path.exists(pdb_path + "{}-assembly1.cif".format(sys.argv[1])):
     import subprocess, shutil
     subprocess.run(["wget", "https://files.rcsb.org/download/{}-assembly1.cif.gz".format(sys.argv[1])])
-    subprocess.run(["gunzip","{}-assembly1.cif.gz".format(sys.argv[1])])
+    subprocess.run(["gunzip","-f", "{}-assembly1.cif.gz".format(sys.argv[1])])
     shutil.move("{}-assembly1.cif".format(sys.argv[1]), pdb_path + "{}-assembly1.cif".format(sys.argv[1]))
     os.chmod(pdb_path + "{}-assembly1.cif".format(sys.argv[1]), 777)
     #https://files.rcsb.org/download/4Z92-assembly1.cif.gz
