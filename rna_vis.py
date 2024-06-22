@@ -137,7 +137,10 @@ for node in nodes:
     if has_edge == False:
         del d3.node_properties[node]
 ##ADD RNAscape and ViennaRNA
-d3.node_properties = addRNAscapeToGraph(d3.node_properties, d3.edge_properties, structure, data, prefix)
+try:
+    d3.node_properties = addRNAscapeToGraph(d3.node_properties, d3.edge_properties, structure, data, prefix)
+except:
+    print("RNAscape failed")
 
 #for item in d3.node_properties:
 #    try:
@@ -145,7 +148,10 @@ d3.node_properties = addRNAscapeToGraph(d3.node_properties, d3.edge_properties, 
 #    except:
 #        print(item)
 #exit()
-d3.node_properties = addViennaToGraph(d3.node_properties, d3.edge_properties, data, prefix)
+try:
+    d3.node_properties = addViennaToGraph(d3.node_properties, d3.edge_properties, data, prefix)
+except:
+    print("ViennaRNA failed")
 
 #coord_type = "viennarna" ## DUMMY REPLACE FOR TESTING / COMMENT OUT AND MAKE OPTION IN FRONTEND
 #if coord_type == "pca":
@@ -262,13 +268,21 @@ def convert_coordinates(data, algorithm):
             node['x'] = node['pca_x']
             node['y'] = node['pca_y']
     elif algorithm == "RNAScape":
-        for node in data['nodes']:
-            node['x'] = node['rnascape_x']
-            node['y'] = node['rnascape_y']
+        try:
+            for node in data['nodes']:
+                node['x'] = node['rnascape_x']
+                node['y'] = node['rnascape_y']
+        except:
+            #print("rnascaspe failed")
+            pass
     elif algorithm == "SecondaryStructure":
-        for node in data['nodes']:
-            node['x'] = node['viennarna_x']
-            node['y'] = node['viennarna_y']
+        try:
+            for node in data['nodes']:
+                node['x'] = node['viennarna_x']
+                node['y'] = node['viennarna_y']
+        except:
+            #print("viennarna failed")
+            pass
     return data
 
 # rnascape
