@@ -220,19 +220,32 @@ for edge in final_json_object["links"]:
             reverse_lw = True
 
         if edge_tuple in processed_edges:
-            # print("Skipping already processed edge:", edge_tuple)
+            print(f"Skipping already processed edge: {edge_tuple}")
             continue
 
         processed_edges.add(edge_tuple)
 
-        if edge_tuple in lw_values:
-            lw_value = lw_values[edge_tuple]
+        # Check both original and reversed keys
+        lw_key_original = (edge["source_id"], edge["target_id"])
+        lw_key_reversed = (edge["target_id"], edge["source_id"])
+
+        print(f"Checking LW keys: {lw_key_original} and {lw_key_reversed}")
+
+        if lw_key_original in lw_values:
+            lw_value = lw_values[lw_key_original]
+            print(f"Found LW value for original key: {lw_value}")
+        elif lw_key_reversed in lw_values:
+            lw_value = lw_values[lw_key_reversed]
             if reverse_lw:
                 lw_value = flip_lw_value(lw_value)
+            print(f"Found LW value for reversed key: {lw_value}")
+        else:
+            lw_value = None
+            print(f"LW key {lw_key_original} or {lw_key_reversed} not found in lw_values")
+
+        if lw_value:
             edge["LW"] = lw_value
-      #       print("ADDING LW FOR:", edge_tuple, "WITH VALUE:", lw_value)
-      #   else:
-      #       print("LW NOT FOUND FOR", edge_tuple, "IN ORIGINAL ORDER")
+            print(f"Processing edge: {edge_tuple}, LW: {lw_value}")
 
 
 
