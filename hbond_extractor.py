@@ -2,6 +2,8 @@
 def hbondExtractor(data) -> list:
     all_pair_info = set()
     hbond_data  = {}
+    if 'hbonds' not in data:
+        return all_pair_info, hbond_data
     for bond in data['hbonds']:
         atom1 = bond["atom1_id"].split("..")[1]
         atom2 = bond["atom2_id"].split("..")[1]

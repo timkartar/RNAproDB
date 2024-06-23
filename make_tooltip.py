@@ -43,8 +43,9 @@ def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data):
             source_name = edge['source_label']
             target_name = edge['target_label']
         except:
-            for item in edge:
-                print(item, edge[item])
+            #for item in edge:
+            #    print(item, edge[item])
+            pass
             #exit()
 
         if source_name not in edge_dict:
@@ -59,7 +60,7 @@ def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data):
         table = {}
         table["Node1"] = edge['source_id']
         table["Node2"] = edge['target_id']
-        table["Distance3D"] = edge['distance_3d']
+        table["Centroid distance"] = edge['distance_3d']
         if edge['my_type'] == 'none':
             my_type = "other"
         else:
@@ -90,7 +91,7 @@ def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data):
             idx = 1
             for item in hbond_data[hbond_cand]:
                 table["Hbond {}".format(idx)] = ""
-                print(item)
+                #print(item)
                 for key, val in item.items():
                     table["\\t{}_{}".format(key, idx)] = str(val)
                 idx+=1
@@ -101,7 +102,7 @@ def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data):
             idx = 1
             for item in whbonds[whbond_cand]:
                 table["Water-mediated Hbond {}".format(idx)] = ""
-                print(item)
+                #print(item)
                 for key, val in item.items():
                     table["\\t{}_{}".format(key, idx)] = str(val)
                 idx+=1

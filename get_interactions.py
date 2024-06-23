@@ -68,14 +68,26 @@ def check_interaction_type(resname, atomname):
     "A": ["N7", "N6"],
     "C": ["N4", "C5"],
     "G": ["N7", "O6"],
-    "U": ["O4", "C5"]
+    "U": ["O4", "C5"],
+    "DU": ["O4", "C5"],
+    "DA": ["N7", "N6"],
+    "DC": ["N4", "C5"],
+    "DG": ["N7", "O6"],
+    "DT": ["O4", "C7"],
+    "T": ["O4", "C7"]
     }
 
     MINOR_GROOVE_ATOMS = {
     "A": ["N3", "C2"],
     "C": ["O2"],
     "G": ["N3", "C2"],
-    "U": ["O2"]
+    "U": ["O2"],
+    "DU": ["O2"],
+     "DA": ["N3", "C2"],
+    "DC": ["O2"],
+    "DG": ["N3", "C2"],
+    "DT": ["O2"],
+    "T": ["O2"]
     }
     try:
         if atomname in MAJOR_GROOVE_ATOMS[resname]:
@@ -101,7 +113,7 @@ def getInteractions(protein, rna, prefix):
         return interactions, {} 
     ns = Nsearch(patoms)
     interactions = {} 
-    cut_off = 4
+    cut_off = 6 #enough
 
     secondary_structure_dict = getProteinSecStructure(protein, prefix) # residue number to secondary structure abbreviation 
     # print("secondary structure length from pymol: {}".format(len(secondary_structure_dict)))
