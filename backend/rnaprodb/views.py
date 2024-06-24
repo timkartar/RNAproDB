@@ -110,7 +110,8 @@ def run_script(request):
             "title": pdb_info['citation'][0]['title'],
             'protein_name': (pdb_info['struct']['title']),#.capitalize().replace('rna', 'RNA'),
             'tooLarge': True,
-            "output": json_output
+            "output": json_output,
+            "pdb_info": pdb_info
             }
         else:
             response_data = {
@@ -119,7 +120,8 @@ def run_script(request):
                 "title": pdb_info['citation'][0]['title'],
                 'protein_name': (pdb_info['struct']['title']),#.capitalize().replace('rna', 'RNA'),
                 'tooLarge': False,
-                "output": json_output  # Use the parsed JSON data here
+                "output": json_output,  # Use the parsed JSON data here
+                "pdb_info": pdb_info
             }
         return JsonResponse(response_data)
         

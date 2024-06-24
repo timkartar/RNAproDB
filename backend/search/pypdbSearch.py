@@ -1,7 +1,7 @@
 import pypdb
 from pypdb.clients.search.search_client import perform_search, perform_search_with_graph, ReturnType, QueryGroup, LogicalOperator
 from pypdb.clients.search.operators import text_operators
-import time
+import sys
 
 
 def query_by_term(term: str, queries: list) -> list:
@@ -109,15 +109,8 @@ def search(additional_queries: list) -> list:
 
 
 if __name__ == "__main__":
-#    start_time = time.time()
-#    pdb_ids_control = query_by_term_control("ribosome")
-#    end_time = time.time()
-#    print("Runtime for control: {:.2f} seconds".format(end_time - start_time))
-   start_time = time.time()
-   pdb_ids_exp = search([['term', 'ribosome'], ['experimental_modality', ['EM', 'X-ray']]])
-   end_time = time.time()
-   print("Runtime for experimental: {:.2f} seconds".format(end_time - start_time))
-   print("this is output from pypdb:" + str(len(pdb_ids_exp)))
+   pdb = sys.argv[1]
+   print(pypdb.get_info(pdb))
 
 
 
