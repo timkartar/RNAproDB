@@ -10,7 +10,7 @@ def getPairfromDBN(dbn="....((((....))..))...(())...&....((..)....)...()..(((..)
     pairs = []
     dbn = dbn.replace("&","")
     for i in range(len(dbn)):
-        if dbn[i] in ["."] :
+        if dbn[i] in [".","[","]"] :
             continue
         if dbn[i] == "(":
             stack.append(i)
