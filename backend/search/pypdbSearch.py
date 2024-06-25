@@ -97,25 +97,24 @@ def query_by_molecular_weight(min_mw:float, max_mw:float, queries: list):
 def search(additional_queries: list) -> list:
     queries = []
     
-    # If there are additional queries, process them
     if additional_queries:
-        for i in additional_queries:
-            if i[0] == "term":
-                query_by_term(i[1], queries)
-            elif i[0] == "resolution":
-                query_by_resolution(i[1][0], i[1][1], queries)
-            elif i[0] == "NA":
-                query_by_NA(i[1][0], i[1][1], queries)
-            elif i[0] == "protein":
-                query_by_protein(i[1][0], i[1][1], queries)
-            elif i[0] == "experimental_modality":
-                query_by_experimental_modality(i[1], queries)
-            elif i[0] == "year":
-                query_by_year(i[1][0], i[1][1], queries)
-            elif i[0] == "NA_type":
-                query_by_NA_type(i[1], queries)
-            elif i[0] == "molecular_weight":
-                query_by_molecular_weight(i[1][0], i[1][1], queries)
+        for query_type, query_value in additional_queries:
+            if query_type == "term":
+                query_by_term(query_value, queries)
+            elif query_type == "resolution":
+                query_by_resolution(query_value[0], query_value[1], queries)
+            elif query_type == "NA":
+                query_by_NA(query_value[0], query_value[1], queries)
+            elif query_type == "protein":
+                query_by_protein(query_value[0], query_value[1], queries)
+            elif query_type == "experimental_modality":
+                query_by_experimental_modality(query_value, queries)
+            elif query_type == "year":
+                query_by_year(query_value[0], query_value[1], queries)
+            elif query_type == "NA_type":
+                query_by_NA_type(query_value, queries)
+            elif query_type == "molecular_weight":
+                query_by_molecular_weight(query_value[0], query_value[1], queries)
 
         results = perform_search_with_graph(
             query_object=QueryGroup(
@@ -124,16 +123,20 @@ def search(additional_queries: list) -> list:
             ),
             return_type=ReturnType.ENTRY
         )
+        result_set = {entry.upper() for entry in results}
     else:
-        results = []
+        result_set = set()
 
+    # Read the file only once
     with open('nakb_prna_ids.txt', 'r') as f:
-        nakb_ids = f.read().split(',')
+        nakb_ids = {entry.strip().upper() for entry in f.read().split(',')}
     
     if not additional_queries:
-        output_list = [entry.lower() for entry in nakb_ids]
+        output_set = nakb_ids
     else:
-        output_list = [entry.lower() for entry in nakb_ids if entry.upper() in set(results)]
+        output_set = nakb_ids.intersection(result_set)
+    
+    output_list = [entry.lower() for entry in output_set]
     
     print(additional_queries)
     print("Output length: " + str(len(output_list)))
@@ -144,6 +147,8 @@ if __name__ == "__main__":
     import sys
     pdb = sys.argv[1]
     print(pypdb.get_info(pdb))
+
+
 
 
 
