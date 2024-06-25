@@ -22,7 +22,7 @@ def runDSSR(structure, quiet=True, prefix='rna', tmpdir=''):
     prefix: string
         The file prefix.
     """
-    pdbpath = frontend + "/public/cifs/{}".format(tmpdir)
+    pdbpath = frontend + "/build/cifs/{}".format(tmpdir)
     outpath = backend + "/dssr_output/{}".format(tmpdir)
     if not os.path.exists(outpath):
         os.makedirs(outpath)
@@ -57,10 +57,10 @@ if __name__ == "__main__":
     
     #update: no need to change anymore
     # home =  os.path.dirname(os.path.abspath(__file__)) #change this line only
-    pdb_path = frontend + "/public/cifs/"
+    pdb_path = frontend + "/build/cifs/"
     # pdb_file = f"{pdb_id}-assembly1.cif"
     
-    for item in tqdm(open(frontend + "/public/cifs/{}-assembly1.cif".format(pdb_id),"r").readlines()):
+    for item in tqdm(open(frontend + "/build/cifs/{}-assembly1.cif".format(pdb_id),"r").readlines()):
         item = item.strip()
         #f = os.path.join(cifdir, fname)
         pdb_file = item #"{}-assembly1.cif".format(prefix)
