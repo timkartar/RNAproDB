@@ -95,66 +95,55 @@ def query_by_molecular_weight(min_mw:float, max_mw:float, queries: list):
       queries.append(mw_query)
 
 def search(additional_queries: list) -> list:
-   queries = []
-   # queries.append(pypdb.text_operators.ComparisonOperator(value = 0, attribute = "rcsb_assembly_info.polymer_entity_count_nucleic_acid", comparison_type = pypdb.text_operators.ComparisonType.GREATER))
-   # queries.append(pypdb.text_operators.ComparisonOperator(value = 0, attribute = "rcsb_assembly_info.polymer_entity_count_protein", comparison_type = pypdb.text_operators.ComparisonType.GREATER))
-   for i in additional_queries:
-      if i[0] == "term":
-         query_by_term(i[1], queries)
-      elif i[0] == "resolution":
-         query_by_resolution(i[1][0], i[1][1], queries)
-      elif i[0] == "NA":
-         query_by_NA(i[1][0], i[1][1], queries)
-      elif i[0] == "protein":
-         query_by_protein(i[1][0], i[1][1], queries)
-      elif i[0] == "experimental_modality":
-         query_by_experimental_modality(i[1], queries)
-      elif i[0] == "year":
-         query_by_year(i[1][0], i[1][1], queries)
-      elif i[0] == "NA_type":
-         query_by_NA_type(i[1], queries)
-      elif i[0] == "molecular_weight":
-         query_by_molecular_weight(i[1][0], i[1][1], queries)
+    queries = []
+    
+    # If there are additional queries, process them
+    if additional_queries:
+        for i in additional_queries:
+            if i[0] == "term":
+                query_by_term(i[1], queries)
+            elif i[0] == "resolution":
+                query_by_resolution(i[1][0], i[1][1], queries)
+            elif i[0] == "NA":
+                query_by_NA(i[1][0], i[1][1], queries)
+            elif i[0] == "protein":
+                query_by_protein(i[1][0], i[1][1], queries)
+            elif i[0] == "experimental_modality":
+                query_by_experimental_modality(i[1], queries)
+            elif i[0] == "year":
+                query_by_year(i[1][0], i[1][1], queries)
+            elif i[0] == "NA_type":
+                query_by_NA_type(i[1], queries)
+            elif i[0] == "molecular_weight":
+                query_by_molecular_weight(i[1][0], i[1][1], queries)
 
-   results = perform_search_with_graph(
-   query_object=QueryGroup(
-      logical_operator=LogicalOperator.AND,
-      queries=queries
-   ),
-   return_type=ReturnType.ENTRY
-   )
-   with open('nakb_prna_ids.txt', 'r') as f:
-      nakb_ids = f.read().split(',')
-   output_list = [entry.lower() for entry in nakb_ids if entry.upper() in set(results)]
-   print(additional_queries)
-   print("Output length: " + str(len(output_list)))
-   return output_list
+        results = perform_search_with_graph(
+            query_object=QueryGroup(
+                logical_operator=LogicalOperator.AND,
+                queries=queries
+            ),
+            return_type=ReturnType.ENTRY
+        )
+    else:
+        results = []
 
-# def query_by_uniprot(uniprot: str) -> list:
-#    query_results = pypdb.Query(uniprot, query_type="uniprot").search()
-#    with open('hirad/nakb_prna_ids.txt', 'r') as f:
-#     nakb_ids = f.read().split(',')
-#    output_list = [entry.upper() for entry in nakb_ids if entry.upper() in set(query_results)]    
-#    return output_list
+    with open('nakb_prna_ids.txt', 'r') as f:
+        nakb_ids = f.read().split(',')
+    
+    if not additional_queries:
+        output_list = [entry.lower() for entry in nakb_ids]
+    else:
+        output_list = [entry.lower() for entry in nakb_ids if entry.upper() in set(results)]
+    
+    print(additional_queries)
+    print("Output length: " + str(len(output_list)))
+    return output_list
 
-# def query_by_pfam(pfam: str) -> list:
-#    query_results = pypdb.Query(pfam, query_type="pfam").search()
-#    with open('hirad/nakb_prna_ids.txt', 'r') as f:
-#     nakb_ids = f.read().split(',')
-#    output_list = [entry.upper() for entry in nakb_ids if entry.upper() in set(query_results)]    
-#    return output_list
-
-# def query_by_pmid(pmid: int) -> list:
-#    query_results = pypdb.Query(pmid, query_type="PubmedIdQuery").search()
-#    with open('hirad/nakb_prna_ids.txt', 'r') as f:
-#     nakb_ids = f.read().split(',')
-#    output_list = [entry.upper() for entry in nakb_ids if entry.upper() in set(query_results)]    
-#    return output_list
-
-
+# Example usage:
 if __name__ == "__main__":
-   pdb = sys.argv[1]
-   print(pypdb.get_info(pdb))
+    import sys
+    pdb = sys.argv[1]
+    print(pypdb.get_info(pdb))
 
 
 
