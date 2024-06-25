@@ -10,7 +10,7 @@ def hbondExtractor(data) -> list:
         pair_info = (atom1, atom2)
         pair_info_rev = (atom2, atom1)
         toappend = {}
-        toappend['distance'] = bond['distance']
+        toappend['distance'] = str(bond['distance']) + " Angstrom"
         toappend['atom1'] = bond['atom1_id']
         toappend['atom2'] = bond['atom2_id']
         if pair_info not in all_pair_info:

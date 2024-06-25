@@ -54,10 +54,50 @@ def query_by_year(min_year:int, max_year:int, queries: list):
       negation=False)
    queries.append(year_query)
 
+def query_by_NA_type(NA_types: list, queries: list):
+    for NA_type in NA_types:
+        if NA_type == "RNA (only)":
+            NA_type_query = text_operators.ComparisonOperator(
+                value=0, 
+                attribute="rcsb_assembly_info.polymer_entity_count_RNA", 
+                comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+            queries.append(NA_type_query)
+        elif NA_type == "DNA (only)":
+            NA_type_query = text_operators.ComparisonOperator(
+                value=0, 
+                attribute="rcsb_assembly_info.polymer_entity_count_DNA", 
+                comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+            queries.append(NA_type_query)
+        elif NA_type == "Hybrid":
+            NA_type_query_RNA = text_operators.ComparisonOperator(
+                value=0, 
+                attribute="rcsb_assembly_info.polymer_entity_count_RNA", 
+                comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+            NA_type_query_DNA = text_operators.ComparisonOperator(
+                value=0, 
+                attribute="rcsb_assembly_info.polymer_entity_count_DNA", 
+                comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+            queries.append(NA_type_query_RNA)
+            queries.append(NA_type_query_DNA)
+
+def query_by_molecular_weight(min_mw:float, max_mw:float, queries: list): 
+      mw_query = text_operators.RangeOperator(
+         attribute="rcsb_entry_info.molecular_weight",
+         from_value=min_mw,
+         to_value=max_mw,
+         include_lower=True,
+         include_upper=True,
+         negation=False)
+      queries.append(mw_query)
+
 def search(additional_queries: list) -> list:
    queries = []
-   queries.append(pypdb.text_operators.ComparisonOperator(value = 0, attribute = "rcsb_assembly_info.polymer_entity_count_RNA", comparison_type = pypdb.text_operators.ComparisonType.GREATER))
-   queries.append(pypdb.text_operators.ComparisonOperator(value = 0, attribute = "rcsb_assembly_info.polymer_entity_count_protein", comparison_type = pypdb.text_operators.ComparisonType.GREATER))
+   # queries.append(pypdb.text_operators.ComparisonOperator(value = 0, attribute = "rcsb_assembly_info.polymer_entity_count_nucleic_acid", comparison_type = pypdb.text_operators.ComparisonType.GREATER))
+   # queries.append(pypdb.text_operators.ComparisonOperator(value = 0, attribute = "rcsb_assembly_info.polymer_entity_count_protein", comparison_type = pypdb.text_operators.ComparisonType.GREATER))
    for i in additional_queries:
       if i[0] == "term":
          query_by_term(i[1], queries)
@@ -71,6 +111,10 @@ def search(additional_queries: list) -> list:
          query_by_experimental_modality(i[1], queries)
       elif i[0] == "year":
          query_by_year(i[1][0], i[1][1], queries)
+      elif i[0] == "NA_type":
+         query_by_NA_type(i[1], queries)
+      elif i[0] == "molecular_weight":
+         query_by_molecular_weight(i[1][0], i[1][1], queries)
 
    results = perform_search_with_graph(
    query_object=QueryGroup(

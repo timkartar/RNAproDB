@@ -23,6 +23,9 @@ def search_view(request):
             experimental_modality = data.get('experimentalModality')
             min_year = data.get('minYear')
             max_year = data.get('maxYear')
+            NA_type = data.get('nucleicAcidType')
+            min_mw = data.get('minWeight')
+            max_mw = data.get('maxWeight')
             # Extract other parameters as needed
 
             additional_queries = []
@@ -38,6 +41,10 @@ def search_view(request):
                additional_queries.append(['experimental_modality', experimental_modality])
             if min_year and max_year:
                 additional_queries.append(['year', [min_year, max_year]])
+            if NA_type:
+                additional_queries.append(['NA_type', NA_type])
+            if min_mw and max_mw:
+                additional_queries.append(['molecular_weight', [min_mw, max_mw]])
             desired_ids = search(additional_queries)
             pdbs = pypdbObject.objects.filter(id__in=desired_ids)
             serializer = pypdbSerializer(pdbs, many=True)
