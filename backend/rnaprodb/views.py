@@ -131,3 +131,10 @@ def get_struct_info(request):
     pdbid = request.GET.get('pdbid')
     pdb_info = get_info(pdbid)
     return JsonResponse(pdb_info)
+
+def download_json(request):
+    pdbid = request.GET.get('pdbid')
+    algorithm = request.GET.get('algorithm')
+    with open("./output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
+        json_output = json.load(json_file)
+    return JsonResponse(json_output)
