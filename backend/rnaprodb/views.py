@@ -9,6 +9,8 @@ import os
 from pypdb import get_info
 # Create your views here.
 
+temp_cwd = '/home/aricohen/Desktop/django-react-rnaprodb/rnaprodb_dev'
+
 class RNAView(viewsets.ModelViewSet):
     serializer_class = RNASerializer
     queryset = RNA.objects.all()
@@ -30,8 +32,9 @@ def run_script(request):
         output_dir = "./output"
 
         if subgraph_nodes:
-            script_path = "./get_subgraph.py"
-            result = subprocess.run(["python", script_path, pdbid, subgraph_nodes, algorithm], capture_output=True, text=True)
+            # script_path = "./get_subgraph.py"
+            # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            result = subprocess.run(["/home/aricohen/Desktop/django-react-rnaprodb/rnaprodb_dev/run_rna_vis_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
 
             # You can capture the stdout or stderr for further use if needed
             output = result.stdout
@@ -47,7 +50,7 @@ def run_script(request):
             json_output = line
 
             if not json_output:
-                return JsonResponse({"message": "Error: No valid JSON found in the script's output."})
+                return JsonResponse({"message": "Error: No valid JSON found in the script's output.", "output": output})
             
             try:
                 json_output = json.loads(json_output)
@@ -60,9 +63,10 @@ def run_script(request):
         else: # full graph!
             RUN_RNAVIS_FLAG = True 
             if(RUN_RNAVIS_FLAG and algorithm == "pca"):
-                script_path = "./rna_vis.py"
-                result = subprocess.run(["python", script_path, pdbid], capture_output=True, text=True)
-                
+                # script_path = "./rna_vis.py"
+                # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid], capture_output=True, text=True, cwd=temp_cwd)
+                result = subprocess.run(["/home/aricohen/Desktop/django-react-rnaprodb/rnaprodb_dev/run_rna_vis_server.sh", pdbid], capture_output=True, text=True, cwd=temp_cwd)
+
                 # You can capture the stdout or stderr for further use if needed
                 output = result.stdout
                 errors = result.stderr
@@ -77,7 +81,7 @@ def run_script(request):
                 json_output = line
 
                 if not json_output:
-                    return JsonResponse({"message": "Error: No valid JSON found in the script's output."})
+                    return JsonResponse({"message": "Error: No valid JSON found in the script's output.", "output": output})
                 
                 try:
                     json_output = json.loads(json_output)
@@ -87,12 +91,12 @@ def run_script(request):
                 if result.returncode != 0:
                     return JsonResponse({"message": "Error running script.", "error": errors})
                
-                with open("./output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
+                with open("/home/aricohen/Desktop/django-react-rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
                     json_output = json.load(json_file)  
             
             # DO NOT RUN RNA_VIS, FILES ALREADY THERE, meant for production
             else:
-                with open("./output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
+                with open("/home/aricohen/Desktop/django-react-rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
                     json_output = json.load(json_file)       
         # Use PyPDB to get title
         pdb_info = get_info(pdbid)
