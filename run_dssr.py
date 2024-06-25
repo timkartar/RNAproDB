@@ -35,7 +35,7 @@ def runDSSR(structure, quiet=True, prefix='rna', tmpdir=''):
         file_name = structure
     
     args = ["x3dna-dssr", f"--i={file_name}", "--o={}/dssr_output/{}-dssr.json".format(backend,
-        prefix), "--json", "--more", "--idstr=long", "--non-pair", "--nested"]
+        prefix), "--json", "--more", "--idstr=long", "--non-pair"]#, "--nested"]
     if quiet:
         FNULL = open(os.devnull, 'w')
         subprocess.call(args, stdout=FNULL, stderr=FNULL)

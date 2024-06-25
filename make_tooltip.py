@@ -13,8 +13,8 @@ def processWH(whbond_data):
                 toappend['water'] = water
                 toappend['nt_role'] = nt_part['type']
                 toappend['aa_role'] = aa_part['type']
-                toappend['nt_distance'] = nt_part['distance_to_water']
-                toappend['aa_distance'] = aa_part['distance_to_water']
+                toappend['nt_distance'] = str(nt_part['distance_to_water']) + " Angstrom"
+                toappend['aa_distance'] = str(aa_part['distance_to_water']) + " Angstrom"
                 toappend['nt_atom'] = nt_part['atom']
                 toappend['aa_atom'] = aa_part['atom']
                 output[edge_id].append(toappend)
@@ -60,7 +60,7 @@ def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data):
         table = {}
         table["Node1"] = edge['source_id']
         table["Node2"] = edge['target_id']
-        table["Centroid distance"] = edge['distance_3d']
+        table["Centroid distance"] = str(edge['distance_3d']) + " Angstrom"
         if edge['my_type'] == 'none':
             my_type = "other"
         else:
