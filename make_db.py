@@ -47,12 +47,12 @@ if __name__ == '__main__':
     dbf = "./sqldb/test.db"
     create_tables(dbf)
     conn = sqlite3.connect(dbf)  
-    for item in tqdm(os.listdir("dssr_output")):
-        if item.endswith(".cif"):
+    for item in tqdm(os.listdir("output")):
+        if "pca_graph" not in item:
             continue
         else:
             try:
-                prefix = item.split("-")[0]
+                prefix = item.split("_")[0]
                 info = pypdb.get_info(prefix)
                 data = [prefix]
                 data.append(",".join(info['citation'][0]['rcsb_authors']))
