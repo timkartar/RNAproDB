@@ -40,8 +40,8 @@ def runHBplus(path, prefix, structure):
 
     io.set_structure(structure)
     io.save('{}.pdb'.format(prefix))
-    rc = subprocess.call(['{}/external/hbplus'.format(backend), '-h', '3.0', '-d', '3.5', '{}.pdb'.format(prefix),
-        '{}.pdb'.format(prefix)])#, stdout=FNULL, stderr=FNULL)
+    rc = subprocess.call(['{}/external/hbplus'.format(backend), '-h', '3.0', '-d', '3.5', '{}.pdb'.format('/srv/www/rnaprodb/rnaprodb_dev/1ivs-assembly1'),
+        '{}.pdb'.format('/srv/www/rnaprodb/rnaprodb_dev/1ivs-assembly1')])#, stdout=FNULL, stderr=FNULL)
 
     water_hbonds = []
     HB = open('{}.hb2'.format(prefix),'r').readlines()

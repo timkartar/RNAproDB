@@ -61,7 +61,7 @@ def run_script(request):
             if result.returncode != 0:
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
-            RUN_RNAVIS_FLAG = True 
+            RUN_RNAVIS_FLAG = False 
             if(RUN_RNAVIS_FLAG and algorithm == "pca"):
                 # script_path = "./rna_vis.py"
                 # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid], capture_output=True, text=True, cwd=temp_cwd)
