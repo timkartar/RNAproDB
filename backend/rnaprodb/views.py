@@ -196,4 +196,4 @@ def handle_upload(request):
         }
         return JsonResponse(response_data)
     else:
-        return JsonResponse({'error': 'Upload failed script no run.'})
+        return JsonResponse({'error': 'Upload failed script no run.', 'json_output': json_output})
