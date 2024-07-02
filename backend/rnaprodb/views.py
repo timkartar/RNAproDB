@@ -7,14 +7,18 @@ import subprocess
 import json
 import os
 from pypdb import get_info
+import uuid
 # Create your views here.
 
 temp_cwd = '/srv/www/rnaprodb/rnaprodb_dev'
+MAX_FILE_SIZE = 50 * 1024 * 1024 # 50 MB
+
 
 class RNAView(viewsets.ModelViewSet):
     serializer_class = RNASerializer
     queryset = RNA.objects.all()
 
+# refactor to work with uploads
 def run_script(request):
     # Ensure it's a GET request (although this will be the case by default for this route)
     if request.method == "GET":
@@ -142,3 +146,15 @@ def download_json(request):
     with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
         json_output = json.load(json_file)
     return JsonResponse(json_output)
+
+# for now no async
+def handle_upload(request):
+    file = request.FILES.get('file')
+
+    if not file:
+        return JsonResponse({"error": "No file provided"}, status=400)
+    
+    if file.size > MAX_FILE_SIZE:
+        return JsonResponse({'error': 'File size exceeds the allowed limit'}, status=400)
+    unique_id = str(uuid.uuid4())
+    return JsonResponse({'message': 'File uploaded successfully', 'id': unique_id}, status=200)

@@ -71,12 +71,18 @@ def query_by_NA_type(NA_types: list, queries: list):
             )
             queries.append(NA_type_query)
         elif NA_type == "Hybrid":
-            NA_type_query_hybrid = text_operators.ComparisonOperator(
+            NA_type_query_RNA = text_operators.ComparisonOperator(
                 value=0, 
-                attribute="rcsb_assembly_info.polymer_entity_count_nucleic_acid_hybrid", 
+                attribute="rcsb_assembly_info.polymer_entity_count_RNA", 
                 comparison_type=pypdb.text_operators.ComparisonType.GREATER
             )
-            queries.append(NA_type_query_hybrid)
+            NA_type_query_DNA = text_operators.ComparisonOperator(
+                value=0, 
+                attribute="rcsb_assembly_info.polymer_entity_count_DNA", 
+                comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+            queries.append(NA_type_query_RNA)
+            queries.append(NA_type_query_DNA)
 
 def query_by_molecular_weight(min_mw:float, max_mw:float, queries: list): 
       mw_query = text_operators.RangeOperator(
