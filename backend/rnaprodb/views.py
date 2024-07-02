@@ -13,12 +13,52 @@ from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 
 temp_cwd = '/srv/www/rnaprodb/rnaprodb_dev'
 MAX_FILE_SIZE = 50 * 1024 * 1024 # 50 MB
-
+RUN_RNAVIS_FLAG = False
 
 class RNAView(viewsets.ModelViewSet):
     serializer_class = RNASerializer
     queryset = RNA.objects.all()
 
+# helper function to run the main script, called by uploading and just pulling a structure
+# pdb is uuid for an uploaded structure
+def run_rna_vis(algorithm, pdbid):
+    json_output = None
+    if(RUN_RNAVIS_FLAG and algorithm == "pca"):
+        # script_path = "./rna_vis.py"
+        # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid], capture_output=True, text=True, cwd=temp_cwd)
+        result = subprocess.run(["/srv/www/rnaprodb/rnaprodb_dev/run_rna_vis_server.sh", pdbid], capture_output=True, text=True, cwd=temp_cwd)
+
+        # You can capture the stdout or stderr for further use if needed
+        output = result.stdout
+        errors = result.stderr
+
+        # Split the output by line breaks
+        lines = output.strip().split('\n')
+
+        # Find the JSON line (starting from the end)
+        for line in lines:
+            if line.startswith("'\"{"):
+                break
+        json_output = line
+
+        if not json_output:
+            return {"message": "Error: No valid JSON found in the script's output.", "output": output, "error": errors}
+        
+        try:
+            json_output = json.loads(json_output)
+        except json.JSONDecodeError:
+            return {"message": "Error decoding JSON output from script.", "error": errors}
+        
+        if result.returncode != 0:
+            return {"message": "Error running script.", "error": errors}
+        with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
+            json_output = json.load(json_file)  
+    
+    # DO NOT RUN RNA_VIS, FILES ALREADY THERE, meant for production
+    else:
+        with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
+            json_output = json.load(json_file)
+    return json_output
 # refactor to work with uploads
 def run_script(request):
     # Ensure it's a GET request (although this will be the case by default for this route)
@@ -66,42 +106,10 @@ def run_script(request):
             if result.returncode != 0:
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
-            RUN_RNAVIS_FLAG = False
-            if(RUN_RNAVIS_FLAG and algorithm == "pca"):
-                # script_path = "./rna_vis.py"
-                # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid], capture_output=True, text=True, cwd=temp_cwd)
-                result = subprocess.run(["/srv/www/rnaprodb/rnaprodb_dev/run_rna_vis_server.sh", pdbid], capture_output=True, text=True, cwd=temp_cwd)
+            json_output = run_rna_vis(algorithm, pdbid)
+            if json_output["error"]:
+                return JsonResponse(json_output, status=400)
 
-                # You can capture the stdout or stderr for further use if needed
-                output = result.stdout
-                errors = result.stderr
-
-                # Split the output by line breaks
-                lines = output.strip().split('\n')
-
-                # Find the JSON line (starting from the end)
-                for line in lines:
-                    if line.startswith("'\"{"):
-                        break
-                json_output = line
-
-                if not json_output:
-                    return JsonResponse({"message": "Error: No valid JSON found in the script's output.", "output": output, "errors": errors})
-                
-                try:
-                    json_output = json.loads(json_output)
-                except json.JSONDecodeError:
-                    return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
-                
-                if result.returncode != 0:
-                    return JsonResponse({"message": "Error running script.", "error": errors})
-                with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
-                    json_output = json.load(json_file)  
-            
-            # DO NOT RUN RNA_VIS, FILES ALREADY THERE, meant for production
-            else:
-                with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
-                    json_output = json.load(json_file)       
         # Use PyPDB to get title
         pdb_info = get_info(pdbid)
 
@@ -157,5 +165,17 @@ def handle_upload(request):
     
     if file.size > MAX_FILE_SIZE:
         return JsonResponse({'error': 'File size exceeds the allowed limit'}, status=400)
+
     unique_id = str(uuid.uuid4())
-    return JsonResponse({'message': 'File uploaded successfully', 'id': unique_id}, status=200)
+    file_extension = os.path.splitext(file.name)[1]
+    
+    if file_extension.lower() not in ['.cif', '.pdb']:
+        return JsonResponse({'error': 'Invalid file type'}, status=400)
+
+    # Define the path where the file will be saved
+    file_path = os.path.join('/path/to/save', f'{unique_id}{file_extension}')
+
+    # Write the file to the disk
+    with open(file_path, 'wb+') as destination:
+        for chunk in file.chunks():
+            destination.write(chunk)
