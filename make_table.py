@@ -25,14 +25,15 @@ def makeTable(path):
         table['Structural motif'].append(toappend)
     for item in data['links']:
         tooltip = json.loads(item['tooltip_table'].replace("\\\\t",""))
-        for key in tooltip:
-            node1 = tooltip["Node1"]
-            node2 = tooltip["Node2"]
-            distance = tooltip["Centroid distance"]
-            attribute = tooltip["Attributes"]
-            toappend = "{},{},{},{}".format(node1, node2, distance, attribute)
-            table['Interaction pairs'].append(toappend)
+        node1 = tooltip["Node1"]
+        node2 = tooltip["Node2"]
+        distance = tooltip["Centroid distance"]
+        attribute = tooltip["Attributes"]
+        toappend = "{},{},{},{}".format(node1, node2, distance, attribute.replace(",",";"))
+        table['Interaction pairs'].append(toappend)
+        print(toappend)
 
+        for key in tooltip:
             if "Hbond" in key and "Water" not in key:
                 node1 = tooltip["Node1"]
                 node2 = tooltip["Node2"]
