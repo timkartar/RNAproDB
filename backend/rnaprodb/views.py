@@ -8,6 +8,7 @@ import json
 import os
 from pypdb import get_info
 import uuid
+from django.views.decorators.csrf import ensure_csrf_cookie
 # Create your views here.
 
 temp_cwd = '/srv/www/rnaprodb/rnaprodb_dev'
@@ -148,6 +149,7 @@ def download_json(request):
     return JsonResponse(json_output)
 
 # for now no async
+@ensure_csrf_cookie
 def handle_upload(request):
     file = request.FILES.get('file')
 
