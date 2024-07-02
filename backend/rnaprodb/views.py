@@ -112,20 +112,27 @@ def run_script(request):
                 return JsonResponse(json_output, status=400)
 
         # Use PyPDB to get title
-        pdb_info = get_info(pdbid)
+        pdb_info = get_info(pdbid) 
+        temp_title = "Uploaded Structure"
+        temp_protein_name = ("N/A")
 
+        # IF NOT UPLOADED STRUCTURE (longer PDB ID), get info
+        if len(pdbid) <= 6:
+            temp_title = pdb_info['citation'][0]['title']
+            temp_protein_name = (pdb_info['struct']['title'])
         TOO_LARGE = False
         if(json_output['tooLarge']):
             TOO_LARGE = True
         
         response_data = None
+
         if(TOO_LARGE and not subgraph_nodes):
             # new_json_output = {"chainsList": json_output['chainsList'], "ss": json_output["ss"]}
             response_data = {
             'file_url': '/{}.tmp.cif.html'.format(pdbid), 
             "message": "Script ran successfully!",
-            "title": pdb_info['citation'][0]['title'],
-            'protein_name': (pdb_info['struct']['title']),#.capitalize().replace('rna', 'RNA'),
+            "title": temp_title,
+            'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
             'tooLarge': True,
             "output": json_output,
             # "pdb_info": pdb_info
@@ -134,8 +141,8 @@ def run_script(request):
             response_data = {
                 'file_url': '/{}.tmp.cif.html'.format(pdbid), 
                 "message": "Script ran successfully!",
-                "title": pdb_info['citation'][0]['title'],
-                'protein_name': (pdb_info['struct']['title']),#.capitalize().replace('rna', 'RNA'),
+                "title": temp_title,
+                'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
                 'tooLarge': False,
                 "output": json_output,  # Use the parsed JSON data here
                 # "pdb_info": pdb_info
