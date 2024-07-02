@@ -11,6 +11,7 @@ import uuid
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 # Create your views here.
 
+main_cwd = '/srv/www/rnaprodb/'
 temp_cwd = '/srv/www/rnaprodb/rnaprodb_dev'
 MAX_FILE_SIZE = 50 * 1024 * 1024 # 50 MB
 RUN_RNAVIS_FLAG = False
@@ -173,9 +174,10 @@ def handle_upload(request):
         return JsonResponse({'error': 'Invalid file type'}, status=400)
 
     # Define the path where the file will be saved
-    file_path = os.path.join('/path/to/save', f'{unique_id}{file_extension}')
+    file_path = os.path.join(main_cwd, '/rnaprodb_frontend/build/cifs', f'{unique_id}{file_extension}')
 
     # Write the file to the disk
     with open(file_path, 'wb+') as destination:
         for chunk in file.chunks():
             destination.write(chunk)
+    return JsonResponse({"message": "file uploaded successfully"})
