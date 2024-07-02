@@ -174,7 +174,7 @@ def handle_upload(request):
         return JsonResponse({'error': 'Invalid file type'}, status=400)
 
     # Define the path where the file will be saved
-    file_path = os.path.join(main_cwd, '/rnaprodb_frontend/build/cifs', f'{unique_id}{file_extension}')
+    file_path = os.path.join(f'{main_cwd}/rnaprodb_frontend/build/cifs', f'{unique_id}{file_extension}')
 
     # Write the file to the disk
     with open(file_path, 'wb+') as destination:
