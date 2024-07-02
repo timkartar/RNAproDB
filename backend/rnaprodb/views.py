@@ -55,7 +55,7 @@ def run_script(request):
             json_output = line
 
             if not json_output:
-                return JsonResponse({"message": "Error: No valid JSON found in the script's output.", "output": output})
+                return JsonResponse({"message": "Error: No valid JSON found in the script's output.", "output": output, "errors": errors})
             
             try:
                 json_output = json.loads(json_output)
@@ -66,7 +66,7 @@ def run_script(request):
             if result.returncode != 0:
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
-            RUN_RNAVIS_FLAG = False 
+            RUN_RNAVIS_FLAG = False
             if(RUN_RNAVIS_FLAG and algorithm == "pca"):
                 # script_path = "./rna_vis.py"
                 # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid], capture_output=True, text=True, cwd=temp_cwd)
@@ -86,7 +86,7 @@ def run_script(request):
                 json_output = line
 
                 if not json_output:
-                    return JsonResponse({"message": "Error: No valid JSON found in the script's output.", "output": output})
+                    return JsonResponse({"message": "Error: No valid JSON found in the script's output.", "output": output, "errors": errors})
                 
                 try:
                     json_output = json.loads(json_output)
@@ -95,7 +95,6 @@ def run_script(request):
                 
                 if result.returncode != 0:
                     return JsonResponse({"message": "Error running script.", "error": errors})
-               
                 with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
                     json_output = json.load(json_file)  
             

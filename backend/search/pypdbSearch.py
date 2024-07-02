@@ -128,7 +128,7 @@ def search(additional_queries: list) -> list:
         result_set = set()
 
     # Read the file only once
-    with open('nakb_prna_ids.txt', 'r') as f:
+    with open('/srv/www/rnaprodb/rnaprodb_dev/nakb_prna_ids.txt', 'r') as f:
         nakb_ids = {entry.strip().upper() for entry in f.read().split(',')}
     
     if not additional_queries:
