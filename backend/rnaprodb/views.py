@@ -22,9 +22,9 @@ class RNAView(viewsets.ModelViewSet):
 
 # helper function to run the main script, called by uploading and just pulling a structure
 # pdb is uuid for an uploaded structure
-def run_rna_vis(algorithm, pdbid):
+def run_rna_vis(algorithm, pdbid, isUpload=False):
     json_output = None
-    if(RUN_RNAVIS_FLAG and algorithm == "pca"):
+    if((RUN_RNAVIS_FLAG and algorithm == "pca") or isUpload):
         # script_path = "./rna_vis.py"
         # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid], capture_output=True, text=True, cwd=temp_cwd)
         result = subprocess.run(["/srv/www/rnaprodb/rnaprodb_dev/run_rna_vis_server.sh", pdbid], capture_output=True, text=True, cwd=temp_cwd)
@@ -181,7 +181,7 @@ def handle_upload(request):
         for chunk in file.chunks():
             destination.write(chunk)
     
-    json_output = run_rna_vis('pca', unique_id)
+    json_output = run_rna_vis('pca', unique_id, isUpload=True)
     if json_output and 'error' not in json_output:
         response_data = {
                 "message": "Script ran successfully!",
