@@ -150,12 +150,12 @@ def download_json(request):
 # for now no async
 @csrf_exempt
 def handle_upload(request):
-    # file = request.FILES.get('file')
+    file = request.FILES.get('file')
 
-    # if not file:
-    #     return JsonResponse({"error": "No file provided"}, status=400)
+    if not file:
+        return JsonResponse({"error": "No file provided"}, status=400)
     
-    # if file.size > MAX_FILE_SIZE:
-    #     return JsonResponse({'error': 'File size exceeds the allowed limit'}, status=400)
+    if file.size > MAX_FILE_SIZE:
+        return JsonResponse({'error': 'File size exceeds the allowed limit'}, status=400)
     unique_id = str(uuid.uuid4())
     return JsonResponse({'message': 'File uploaded successfully', 'id': unique_id}, status=200)
