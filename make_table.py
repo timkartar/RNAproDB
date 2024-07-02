@@ -10,7 +10,7 @@ def makeTable(path):
     table['Hydrogen bonds'] = ["Node 1,Node 2,Distance,Atom1,Atom2"]
     table['Water-mediated hydrogen bonds'] = ["Water,Node 1,Node 2,NT_distance,AA_distance,NT_role,AA_role,NT_Atom,AA_Atom"]
     table['Base pairing info'] = ["Node 1,Node 2,Centroid distance, pair_type, Leontis-Westhof class"]
-    table['Structural Motif'] = ["Name","Chain","Number","Motif (DSSP annotation for protein/DSSR for RNA)"]
+    table['Structural motif'] = ["Name,Chain,Number,Motif (DSSP annotation for protein/DSSR for RNA)"]
 
     for item in data['nodes']:
         tooltip = json.loads(item['tooltip_table'].replace("\\\\t",""))
@@ -21,8 +21,8 @@ def makeTable(path):
             struct = tooltip["Structural motif"]
         except:
             struct = "-"
-        toappend = "{},{},{},{}".format(node1, chain, res, struct)
-
+        toappend = "{},{},{},{}".format(node1, chain, res, str(struct).replace("[","").replace("]","").replace("'","").replace(",",";"))
+        table['Structural motif'].append(toappend)
     for item in data['links']:
         tooltip = json.loads(item['tooltip_table'].replace("\\\\t",""))
         for key in tooltip:
@@ -31,6 +31,8 @@ def makeTable(path):
             distance = tooltip["Centroid distance"]
             attribute = tooltip["Attributes"]
             toappend = "{},{},{},{}".format(node1, node2, distance, attribute)
+            table['Interaction pairs'].append(toappend)
+
             if "Hbond" in key and "Water" not in key:
                 node1 = tooltip["Node1"]
                 node2 = tooltip["Node2"]
@@ -51,8 +53,7 @@ def makeTable(path):
                 aa_role = tooltip["aa_role_"+idx]
                 nt_atom = tooltip["nt_atom_"+idx]
                 aa_atom = tooltip["aa_atom_"+idx]
-                toappend = "{},{},{},{},{},{},{}".format(water, node1, node2, nt_distance, aa_distance,
-                        nt_role, aa_role, nt_atom, aa_atom)
+                toappend = "{},{},{},{},{},{},{},{},{}".format(water, node1, node2, nt_distance, aa_distance, nt_role, aa_role, nt_atom, aa_atom)
                 table['Water-mediated hydrogen bonds'].append(toappend)
             elif "Leontis" in key:
                 node1 = tooltip["Node1"]
@@ -67,4 +68,5 @@ def makeTable(path):
     return table
 
 if __name__ == "__main__":
-    print(makeTable("./output/1ivs_pca_graph.json").keys())
+    table  = makeTable("./output/1ivs_pca_graph.json")
+    json.dump(table, open("1ivs_table.json","w"))
