@@ -107,7 +107,7 @@ def run_script(request):
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
             json_output = run_rna_vis(algorithm, pdbid)
-            if json_output["error"]:
+            if 'error' in json_output:
                 return JsonResponse(json_output, status=400)
 
         # Use PyPDB to get title
