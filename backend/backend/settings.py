@@ -128,3 +128,6 @@ STATIC_URL = 'static/'
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 CORS_ALLOW_ALL_ORIGINS = True
+CSRF_COOKIE_NAME = 'csrftoken'
+
+CORS_ALLOW_CREDENTIALS = True
