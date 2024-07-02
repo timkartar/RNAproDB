@@ -180,4 +180,12 @@ def handle_upload(request):
     with open(file_path, 'wb+') as destination:
         for chunk in file.chunks():
             destination.write(chunk)
-    return JsonResponse({"message": "file uploaded successfully"})
+    
+    json_output = run_rna_vis('pca', unique_id)
+    if json_output and 'error' not in json_output:
+        response_data = {
+                "message": "Script ran successfully!",
+                "id": unique_id,
+        }
+        return JsonResponse(response_data)
+    return JsonResponse({'error': 'Upload failed.'})
