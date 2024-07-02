@@ -177,7 +177,7 @@ def handle_upload(request):
     unique_id = str(uuid.uuid4())
     file_extension = os.path.splitext(file.name)[1]
     
-    if file_extension.lower() not in ['.cif', '.pdb']:
+    if file_extension.lower() not in ['.cif']:
         return JsonResponse({'error': 'Invalid file type'}, status=400)
 
     # Define the path where the file will be saved
@@ -195,4 +195,5 @@ def handle_upload(request):
                 "id": unique_id,
         }
         return JsonResponse(response_data)
-    return JsonResponse({'error': 'Upload failed.'})
+    else:
+        return JsonResponse({'error': 'Upload failed script no run.'})
