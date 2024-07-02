@@ -11,7 +11,7 @@ import uuid
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 # Create your views here.
 
-temp_cwd = '/srv/www/rnaprodb/rnaprodb_dev'
+cwd = '/srv/www/rnaprodb/'
 MAX_FILE_SIZE = 50 * 1024 * 1024 # 50 MB
 RUN_RNAVIS_FLAG = False
 
@@ -26,7 +26,7 @@ def run_rna_vis(algorithm, pdbid):
     if(RUN_RNAVIS_FLAG and algorithm == "pca"):
         # script_path = "./rna_vis.py"
         # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid], capture_output=True, text=True, cwd=temp_cwd)
-        result = subprocess.run(["/srv/www/rnaprodb/rnaprodb_dev/run_rna_vis_server.sh", pdbid], capture_output=True, text=True, cwd=temp_cwd)
+        result = subprocess.run(["/srv/www/rnaprodb/rnaprodb_dev/run_rna_vis_server.sh", pdbid], capture_output=True, text=True)
 
         # You can capture the stdout or stderr for further use if needed
         output = result.stdout
@@ -79,7 +79,7 @@ def run_script(request):
         if subgraph_nodes:
             # script_path = "./get_subgraph.py"
             # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
-            result = subprocess.run(["/srv/www/rnaprodb/rnaprodb_dev/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            result = subprocess.run(["/srv/www/rnaprodb/rnaprodb_dev/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True)
 
             # You can capture the stdout or stderr for further use if needed
             output = result.stdout
@@ -173,9 +173,10 @@ def handle_upload(request):
         return JsonResponse({'error': 'Invalid file type'}, status=400)
 
     # Define the path where the file will be saved
-    file_path = os.path.join('/path/to/save', f'{unique_id}{file_extension}')
+    file_path = os.path.join(cwd, '/rnaprodb_frontend/build/cifs/', f'{unique_id}{file_extension}')
 
     # Write the file to the disk
     with open(file_path, 'wb+') as destination:
         for chunk in file.chunks():
             destination.write(chunk)
+    return JsonResponse('message': 'successfully added file')
