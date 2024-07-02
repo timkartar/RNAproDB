@@ -189,7 +189,7 @@ def handle_upload(request):
             destination.write(chunk)
     
     json_output = run_rna_vis('pca', unique_id, isUpload=True)
-    if json_output and 'error' not in json_output:
+    if json_output:
         response_data = {
                 "message": "Script ran successfully!",
                 "id": unique_id,
