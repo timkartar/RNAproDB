@@ -9,7 +9,7 @@ import os
 from pypdb import get_info
 import uuid
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
-from make_table import makeTable
+from .make_table import makeTable
 # Create your views here.
 
 main_cwd = '/srv/www/rnaprodb/'
