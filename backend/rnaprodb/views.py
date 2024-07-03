@@ -105,6 +105,11 @@ def run_script(request):
             except json.JSONDecodeError:
                 return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
             
+            try:
+                table = makeTable(json_output)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=400)
+
             if result.returncode != 0:
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
@@ -150,6 +155,7 @@ def run_script(request):
                 'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
                 'tooLarge': False,
                 "output": json_output,  # Use the parsed JSON data here
+                "table": table
                 # "pdb_info": pdb_info
             }
         return JsonResponse(response_data)
