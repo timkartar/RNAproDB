@@ -54,12 +54,12 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
             return {"message": "Error running script.", "error": errors}
         with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
             json_output = json.load(json_file)  
-    
+            return json_output
     # DO NOT RUN RNA_VIS, FILES ALREADY THERE, meant for production
     else:
         with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
             json_output = json.load(json_file)
-    return json_output
+            return json_output
 # refactor to work with uploads
 def run_script(request):
     # Ensure it's a GET request (although this will be the case by default for this route)
