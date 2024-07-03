@@ -111,7 +111,10 @@ def run_script(request):
             json_output = run_rna_vis(algorithm, pdbid)
             if 'error' in json_output:
                 return JsonResponse(json_output, status=400)
-            makeTable(json_output)
+            try:
+                makeTable(json_output)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=400)
         # Use PyPDB to get title
         pdb_info = get_info(pdbid) 
         temp_title = "Uploaded Structure"
