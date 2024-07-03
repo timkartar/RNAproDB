@@ -174,7 +174,7 @@ def handle_upload(request):
     if file.size > MAX_FILE_SIZE:
         return JsonResponse({'error': 'File size exceeds the allowed limit'}, status=400)
 
-    unique_id = str(uuid.uuid4())
+    unique_id = "upload-" + str(uuid.uuid4())
     file_extension = os.path.splitext(file.name)[1]
     
     if file_extension.lower() not in ['.cif']:
