@@ -66,7 +66,7 @@ def makeTable(json_output, path=None):
                 table['Base pairing info'].append(toappend)
             
     #print(table['Water-mediated hydrogen bonds'])
-    return json.dump(table)
+    return table
 
 if __name__ == "__main__":
     table  = makeTable("./output/1ivs_pca_graph.json")
