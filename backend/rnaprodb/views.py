@@ -9,6 +9,7 @@ import os
 from pypdb import get_info
 import uuid
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
+from make_table import makeTable
 # Create your views here.
 
 main_cwd = '/srv/www/rnaprodb/'
@@ -110,7 +111,7 @@ def run_script(request):
             json_output = run_rna_vis(algorithm, pdbid)
             if 'error' in json_output:
                 return JsonResponse(json_output, status=400)
-
+            makeTable(json_output)
         # Use PyPDB to get title
         pdb_info = get_info(pdbid) 
         temp_title = "Uploaded Structure"
