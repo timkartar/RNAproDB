@@ -10,7 +10,7 @@ from pypdb import get_info
 import uuid
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 # Create your views here.
-from ... import make_table
+from make_table import makeTable
 
 main_cwd = '/srv/www/rnaprodb/'
 temp_cwd = '/srv/www/rnaprodb/rnaprodb_dev'
@@ -136,7 +136,7 @@ def run_script(request):
             'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
             'tooLarge': True,
             "output": json_output,
-            "table": make_table(json_output)
+            "table": makeTable(json_output)
             # "pdb_info": pdb_info
             }
         else:
@@ -147,7 +147,7 @@ def run_script(request):
                 'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
                 'tooLarge': False,
                 "output": json_output,  # Use the parsed JSON data here
-                "table": make_table(json_output)
+                "table": makeTable(json_output)
                 # "pdb_info": pdb_info
             }
         return JsonResponse(response_data)
