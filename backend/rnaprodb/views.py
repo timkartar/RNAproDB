@@ -190,10 +190,12 @@ def handle_upload(request):
     
     json_output = run_rna_vis('pca', unique_id, isUpload=True)
     if json_output:
+        if isinstance(json_output, dict): # if dictionary did not work!
+            return JsonResponse({'error': 'Upload failed script no run.', 'json_output': str(json_output)}, status=400)
         response_data = {
                 "message": "Script ran successfully!",
                 "id": unique_id,
         }
         return JsonResponse(response_data)
     else:
-        return JsonResponse({'error': 'Upload failed script no run.', 'json_output': json_output})
+        return JsonResponse({'error': 'Upload failed script no run.', 'json_output': json_output}, status=400)
