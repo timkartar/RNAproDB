@@ -101,6 +101,7 @@ def run_script(request):
             
             try:
                 json_output = json.loads(json_output)
+                makeTable(json_output[''])
                 json_output['tooLarge'] = False
             except json.JSONDecodeError:
                 return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
@@ -111,7 +112,10 @@ def run_script(request):
             json_output = run_rna_vis(algorithm, pdbid)
             if 'error' in json_output:
                 return JsonResponse(json_output, status=400)
-
+            try:
+                makeTable(json_output[''])
+            except Exception as e:
+                return JsonResponse({"message": "Error decoding JSON output from makeTabler.", "error": str(e)})
         # Use PyPDB to get title
         pdb_info = get_info(pdbid) 
         temp_title = "Uploaded Structure"
@@ -136,7 +140,7 @@ def run_script(request):
             'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
             'tooLarge': True,
             "output": json_output,
-            "table": makeTable(json_output)
+            # "table": makeTable(json_output)
             # "pdb_info": pdb_info
             }
         else:
@@ -147,7 +151,7 @@ def run_script(request):
                 'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
                 'tooLarge': False,
                 "output": json_output,  # Use the parsed JSON data here
-                "table": makeTable(json_output)
+                # "table": makeTable(json_output)
                 # "pdb_info": pdb_info
             }
         return JsonResponse(response_data)
