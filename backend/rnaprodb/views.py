@@ -77,7 +77,7 @@ def run_script(request):
         result = None
         json_output = None
         output_dir = "./output"
-
+        table = None
         if subgraph_nodes:
             # script_path = "./get_subgraph.py"
             # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
@@ -109,12 +109,12 @@ def run_script(request):
                 return JsonResponse({"message": "Error running script.", "error": errors})
         else: # full graph!
             json_output = run_rna_vis(algorithm, pdbid)
-            if 'error' in json_output:
-                return JsonResponse(json_output, status=400)
             try:
-                makeTable(json_output)
+                table = makeTable(json_output)
             except Exception as e:
                 return JsonResponse({'error': str(e)}, status=400)
+            if 'error' in json_output:
+                return JsonResponse(json_output, status=400)
         # Use PyPDB to get title
         pdb_info = get_info(pdbid) 
         temp_title = "Uploaded Structure"
@@ -130,15 +130,16 @@ def run_script(request):
         
         response_data = None
 
-        if(TOO_LARGE and not subgraph_nodes):
+        if not subgraph_nodes:
             # new_json_output = {"chainsList": json_output['chainsList'], "ss": json_output["ss"]}
             response_data = {
             'file_url': '/{}.tmp.cif.html'.format(pdbid), 
             "message": "Script ran successfully!",
             "title": temp_title,
             'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
-            'tooLarge': True,
+            'tooLarge': False,
             "output": json_output,
+            "table": table
             # "pdb_info": pdb_info
             }
         else:
