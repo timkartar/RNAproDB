@@ -138,8 +138,8 @@ def run_script(request):
             "title": temp_title,
             'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
             'tooLarge': False,
+            "table": table,
             "output": json_output,
-            "table": table
             # "pdb_info": pdb_info
             }
         else:
