@@ -2,8 +2,8 @@ import json
 import os
 import numpy
 
-def makeTable(path):
-    data = dict(json.load(open(path,"r")))
+def makeTable(json_output, path=None):
+    data = dict(json_output)
 
     table = dict()
     table['Interaction pairs'] = ["Node 1, Node 2, Centroid distance, Attribute"]

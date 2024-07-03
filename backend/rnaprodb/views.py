@@ -10,6 +10,7 @@ from pypdb import get_info
 import uuid
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 # Create your views here.
+from ... import make_table
 
 main_cwd = '/srv/www/rnaprodb/'
 temp_cwd = '/srv/www/rnaprodb/rnaprodb_dev'
@@ -135,6 +136,7 @@ def run_script(request):
             'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
             'tooLarge': True,
             "output": json_output,
+            "table": make_table(json_output)
             # "pdb_info": pdb_info
             }
         else:
@@ -145,6 +147,7 @@ def run_script(request):
                 'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
                 'tooLarge': False,
                 "output": json_output,  # Use the parsed JSON data here
+                "table": make_table(json_output)
                 # "pdb_info": pdb_info
             }
         return JsonResponse(response_data)
@@ -191,7 +194,7 @@ def handle_upload(request):
     json_output = run_rna_vis('pca', unique_id, isUpload=True)
     if json_output:
         if 'error' in json_output: # if dictionary did not work!
-            return JsonResponse(json_output, status=400)
+            return JsonResponse({"message": "error processing your file", "error": "error processing your file"}, status=400)
         response_data = {
                 "message": "Script ran successfully!",
                 "id": unique_id,
