@@ -48,7 +48,7 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
         try:
             json_output = json.loads(json_output)
         except json.JSONDecodeError:
-            return {"message": "Error decoding JSON output from script.", "error": errors}
+            return {"message": "Error decoding JSON output from script.", "error": errors, "output": output}
         
         if result.returncode != 0:
             return {"message": "Error running script.", "error": errors}
