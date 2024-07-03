@@ -38,7 +38,7 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
 
         # Find the JSON line (starting from the end)
         for line in lines:
-            if line.startswith("'\"{"):
+            if line.startswith("{"):
                 break
         json_output = line
 
