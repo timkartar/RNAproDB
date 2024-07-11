@@ -27,7 +27,7 @@ def makeTable(json_output, path=None):
         tooltip = json.loads(item['tooltip_table'].replace("\\\\t",""))
         node1 = tooltip["Node1"]
         node2 = tooltip["Node2"]
-        distance = tooltip["Centroid distance"]
+        distance = tooltip["Centroid distance"].replace("Angstrom", "Å")
         attribute = tooltip["Attributes"]
         toappend = "{},{},{},{}".format(node1, node2, distance, attribute.replace(",",";"))
         table['Interaction pairs'].append(toappend)
