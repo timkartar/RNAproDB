@@ -54,35 +54,62 @@ def query_by_year(min_year:int, max_year:int, queries: list):
       negation=False)
    queries.append(year_query)
 
+# def query_by_NA_type(NA_types: list, queries: list):
+#     for NA_type in NA_types:
+#         if NA_type == "RNA (only)":
+#             NA_type_query = text_operators.ComparisonOperator(
+#                 value=0, 
+#                 attribute="rcsb_assembly_info.polymer_entity_count_RNA", 
+#                 comparison_type=pypdb.text_operators.ComparisonType.GREATER
+#             )
+#             queries.append(NA_type_query)
+#         elif NA_type == "DNA (only)":
+#             NA_type_query = text_operators.ComparisonOperator(
+#                 value=0, 
+#                 attribute="rcsb_assembly_info.polymer_entity_count_DNA", 
+#                 comparison_type=pypdb.text_operators.ComparisonType.GREATER
+#             )
+#             queries.append(NA_type_query)
+#         elif NA_type == "Hybrid":
+#             NA_type_query_RNA = text_operators.ComparisonOperator(
+#                 value=0, 
+#                 attribute="rcsb_assembly_info.polymer_entity_count_RNA", 
+#                 comparison_type=pypdb.text_operators.ComparisonType.GREATER
+#             )
+#             NA_type_query_DNA = text_operators.ComparisonOperator(
+#                 value=0, 
+#                 attribute="rcsb_assembly_info.polymer_entity_count_DNA", 
+#                 comparison_type=pypdb.text_operators.ComparisonType.GREATER
+#             )
+#             queries.append(NA_type_query_RNA)
+#             queries.append(NA_type_query_DNA)
 def query_by_NA_type(NA_types: list, queries: list):
-    for NA_type in NA_types:
-        if NA_type == "RNA (only)":
-            NA_type_query = text_operators.ComparisonOperator(
-                value=0, 
-                attribute="rcsb_assembly_info.polymer_entity_count_RNA", 
-                comparison_type=pypdb.text_operators.ComparisonType.GREATER
-            )
-            queries.append(NA_type_query)
-        elif NA_type == "DNA (only)":
-            NA_type_query = text_operators.ComparisonOperator(
-                value=0, 
-                attribute="rcsb_assembly_info.polymer_entity_count_DNA", 
-                comparison_type=pypdb.text_operators.ComparisonType.GREATER
-            )
-            queries.append(NA_type_query)
-        elif NA_type == "Hybrid":
-            NA_type_query_RNA = text_operators.ComparisonOperator(
-                value=0, 
-                attribute="rcsb_assembly_info.polymer_entity_count_RNA", 
-                comparison_type=pypdb.text_operators.ComparisonType.GREATER
-            )
-            NA_type_query_DNA = text_operators.ComparisonOperator(
-                value=0, 
-                attribute="rcsb_assembly_info.polymer_entity_count_DNA", 
-                comparison_type=pypdb.text_operators.ComparisonType.GREATER
-            )
-            queries.append(NA_type_query_RNA)
-            queries.append(NA_type_query_DNA)
+    or_query = None
+    if "RNA (only)" in NA_types:
+        NA_type_query_RNA = text_operators.ComparisonOperator(
+            value=0, attribute="rcsb_assembly_info.polymer_entity_count_RNA", comparison_type=pypdb.text_operators.ComparisonType.GREATER
+        )
+        queries.append(NA_type_query_RNA)
+    if "Hybrid" in NA_types:
+        NA_type_query_RNA = text_operators.ComparisonOperator(
+            value=0, attribute="rcsb_assembly_info.polymer_entity_count_RNA", comparison_type=pypdb.text_operators.ComparisonType.GREATER
+        )
+        NA_type_query_DNA = text_operators.ComparisonOperator(
+            value=0, attribute="rcsb_assembly_info.polymer_entity_count_DNA", comparison_type=pypdb.text_operators.ComparisonType.GREATER
+        )
+        NA_type_query_hybrid = text_operators.ComparisonOperator(
+            value=0, attribute="rcsb_assembly_info.polymer_entity_count_nucleic_acid_hybrid", comparison_type=pypdb.text_operators.ComparisonType.GREATER
+        )
+        and_query = QueryGroup(
+            queries = [NA_type_query_RNA, NA_type_query_DNA],
+            logical_operator = LogicalOperator.AND
+        )
+        or_query = QueryGroup(
+            queries = [and_query, NA_type_query_hybrid],
+            logical_operator = LogicalOperator.OR
+        )
+        queries.append(or_query)
+
 
 def query_by_molecular_weight(min_mw:float, max_mw:float, queries: list): 
       mw_query = text_operators.RangeOperator(
