@@ -83,29 +83,63 @@ def query_by_year(min_year:int, max_year:int, queries: list):
 #             )
 #             queries.append(NA_type_query_RNA)
 #             queries.append(NA_type_query_DNA)
-def query_by_NA_type(NA_types: list, queries: list):
-    or_query = None
-    if "RNA (only)" in NA_types:
-        NA_type_query_RNA = text_operators.ComparisonOperator(
-            value=0, attribute="rcsb_assembly_info.polymer_entity_count_RNA", comparison_type=pypdb.text_operators.ComparisonType.GREATER
-        )
-        queries.append(NA_type_query_RNA)
-    if "Hybrid" in NA_types:
-        NA_type_query_RNA = text_operators.ComparisonOperator(
-            value=0, attribute="rcsb_assembly_info.polymer_entity_count_RNA", comparison_type=pypdb.text_operators.ComparisonType.GREATER
-        )
-        NA_type_query_DNA = text_operators.ComparisonOperator(
-            value=0, attribute="rcsb_assembly_info.polymer_entity_count_DNA", comparison_type=pypdb.text_operators.ComparisonType.GREATER
-        )
-        NA_type_query_hybrid = text_operators.ComparisonOperator(
-            value=0, attribute="rcsb_assembly_info.polymer_entity_count_nucleic_acid_hybrid", comparison_type=pypdb.text_operators.ComparisonType.GREATER
-        )
+def query_by_NA_type(NA_types: list, queries: list, conditional: str = "or"):
+    if conditional == "and":
+        if "Protein" in NA_types:
+            NA_type_query_protein = text_operators.ComparisonOperator(
+                value=0, attribute="rcsb_assembly_info.polymer_entity_count_protein", comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+        else:
+            NA_type_query_protein = text_operators.ComparisonOperator(
+                value=0, attribute="rcsb_assembly_info.polymer_entity_count_protein", comparison_type=pypdb.text_operators.ComparisonType.EQUAL
+            )
+        
+        if "RNA" in NA_types:
+            NA_type_query_RNA = text_operators.ComparisonOperator(
+                value=0, attribute="rcsb_assembly_info.polymer_entity_count_RNA", comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+        else:
+            NA_type_query_RNA = text_operators.ComparisonOperator(
+                value=0, attribute="rcsb_assembly_info.polymer_entity_count_RNA", comparison_type=pypdb.text_operators.ComparisonType.EQUAL
+            )
+
+        if "DNA" in NA_types:
+            NA_type_query_DNA = text_operators.ComparisonOperator(
+                value=0, attribute="rcsb_assembly_info.polymer_entity_count_DNA", comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+        else:
+            NA_type_query_DNA = text_operators.ComparisonOperator(
+                value=0, attribute="rcsb_assembly_info.polymer_entity_count_DNA", comparison_type=pypdb.text_operators.ComparisonType.EQUAL
+            )
+        
         and_query = QueryGroup(
-            queries = [NA_type_query_RNA, NA_type_query_DNA],
+            queries = [NA_type_query_protein, NA_type_query_RNA, NA_type_query_DNA],
             logical_operator = LogicalOperator.AND
         )
+        queries.append(and_query)
+
+    elif conditional == "or":
+        temp_queries = []
+        if "Protein" in NA_types:
+            NA_type_query_protein = text_operators.ComparisonOperator(
+                value=0, attribute="rcsb_assembly_info.polymer_entity_count_protein", comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+            temp_queries.append(NA_type_query_protein)
+    
+        if "RNA" in NA_types:
+            NA_type_query_RNA = text_operators.ComparisonOperator(
+                value=0, attribute="rcsb_assembly_info.polymer_entity_count_RNA", comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+            temp_queries.append(NA_type_query_RNA)
+
+        if "DNA" in NA_types:
+            NA_type_query_DNA = text_operators.ComparisonOperator(
+                value=0, attribute="rcsb_assembly_info.polymer_entity_count_DNA", comparison_type=pypdb.text_operators.ComparisonType.GREATER
+            )
+            temp_queries.append(NA_type_query_DNA)
+
         or_query = QueryGroup(
-            queries = [and_query, NA_type_query_hybrid],
+            queries = temp_queries, 
             logical_operator = LogicalOperator.OR
         )
         queries.append(or_query)
