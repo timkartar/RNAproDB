@@ -32,24 +32,24 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
         # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid], capture_output=True, text=True, cwd=temp_cwd)
         result = subprocess.run([f"{temp_cwd}/run_rna_vis_server.sh", pdbid], capture_output=True, text=True, cwd=temp_cwd)
 
-        # You can capture the stdout or stderr for further use if needed
+        # # You can capture the stdout or stderr for further use if needed
         output = result.stdout
         errors = result.stderr
 
-        # Split the output by line breaks
-        lines = output.strip().split('\n')
+        # # Split the output by line breaks
+        # lines = output.strip().split('\n')
 
-        # Find the JSON line (starting from the end)
-        for line in lines:
-            if line.startswith("{"):
-                break
-        json_output = line
+        # # Find the JSON line (starting from the end)
+        # for line in lines:
+        #     if line.startswith("{"):
+        #         break
+        # json_output = line
 
-        if not json_output:
-            return {"message": "Error: No valid JSON found in the script's output.", "output": output, "error": errors}
+        # if not json_output:
+        #     return {"message": "Error: No valid JSON found in the script's output.", "output": output, "error": errors}
         
         try:
-            json_output = json.loads(json_output)
+            json_output = json.loads(f"{temp_cwd}/output/upload-{pdbid}_pca_graph.json")
         except json.JSONDecodeError:
             return {"message": "Error decoding JSON output from script.", "error": errors, "output": output}
         
