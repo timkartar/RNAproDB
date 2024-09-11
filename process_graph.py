@@ -217,6 +217,7 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
         ### segregate protein-RNA interaction edges
         if edge_tuple in interaction_types.keys():
             types = list(interaction_types[edge_tuple])
+
             if "major" in types and "minor" not in types:
                 edge_properties[edge]['color'] = '#5DE3BA'
                 edge_properties[edge]['edge_width'] = 4
@@ -228,13 +229,19 @@ def processEdges(edge_properties, backbone_edges, stacks, pairs, interaction_typ
             elif "other" in types:
                 edge_properties[edge]['color'] = 'black'
             else: #only backbone
-                edge_properties[edge]['color'] = 'black' #for now
+                if edge_properties[edge]['source_type'] == edge_properties[edge]['target_type']:
+                    pass
+                else:
+                    edge_properties[edge]['color'] = 'black' #for now
+
             if "hbond" in types:
                 edge_properties[edge]['my_type'] = 'protein_rna_hbond'
             
             # Water-mediated H bond logic, plan to refactor for multiple types and showing most important edges
             if "whbond" in types:
                 edge_properties[edge]['is_whbond'] = True
+                if edge_properties[edge]['my_type'] == 'backbone':
+                    print(edge_properties[edge])
             else:
                 edge_properties[edge]['is_whbond'] = False
         else:
