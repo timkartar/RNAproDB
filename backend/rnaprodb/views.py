@@ -12,8 +12,10 @@ from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from .make_table import makeTable
 # Create your views here.
 
-main_cwd = '/srv/www/rnaprodb/'
-temp_cwd = '/srv/www/rnaprodb/rnaprodb_dev'
+# main_cwd = '/srv/www/rnaprodb/'
+main_cwd = '/home/aricohen/Desktop/django-react-rnaprodb/'
+
+temp_cwd = main_cwd + 'rnaprodb_dev'
 MAX_FILE_SIZE = 50 * 1024 * 1024 # 50 MB
 RUN_RNAVIS_FLAG = False
 
@@ -28,7 +30,7 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
     if((RUN_RNAVIS_FLAG and algorithm == "pca") or isUpload):
         # script_path = "./rna_vis.py"
         # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid], capture_output=True, text=True, cwd=temp_cwd)
-        result = subprocess.run(["/srv/www/rnaprodb/rnaprodb_dev/run_rna_vis_server.sh", pdbid], capture_output=True, text=True, cwd=temp_cwd)
+        result = subprocess.run([f"{temp_cwd}/run_rna_vis_server.sh", pdbid], capture_output=True, text=True, cwd=temp_cwd)
 
         # You can capture the stdout or stderr for further use if needed
         output = result.stdout
@@ -53,12 +55,12 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
         
         if result.returncode != 0:
             return {"message": "Error running script.", "error": errors}
-        with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
+        with open("{}/output/{}_{}_graph.json".format(temp_cwd, pdbid, algorithm), 'r') as json_file:
             json_output = json.load(json_file)  
             return json_output
     # DO NOT RUN RNA_VIS, FILES ALREADY THERE, meant for production
     else:
-        with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
+        with open("{}/output/{}_{}_graph.json".format(temp_cwd, pdbid, algorithm), 'r') as json_file:
             json_output = json.load(json_file)
             return json_output
 # refactor to work with uploads
@@ -81,7 +83,7 @@ def run_script(request):
         if subgraph_nodes:
             # script_path = "./get_subgraph.py"
             # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
-            result = subprocess.run(["/srv/www/rnaprodb/rnaprodb_dev/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            result = subprocess.run([f"{temp_cwd}/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
 
             # You can capture the stdout or stderr for further use if needed
             output = result.stdout
@@ -170,7 +172,7 @@ def get_struct_info(request):
 def download_json(request):
     pdbid = request.GET.get('pdbid')
     algorithm = request.GET.get('algorithm')
-    with open("/srv/www/rnaprodb/rnaprodb_dev/output/{}_{}_graph.json".format(pdbid, algorithm), 'r') as json_file:
+    with open("{}/output/{}_{}_graph.json".format(temp_cwd, pdbid, algorithm), 'r') as json_file:
         json_output = json.load(json_file)
     return JsonResponse(json_output)
 
@@ -202,7 +204,7 @@ def handle_upload(request):
     json_output = run_rna_vis('pca', unique_id, isUpload=True)
     if json_output:
         if 'error' in json_output: # if dictionary did not work!
-            return JsonResponse({"message": "error processing your file", "error": "error processing your file"}, status=400)
+            return JsonResponse({"message": "error processing your file", "error": "error processing your file", "output": str(json_output)}, status=400)
         response_data = {
                 "message": "Script ran successfully!",
                 "id": unique_id,
