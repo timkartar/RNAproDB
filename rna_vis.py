@@ -19,7 +19,7 @@ from get_rnascape import addRNAscapeToGraph
 from get_viennarna import addViennaToGraph
 from get_num_nucleotides import count_nucleotides_slow, count_nucleotides_fast
 from get_lw import getLW
-from get_whbonds import getWHbonds #runHBplus
+from get_whbonds import getWHbonds, getRNAWHbonds #runHBplus
 from make_tooltip import makeTooltip
 from make_ss_graph import makeSSgraph
 
@@ -56,7 +56,7 @@ protein, rna = splitEntities(structure) # split RNA and protein from structure
 data = runDSSR(structure, quiet=True, prefix=prefix, tmpdir="")
 dssrss = dssrSS(data)
 #for residue in structure.get_residues():
-#    print(residue.get_id())
+#    print(residue.get_id()) 
 #ss = getSS(prefix, data)
 #with open("{}/{}-dssr.json".format(pdb_path, prefix)) as FH:
 #   data = json.load(FH, object_pairs_hook=collections.OrderedDict) 
@@ -79,11 +79,21 @@ pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(da
 water_hbonds, interaction_types, whbond_data = getWHbonds(pdb_path, "{}-assembly1".format(prefix), structure, ss_dict,
         interaction_types)
 
-#print(water_hbonds)
-all_edges = pairs + backbone_edges + interaction_edges + stacks + water_hbonds
+
+# weiyu: the layout is weird when water_hbonds and rna_water_hbonds are combined.
+rna_water_hbonds, rna_interaction_types = getRNAWHbonds(backbone_edges, whbond_data)
+
+all_edges = pairs + backbone_edges + interaction_edges + stacks + water_hbonds + rna_water_hbonds
 
 hbond_set, hbond_data = hbondExtractor(data)
 interaction_types  = labelHbondEdges(interaction_types, hbond_set, ss_dict)
+
+# weiyu: combine rna-rna hbonds and protein-rna hbonds
+#        need to be done after the labelHbondEdges
+interaction_types.update(rna_interaction_types)
+
+#print(interaction_types)
+#exit(0)
 #print(len(all_edges), len(list(set(all_edges)))) not same ??
 #exit()
 #for edge in all_edges:
@@ -91,7 +101,7 @@ interaction_types  = labelHbondEdges(interaction_types, hbond_set, ss_dict)
 #exit()
 d3 = d3graph(support=None, collision=0.5)
 df = pd.DataFrame(all_edges, columns=['source', 'target'])
-df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) +[20]*(len(stacks)) + [20]*len(water_hbonds)
+df['weight'] = [100]*len(pairs) + [100]*(len(backbone_edges)) + [5]*(len(interaction_edges)) +[20]*(len(stacks)) + [20]*len(water_hbonds) + [20]*len(rna_water_hbonds)
 adjmat = vec2adjmat(df['source'], df['target'], weight=df['weight'])
 
 #for item in all_edges:
