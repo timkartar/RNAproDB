@@ -121,8 +121,12 @@ def getWHbonds(path, prefix, structure, ss_dict, interaction_types):
     #exit()
     keys = list(waters.keys())
     for water in keys:
-        if ([] in waters[water]):
-            del waters[water]
+        # if ([] in waters[water]):
+        #     del waters[water]
+
+        # weiyu: delete only if no nt hbonds
+        if waters[water][0] == []:
+            del waters[water] 
 
     wm_edges = set()
     for item in waters.values():
@@ -142,8 +146,48 @@ def getWHbonds(path, prefix, structure, ss_dict, interaction_types):
                 else:
                     interaction_types[edge].add('whbond')
     wm_edges = list(wm_edges)
-    print(wm_edges)
+
     return wm_edges, interaction_types, waters
+
+def getRNAWHbonds(backbone_edges, waters):
+    rna_interaction_types = {}
+    wm_edges = set()
+    
+    # for item in waters.values():
+    for key, item in waters.items():
+        # get all unique nt node connected to the water molecule
+        nt_nodes = set()
+        for nt_data in item[0]:
+            nt_data = nt_data[1]
+            ntsplit = nt_data['rnaprodb_id'].split(":")
+
+            nt_node = ":".join([ntsplit[0], nt_data['name'], ntsplit[1], ntsplit[2]])
+
+            if nt_node not in nt_nodes:
+                nt_nodes.add(nt_node)
+        nt_nodes = list(nt_nodes)
+
+        if len(nt_nodes) > 1:
+            # create pairwise edges between each nucleotide that is bond to the water molecule
+            for i in range(len(nt_nodes)):
+                for j in range(i+1, len(nt_nodes)):
+                    edge = (nt_nodes[i], nt_nodes[j])
+                    
+                    # weiyu: change the edge direction to be the same as backbone_edge
+                    #        otherwise it will show a grey line on the backbone
+                    if edge not in backbone_edges:
+                        edge = (nt_nodes[j], nt_nodes[i])
+
+                    wm_edges.add(edge)
+
+                    if edge not in rna_interaction_types:
+                        rna_interaction_types[edge] = {'whbond'}
+                    else:
+                        rna_interaction_types[edge].add('whbond')
+
+    wm_edges = list(wm_edges)
+    return wm_edges, rna_interaction_types
+
 if __name__=="__main__":
     pass
     #runHBplus()
