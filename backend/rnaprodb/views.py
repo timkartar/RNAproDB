@@ -49,12 +49,13 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
         #     return {"message": "Error: No valid JSON found in the script's output.", "output": output, "error": errors}
         
         try:
-            json_output = json.loads(f"{temp_cwd}/output/upload-{pdbid}_pca_graph.json")
-        except json.JSONDecodeError:
-            return {"message": "Error decoding JSON output from script.", "error": errors, "output": output}
+            with open("{}/output/{}_{}_graph.json".format(temp_cwd, pdbid, algorithm), 'r') as json_file:
+                json_output = json.load(json_file)  
+        except Exception as e:
+            return {"message": "Error decoding JSON output from script.", "error": str(e), "output": output}
         
-        if result.returncode != 0:
-            return {"message": "Error running script.", "error": errors}
+        # if result.returncode != 0:
+        #     return {"message": "Error running script.", "error": errors}
         with open("{}/output/{}_{}_graph.json".format(temp_cwd, pdbid, algorithm), 'r') as json_file:
             json_output = json.load(json_file)  
             return json_output
