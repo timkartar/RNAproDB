@@ -84,7 +84,8 @@ def run_script(request):
         if subgraph_nodes:
             # script_path = "./get_subgraph.py"
             # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
-            result = subprocess.run([f"{temp_cwd}/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            # result = subprocess.run([f"{temp_cwd}/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            result = subprocess.run([f"{temp_cwd}/run_subgraph_local.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
 
             # You can capture the stdout or stderr for further use if needed
             output = result.stdout
@@ -195,7 +196,7 @@ def handle_upload(request):
         return JsonResponse({'error': 'Invalid file type'}, status=400)
 
     # Define the path where the file will be saved
-    file_path = os.path.join(f'{main_cwd}/rnaprodb_frontend/build/cifs', f'{unique_id}-assembly1{file_extension}')
+    file_path = os.path.join(f'{main_cwd}/rnaprodb_dev/output/cifs', f'{unique_id}-assembly1{file_extension}')
 
     # Write the file to the disk
     with open(file_path, 'wb+') as destination:
