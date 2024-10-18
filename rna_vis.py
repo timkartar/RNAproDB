@@ -28,7 +28,7 @@ home =  os.path.dirname(os.path.abspath(__file__))
 backend =  os.path.dirname(os.path.abspath(__file__))
 frontend = backend + "/../rnaprodb_frontend/"
 
-pdb_path = frontend + "build/cifs/"
+pdb_path = backend + "output/cifs/"
 
 if not os.path.exists(pdb_path + "{}-assembly1.cif".format(sys.argv[1])):
     import subprocess, shutil
