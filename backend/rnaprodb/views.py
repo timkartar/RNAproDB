@@ -84,8 +84,8 @@ def run_script(request):
         if subgraph_nodes:
             # script_path = "./get_subgraph.py"
             # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
-            # result = subprocess.run([f"{temp_cwd}/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
-            result = subprocess.run([f"{temp_cwd}/run_subgraph_local.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            result = subprocess.run([f"{temp_cwd}/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            # result = subprocess.run([f"{temp_cwd}/run_subgraph_local.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
 
             # You can capture the stdout or stderr for further use if needed
             output = result.stdout
