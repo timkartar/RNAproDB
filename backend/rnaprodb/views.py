@@ -90,7 +90,7 @@ def run_electrostatics(request):
             # Run the script synchronously
             result = subprocess.run(
                 [script_path, pdbid],
-                cwd=temp_cwd,
+                cwd=electro_path,
                 stdout=subprocess.PIPE,
                 stderr=subprocess.PIPE,
                 text=True  # Ensure stdout and stderr are captured as strings
