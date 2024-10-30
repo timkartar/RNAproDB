@@ -65,7 +65,7 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
         with open("{}/output/{}_{}_graph.json".format(temp_cwd, pdbid, algorithm), 'r') as json_file:
             json_output = json.load(json_file)
             return json_output
-
+"""
 def run_electrostatics(request):
     if request.method == "GET":
         pdbid = request.GET.get('pdbid')
@@ -109,7 +109,45 @@ def run_electrostatics(request):
         except Exception as e:
             # Catch any exception and return an error response
             return JsonResponse({"message": f"Error starting process: {str(e)}"}, status=500)
+"""
+def run_electrostatics(request):
+    if request.method == "GET":
+        pdbid = request.GET.get('pdbid')
+        
+        # Check if pdbid is provided
+        if not pdbid:
+            return JsonResponse({"message": "Missing pdbid parameter."}, status=400)
+        
+        # Sanitize pdbid to allow only alphanumeric characters, dashes, and periods
+        if not re.match(r'^[\w\-.]+$', pdbid):
+            return JsonResponse({"message": "Invalid pdbid parameter."}, status=400)
 
+        # Define the script path
+        electro_path = os.path.join(temp_cwd, "electrostatics")
+        script_path = os.path.join(electro_path, "process_upload.sh")
+
+        # Check if the script exists
+        if not os.path.isfile(script_path):
+            return JsonResponse({"message": "Script not found."}, status=500)
+
+        try:
+            # Run the script asynchronously
+            process = subprocess.Popen(
+                [script_path, pdbid],
+                cwd=electro_path,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            
+            # Optionally, you could log the PID of the background process
+            print(f"Started electrostatics process for {pdbid} with PID: {process.pid}")
+            
+            # Return response indicating the process has started
+            return JsonResponse({"message": f"Electrostatics process started for {pdbid}."}, status=202)
+
+        except Exception as e:
+            # Catch any exception and return an error response
+            return JsonResponse({"message": f"Error starting process: {str(e)}"}, status=500)
 
 def run_script(request):
     # Ensure it's a GET request (although this will be the case by default for this route)
