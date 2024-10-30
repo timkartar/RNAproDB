@@ -10,6 +10,7 @@ from pypdb import get_info
 import uuid
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from .make_table import makeTable
+import re
 # Create your views here.
 
 main_cwd = '/srv/www/rnaprodb/'
@@ -64,7 +65,44 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
         with open("{}/output/{}_{}_graph.json".format(temp_cwd, pdbid, algorithm), 'r') as json_file:
             json_output = json.load(json_file)
             return json_output
-# refactor to work with uploads
+        
+# run electrostatics!
+def run_electrostatics(request):
+    if request.method == "GET":
+        pdbid = request.GET.get('pdbid')
+        
+        # Check if pdbid is provided
+        if not pdbid:
+            return JsonResponse({"message": "Missing pdbid parameter."}, status=400)
+        
+        # Sanitize pdbid to allow only alphanumeric characters, dashes, and periods
+        if not re.match(r'^[\w\-.]+$', pdbid):
+            return JsonResponse({"message": "Invalid pdbid parameter."}, status=400)
+
+        # Define the script path
+        script_path = os.path.join(temp_cwd, "electrostatics/process_upload.sh")
+        
+        # Check if the script exists
+        if not os.path.isfile(script_path):
+            return JsonResponse({"message": "Script not found."}, status=500)
+
+        try:
+            # Run the script asynchronously
+            subprocess.Popen(
+                [script_path, pdbid],
+                cwd=temp_cwd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE
+            )
+            
+            # Return response indicating the process has started
+            return JsonResponse({"message": f"Electrostatics process started for {pdbid}."}, status=202)
+
+        except Exception as e:
+            # Catch any exception and return an error response
+            return JsonResponse({"message": f"Error starting process: {str(e)}"}, status=500)
+    
+
 def run_script(request):
     # Ensure it's a GET request (although this will be the case by default for this route)
     if request.method == "GET":
@@ -84,8 +122,8 @@ def run_script(request):
         if subgraph_nodes:
             # script_path = "./get_subgraph.py"
             # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
-            result = subprocess.run([f"{temp_cwd}/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
-            # result = subprocess.run([f"{temp_cwd}/run_subgraph_local.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            # result = subprocess.run([f"{temp_cwd}/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            result = subprocess.run([f"{temp_cwd}/run_subgraph_local.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
 
             # You can capture the stdout or stderr for further use if needed
             output = result.stdout
