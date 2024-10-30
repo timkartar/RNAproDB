@@ -65,8 +65,54 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
         with open("{}/output/{}_{}_graph.json".format(temp_cwd, pdbid, algorithm), 'r') as json_file:
             json_output = json.load(json_file)
             return json_output
+
+def run_electrostatics(request):
+    if request.method == "GET":
+        pdbid = request.GET.get('pdbid')
         
+        # Check if pdbid is provided
+        if not pdbid:
+            return JsonResponse({"message": "Missing pdbid parameter."}, status=400)
+        
+        # Sanitize pdbid to allow only alphanumeric characters, dashes, and periods
+        if not re.match(r'^[\w\-.]+$', pdbid):
+            return JsonResponse({"message": "Invalid pdbid parameter."}, status=400)
+
+        # Define the script path
+        electro_path = os.path.join(temp_cwd, "electrostatics")
+        script_path = os.path.join(electro_path, "process_upload.sh")
+
+        # Check if the script exists
+        if not os.path.isfile(script_path):
+            return JsonResponse({"message": "Script not found."}, status=500)
+
+        try:
+            # Run the script synchronously
+            result = subprocess.run(
+                [script_path, pdbid],
+                cwd=temp_cwd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True  # Ensure stdout and stderr are captured as strings
+            )
+            
+            # Check if there was an error in execution
+            if result.returncode != 0:
+                # Log and return the stderr output if there was an error
+                print("Script stderr:", result.stderr)
+                return JsonResponse({"message": f"Error running script: {result.stderr}"}, status=500)
+
+            # Log the stdout output for successful execution
+            print("Script stdout:", result.stdout)
+            return JsonResponse({"message": f"Electrostatics process completed for {pdbid}.", "output": result.stdout}, status=200)
+
+        except Exception as e:
+            # Catch any exception and return an error response
+            return JsonResponse({"message": f"Error starting process: {str(e)}"}, status=500)
+
 # run electrostatics!
+# OLD!
+"""
 def run_electrostatics(request):
     if request.method == "GET":
         pdbid = request.GET.get('pdbid')
@@ -103,7 +149,7 @@ def run_electrostatics(request):
         except Exception as e:
             # Catch any exception and return an error response
             return JsonResponse({"message": f"Error starting process: {str(e)}"}, status=500)
-    
+"""
 
 def run_script(request):
     # Ensure it's a GET request (although this will be the case by default for this route)
