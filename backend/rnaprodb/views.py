@@ -65,7 +65,7 @@ def run_rna_vis(algorithm, pdbid, isUpload=False):
         with open("{}/output/{}_{}_graph.json".format(temp_cwd, pdbid, algorithm), 'r') as json_file:
             json_output = json.load(json_file)
             return json_output
-"""
+
 def run_electrostatics(request):
     if request.method == "GET":
         pdbid = request.GET.get('pdbid')
@@ -109,46 +109,108 @@ def run_electrostatics(request):
         except Exception as e:
             # Catch any exception and return an error response
             return JsonResponse({"message": f"Error starting process: {str(e)}"}, status=500)
-"""
 
-def run_electrostatics(request):
+
+def run_script(request):
+    # Ensure it's a GET request (although this will be the case by default for this route)
     if request.method == "GET":
+        # Define the path to your script
         pdbid = request.GET.get('pdbid')
-        
-        # Check if pdbid is provided
+        subgraph_nodes = request.GET.get('subgraph')
+        algorithm = request.GET.get('algorithm')
+        isFirst = request.GET.get('isFirst', 'false').lower() == 'true'  # Correctly handle the 'isFirst' flag as boolean
+
         if not pdbid:
             return JsonResponse({"message": "Missing pdbid parameter."}, status=400)
+
+        result = None
+        json_output = None
+        output_dir = "./output"
+        table = None
+        if subgraph_nodes:
+            # script_path = "./get_subgraph.py"
+            # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            # result = subprocess.run([f"{temp_cwd}/run_subgraph_server.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+            result = subprocess.run([f"{temp_cwd}/run_subgraph_local.sh", pdbid, subgraph_nodes, algorithm], capture_output=True, text=True, cwd=temp_cwd)
+
+            # You can capture the stdout or stderr for further use if needed
+            output = result.stdout
+            errors = result.stderr
+
+            # Split the output by line breaks
+            lines = output.strip().split('\n')
+
+            # Find the JSON line (starting from the end)
+            for line in lines:
+                if line.startswith("'\"{"):
+                    break
+            json_output = line
+
+            if not json_output:
+                return JsonResponse({"message": "Error: No valid JSON found in the script's output.", "output": output, "errors": errors})
+            
+            try:
+                json_output = json.loads(json_output)
+                json_output['tooLarge'] = False
+            except json.JSONDecodeError:
+                return JsonResponse({"message": "Error decoding JSON output from script.", "error": errors})
+            
+            try:
+                table = makeTable(json_output)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=400)
+
+            if result.returncode != 0:
+                return JsonResponse({"message": "Error running script.", "error": errors})
+        else: # full graph!
+            json_output = run_rna_vis(algorithm, pdbid)
+            try:
+                table = makeTable(json_output)
+            except Exception as e:
+                return JsonResponse({'error': str(e)}, status=400)
+            if 'error' in json_output:
+                return JsonResponse(json_output, status=400)
+        # Use PyPDB to get title
+        pdb_info = get_info(pdbid) 
+        temp_title = "Uploaded Structure"
+        temp_protein_name = ("N/A")
+
+        # IF NOT UPLOADED STRUCTURE (longer PDB ID), get info
+        if len(pdbid) <= 6:
+            temp_title = pdb_info['citation'][0]['title']
+            temp_protein_name = (pdb_info['struct']['title'])
+        TOO_LARGE = False
+        if(json_output['tooLarge']):
+            TOO_LARGE = True
         
-        # Sanitize pdbid to allow only alphanumeric characters, dashes, and periods
-        if not re.match(r'^[\w\-.]+$', pdbid):
-            return JsonResponse({"message": "Invalid pdbid parameter."}, status=400)
+        response_data = None
 
-        # Define the script path
-        electro_path = os.path.join(temp_cwd, "electrostatics")
-        script_path = os.path.join(electro_path, "process_upload.sh")
-
-        # Check if the script exists
-        if not os.path.isfile(script_path):
-            return JsonResponse({"message": "Script not found."}, status=500)
-
-        try:
-            # Run the script asynchronously
-            process = subprocess.Popen(
-                [script_path, pdbid],
-                cwd=electro_path,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.PIPE
-            )
-            
-            # Optionally, you could log the PID of the background process
-            print(f"Started electrostatics process for {pdbid} with PID: {process.pid}")
-            
-            # Return response indicating the process has started
-            return JsonResponse({"message": f"Electrostatics process started for {pdbid}."}, status=202)
-
-        except Exception as e:
-            # Catch any exception and return an error response
-            return JsonResponse({"message": f"Error starting process: {str(e)}"}, status=500)
+        if not subgraph_nodes:
+            # new_json_output = {"chainsList": json_output['chainsList'], "ss": json_output["ss"]}
+            response_data = {
+            'file_url': '/{}.tmp.cif.html'.format(pdbid), 
+            "message": "Script ran successfully!",
+            "title": temp_title,
+            'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
+            'tooLarge': False,
+            "table": table,
+            "output": json_output,
+            # "pdb_info": pdb_info
+            }
+        else:
+            response_data = {
+                'file_url': '/{}.tmp.cif.html'.format(pdbid), 
+                "message": "Script ran successfully!",
+                "title": temp_title,
+                'protein_name': temp_protein_name,#.capitalize().replace('rna', 'RNA'),
+                'tooLarge': False,
+                "output": json_output,  # Use the parsed JSON data here
+                "table": table
+                # "pdb_info": pdb_info
+            }
+        return JsonResponse(response_data)
+        
+    return JsonResponse({"message": "Invalid request method."}, status=405)
 
 def get_struct_info(request):
     pdbid = request.GET.get('pdbid')
