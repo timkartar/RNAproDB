@@ -80,7 +80,9 @@ def run_electrostatics(request):
             return JsonResponse({"message": "Invalid pdbid parameter."}, status=400)
 
         # Define the script path
-        script_path = os.path.join(temp_cwd, "electrostatics/process_upload.sh")
+        electro_path = os.path.join(temp_cwd, "electrostatics")
+        script_path = os.path.join(electro_path, "process_upload.sh")
+
         
         # Check if the script exists
         if not os.path.isfile(script_path):
