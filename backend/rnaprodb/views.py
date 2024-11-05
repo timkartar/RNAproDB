@@ -13,8 +13,8 @@ from .make_table import makeTable
 import re
 # Create your views here.
 
-main_cwd = '/srv/www/rnaprodb/'
-# main_cwd = '/home/aricohen/Desktop/django-react-rnaprodb/'
+# main_cwd = '/srv/www/rnaprodb/'
+main_cwd = '/home/aricohen/Desktop/django-react-rnaprodb/'
 
 temp_cwd = main_cwd + 'rnaprodb_dev'
 MAX_FILE_SIZE = 50 * 1024 * 1024 # 50 MB
@@ -24,12 +24,29 @@ class RNAView(viewsets.ModelViewSet):
     serializer_class = RNASerializer
     queryset = RNA.objects.all()
 
+
+def get_struct_list(request):
+    struct_string = ""
+    file_path = os.path.join(temp_cwd, "nakb_prna_ids.txt")
+    
+    try:
+        with open(file_path, "r") as ids_file:
+            struct_string = ids_file.read()  # Read the entire file content into struct_string
+    except FileNotFoundError:
+        return JsonResponse({"error": "File not found."}, status=404)
+    except Exception as e:
+        return JsonResponse({"error": f"An error occurred: {str(e)}"}, status=500)
+
+    return JsonResponse({"structures": struct_string})
+
+
+
 # helper function to run the main script, called by uploading and just pulling a structure
 # pdb is uuid for an uploaded structure
 def run_rna_vis(algorithm, pdbid, isUpload=False):
     json_output = None
     if((RUN_RNAVIS_FLAG and algorithm == "pca") or isUpload):
-        # script_path = "./rna_vis.py"
+        script_path = "./rna_vis.py"
         # result = subprocess.run(["/home/aricohen/anaconda3/envs/RNAproDB/bin/python", script_path, pdbid], capture_output=True, text=True, cwd=temp_cwd)
         result = subprocess.run([f"{temp_cwd}/run_rna_vis_server.sh", pdbid], capture_output=True, text=True, cwd=temp_cwd)
 
