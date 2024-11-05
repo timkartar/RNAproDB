@@ -13,8 +13,8 @@ from .make_table import makeTable
 import re
 # Create your views here.
 
-# main_cwd = '/srv/www/rnaprodb/'
-main_cwd = '/home/aricohen/Desktop/django-react-rnaprodb/'
+main_cwd = '/srv/www/rnaprodb/'
+# main_cwd = '/home/aricohen/Desktop/django-react-rnaprodb/'
 
 temp_cwd = main_cwd + 'rnaprodb_dev'
 MAX_FILE_SIZE = 50 * 1024 * 1024 # 50 MB
