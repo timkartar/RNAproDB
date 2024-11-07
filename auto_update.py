@@ -68,6 +68,8 @@ if __name__ == "__main__":
     # New IDS not common to both
     new_ids = potential_ids.symmetric_difference(seen_ids)
 
+    to_run_electrostatics = []
+
     with open('ids_considered.txt', 'a') as ids_file:
         for new_id in new_ids:
             ran_success = run_rna_vis(new_id)
@@ -75,4 +77,22 @@ if __name__ == "__main__":
                 print('Failed', new_id)
             else:
                 print('Succeeded', new_id)
+                print('Adding to electrostatics queue')
         ids_file.write("\n" + new_id)
+    electrostatics_dir = backend + "/electrostatics"
+    # Loop through each ID and run the script
+    for id in to_run_electrostatics:
+        try:
+            # Run the script with the specified ID in the correct directory
+            subprocess.run(
+                ["./process_upload.sh", id],
+                cwd=electrostatics_dir,
+                check=True,          # Raises an error if the command fails
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True             # Ensures stdout/stderr are strings
+            )
+            print(f"Electrostatics process completed for {id}")
+        except subprocess.CalledProcessError as e:
+            # Handle any errors that occur during the process
+            print(f"Error running electrostatics for {id}: {e.stderr}")
