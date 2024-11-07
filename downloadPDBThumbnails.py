@@ -2,7 +2,7 @@ import requests
 import os
 
 
-def download_assembly_images(pdb_ids, output_folder="../rnaprodb_frontend/public/pdb_thumbnails"):
+def download_assembly_images(pdb_ids, output_folder="../rnaprodb_frontend/build/pdb_thumbnails"):
     """
     Downloads Assembly 1 images for a list of PDB IDs.
     """
@@ -13,7 +13,7 @@ def download_assembly_images(pdb_ids, output_folder="../rnaprodb_frontend/public
         if response.status_code == 200:
             with open(os.path.join(output_folder, f"{pdb_id}_assembly1.png"), "wb") as file:
                 file.write(response.content)
-            os.chmod(os.path.join(output_folder, f"{pdb_id}_assembly1.png"), 777)
+            os.chmod(os.path.join(output_folder, f"{pdb_id}_assembly1.png"), 0o777)
         else:
             print(f"Failed to download image for {pdb_id}")
 

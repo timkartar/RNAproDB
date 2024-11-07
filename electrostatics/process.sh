@@ -4,5 +4,7 @@ while read p; do
     ./run.sh full_$p
     #./run.sh na_$p
     #./run.sh pro_$p
-    #rm *$p*
+    rm pro_*
+    rm na_*
+    rm full_*
 done <$1

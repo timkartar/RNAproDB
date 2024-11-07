@@ -63,12 +63,12 @@ if __name__ == "__main__":
     seen_ids = set()
     with open('ids_considered.txt', 'r') as ids_file:
         for cur_id in ids_file:
-            seen_ids.add(cur_id)
+            seen_ids.add(cur_id.strip())
     
     # New IDS not common to both
     new_ids = potential_ids.symmetric_difference(seen_ids)
 
-    with open('ids_considered.txt', 'w') as ids_file:
+    with open('ids_considered.txt', 'a') as ids_file:
         for new_id in new_ids:
             ran_success = run_rna_vis(new_id)
             if not ran_success:

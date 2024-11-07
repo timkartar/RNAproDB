@@ -16,9 +16,9 @@ mesh = trimesh.Trimesh(vertices=data['points'],
 import matplotlib.pyplot as plt
 
 import matplotlib.cm as cm
-cmap = cm.RdBu
+cmap = cm.bwr_r
 values = data["pdata"]
-norm = plt.Normalize(-15, +15)
+norm = plt.Normalize(-20, +20)
 colors = cmap(norm(values))
 mesh.visual.vertex_colors = colors
 
