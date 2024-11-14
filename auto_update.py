@@ -79,8 +79,9 @@ if __name__ == "__main__":
                 print('Succeeded', new_id)
                 print('Adding to electrostatics queue')
         ids_file.write("\n" + new_id)
+    
+    # Run electrostatics
     electrostatics_dir = backend + "/electrostatics"
-    # Loop through each ID and run the script
     for id in to_run_electrostatics:
         try:
             # Run the script with the specified ID in the correct directory
@@ -96,3 +97,5 @@ if __name__ == "__main__":
         except subprocess.CalledProcessError as e:
             # Handle any errors that occur during the process
             print(f"Error running electrostatics for {id}: {e.stderr}")
+
+    # update search
