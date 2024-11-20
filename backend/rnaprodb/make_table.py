@@ -63,7 +63,7 @@ def makeTable(json_output, path=None):
                 pair_type = tooltip["pair_type"]
                 lw_class = tooltip["Leontis-Westhof class"]
                 toappend = "{},{},{},{},{}".format(node1, node2, distance, pair_type, lw_class)
-                table['Base pairing info'].append(toappend)
+                table['Base pairing'].append(toappend)
             
     #print(table['Water-mediated hydrogen bonds'])
     return table
