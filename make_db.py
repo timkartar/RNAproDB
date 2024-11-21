@@ -72,7 +72,7 @@ if __name__ == '__main__':
                     data.append("NULL")
                 try:   
                     protein_count = info['rcsb_entry_info']['polymer_entity_count_protein']
-                    nucleic_acid_count = info['rcsb_entry_info']['polymer_entity_count_nucleic_acid']
+                    nucleic_acid_count = info['rcsb_entry_info']['polymer_entity_count_RNA']
 
                     if protein_count >= 1 and nucleic_acid_count >= 1: 
                         data.append(True)
