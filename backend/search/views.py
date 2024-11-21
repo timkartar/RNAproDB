@@ -13,6 +13,7 @@ def search_view(request):
     if request.method == 'POST':
         try:
             data = json.loads(request.body)
+            conditional = data.get('conditional')
             search_term = data.get('searchTerm')
             min_resolution = data.get('minResolution')
             max_resolution = data.get('maxResolution')
@@ -28,23 +29,25 @@ def search_view(request):
             max_mw = data.get('maxWeight')
             # Extract other parameters as needed
 
-            additional_queries = []
+            additional_queries = {}
+            if conditional:
+                additional_queries["conditional"] = conditional
             if search_term:
-                additional_queries.append(['term', search_term])
+                additional_queries["term"] = search_term
             if min_resolution and max_resolution:
-                additional_queries.append(['resolution', [min_resolution, max_resolution]])
+                additional_queries["resolution"] = [min_resolution, max_resolution]
             if min_NA and max_NA:
-                additional_queries.append(['NA', [min_NA, max_NA]])
+                additional_queries["NA"] = [min_NA, max_NA]
             if min_protein and max_protein:
-                additional_queries.append(['protein', [min_protein, max_protein]])
+                additional_queries["protein"] = [min_protein, max_protein]
             if experimental_modality:
-               additional_queries.append(['experimental_modality', experimental_modality])
+               additional_queries["experimental_modality"] = experimental_modality
             if min_year and max_year:
-                additional_queries.append(['year', [min_year, max_year]])
+                additional_queries["year"] = [min_year, max_year]
             if NA_type:
-                additional_queries.append(['NA_type', NA_type])
+                additional_queries["NA_type"] = NA_type
             if min_mw and max_mw:
-                additional_queries.append(['molecular_weight', [min_mw, max_mw]])
+                additional_queries["molecular_weight"] = [min_mw, max_mw]
             desired_ids = search(additional_queries)
             pdbs = pypdbObject.objects.filter(id__in=desired_ids)
             serializer = pypdbSerializer(pdbs, many=True)

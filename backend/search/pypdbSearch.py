@@ -54,36 +54,7 @@ def query_by_year(min_year:int, max_year:int, queries: list):
       negation=False)
    queries.append(year_query)
 
-# def query_by_NA_type(NA_types: list, queries: list):
-#     for NA_type in NA_types:
-#         if NA_type == "RNA (only)":
-#             NA_type_query = text_operators.ComparisonOperator(
-#                 value=0, 
-#                 attribute="rcsb_assembly_info.polymer_entity_count_RNA", 
-#                 comparison_type=pypdb.text_operators.ComparisonType.GREATER
-#             )
-#             queries.append(NA_type_query)
-#         elif NA_type == "DNA (only)":
-#             NA_type_query = text_operators.ComparisonOperator(
-#                 value=0, 
-#                 attribute="rcsb_assembly_info.polymer_entity_count_DNA", 
-#                 comparison_type=pypdb.text_operators.ComparisonType.GREATER
-#             )
-#             queries.append(NA_type_query)
-#         elif NA_type == "Hybrid":
-#             NA_type_query_RNA = text_operators.ComparisonOperator(
-#                 value=0, 
-#                 attribute="rcsb_assembly_info.polymer_entity_count_RNA", 
-#                 comparison_type=pypdb.text_operators.ComparisonType.GREATER
-#             )
-#             NA_type_query_DNA = text_operators.ComparisonOperator(
-#                 value=0, 
-#                 attribute="rcsb_assembly_info.polymer_entity_count_DNA", 
-#                 comparison_type=pypdb.text_operators.ComparisonType.GREATER
-#             )
-#             queries.append(NA_type_query_RNA)
-#             queries.append(NA_type_query_DNA)
-def query_by_NA_type(NA_types: list, queries: list, conditional: str = "or"):
+def query_by_NA_type(NA_types: list, queries: list, conditional: str = "and"):
     if conditional == "and":
         if "Protein" in NA_types:
             NA_type_query_protein = text_operators.ComparisonOperator(
@@ -155,28 +126,43 @@ def query_by_molecular_weight(min_mw:float, max_mw:float, queries: list):
          negation=False)
       queries.append(mw_query)
 
-def search(additional_queries: list) -> list:
+
+def search(additional_queries: dict) -> list:
+    conditional = additional_queries.get("conditional", "and")
+    if "conditional" in additional_queries:
+        del additional_queries["conditional"]
+    
+    with open('/srv/www/rnaprodb/rnaprodb_dev/nakb_prna_ids.txt', 'r') as f:
+        nakb_ids = {entry.strip().upper() for entry in f.read().split(',')}
+    
     queries = []
     
-    if additional_queries:
-        for query_type, query_value in additional_queries:
-            if query_type == "term":
-                query_by_term(query_value, queries)
-            elif query_type == "resolution":
-                query_by_resolution(query_value[0], query_value[1], queries)
-            elif query_type == "NA":
-                query_by_NA(query_value[0], query_value[1], queries)
-            elif query_type == "protein":
-                query_by_protein(query_value[0], query_value[1], queries)
-            elif query_type == "experimental_modality":
-                query_by_experimental_modality(query_value, queries)
-            elif query_type == "year":
-                query_by_year(query_value[0], query_value[1], queries)
-            elif query_type == "NA_type":
-                query_by_NA_type(query_value, queries)
-            elif query_type == "molecular_weight":
-                query_by_molecular_weight(query_value[0], query_value[1], queries)
+    for query_type, query_value in additional_queries.items():
+        if query_type == "term":
+            query_by_term(query_value, queries)
+        elif query_type == "resolution":
+            query_by_resolution(query_value[0], query_value[1], queries)
+        elif query_type == "NA":
+            query_by_NA(query_value[0], query_value[1], queries)
+        elif query_type == "protein":
+            query_by_protein(query_value[0], query_value[1], queries)
+        elif query_type == "experimental_modality":
+            query_by_experimental_modality(query_value, queries)
+        elif query_type == "year":
+            query_by_year(query_value[0], query_value[1], queries)
+        elif query_type == "NA_type":
+            query_by_NA_type(query_value, queries, conditional)
+        elif query_type == "molecular_weight":
+            query_by_molecular_weight(query_value[0], query_value[1], queries)
 
+    # If no query parameters, return all IDs from file
+    if not queries:
+        print("No valid search conditions provided.")
+        output_list = [entry.lower() for entry in nakb_ids]
+        print("Output length: " + str(len(output_list)))
+        return output_list
+
+    try:
         results = perform_search_with_graph(
             query_object=QueryGroup(
                 logical_operator=LogicalOperator.AND,
@@ -184,22 +170,20 @@ def search(additional_queries: list) -> list:
             ),
             return_type=ReturnType.ENTRY
         )
+        
         result_set = {entry.upper() for entry in results}
-    else:
+        
+    except Exception as e:
+        print(f"Error during search: {e}")
         result_set = set()
 
-    # Read the file only once
-    with open('/srv/www/rnaprodb/rnaprodb_dev/nakb_prna_ids.txt', 'r') as f:
-        nakb_ids = {entry.strip().upper() for entry in f.read().split(',')}
-    
-    if not additional_queries:
+    if not result_set:
         output_set = nakb_ids
     else:
         output_set = nakb_ids.intersection(result_set)
-    
+
     output_list = [entry.lower() for entry in output_set]
     
-    print(additional_queries)
     print("Output length: " + str(len(output_list)))
     return output_list
 
@@ -208,9 +192,3 @@ if __name__ == "__main__":
     import sys
     pdb = sys.argv[1]
     print(pypdb.get_info(pdb))
-
-
-
-
-
-

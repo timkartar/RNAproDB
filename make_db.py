@@ -28,7 +28,8 @@ def create_tables(f):
     TITLE text,
     YEAR INT,
     DOI text,
-    PubMed INT
+    PubMed INT,
+    IS_RNA_PROTEIN bool
     )
     '''
 
@@ -69,10 +70,18 @@ if __name__ == '__main__':
                     data.append(info['citation'][0]['pdbx_database_id_doi'])
                 except:
                     data.append("NULL")
+                try:   
+                    protein_count = info['rcsb_entry_info']['polymer_entity_count_protein']
+                    nucleic_acid_count = info['rcsb_entry_info']['polymer_entity_count_nucleic_acid']
+
+                    if protein_count >= 1 and nucleic_acid_count >= 1: 
+                        data.append(True)
+                    else:
+                        data.append(False)
+                except:
+                    data.append("NULL")
                 add_data(conn, "Structures", data)
             except Exception as e:
                 print(e)
     
     conn.close()
-            
-

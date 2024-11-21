@@ -18,6 +18,7 @@ def import_SQL():
         year = None if row[3] == 'NULL' else row[3]
         doi = None if row[5] == 'NULL' else row[5]
         pubmed = None if row[4] == 'NULL' else row[4]
+        is_rna_protein = None if row[6] == 'NULL' else row[6]
 
         pypdbObject.objects.create(
             id=row[0], 
@@ -25,7 +26,8 @@ def import_SQL():
             title=title, 
             year=year, 
             pubmed=pubmed, 
-            doi=doi
+            doi=doi,
+            is_rna_protein=is_rna_protein
         )
     conn.commit()
     conn.close()

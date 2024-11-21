@@ -4,4 +4,4 @@ from .models import pypdbObject
 class pypdbSerializer(serializers.ModelSerializer):
     class Meta:
         model = pypdbObject
-        fields = ['id', 'authors', 'title', 'year', 'doi', 'pubmed']
+        fields = ['id', 'authors', 'title', 'year', 'doi', 'pubmed', 'is_rna_protein']
