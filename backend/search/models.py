@@ -7,6 +7,7 @@ class pypdbObject(models.Model):
     year = models.IntegerField(null=True)
     doi = models.CharField(max_length=100, null=True)
     pubmed = models.IntegerField(null=True)
+    is_rna_protein = models.BooleanField(null=False)
 
     def __str__(self) -> str:
         return self.id + ": " + self.title
