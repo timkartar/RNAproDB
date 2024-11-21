@@ -20,9 +20,9 @@ temp_cwd = main_cwd + 'rnaprodb_dev'
 MAX_FILE_SIZE = 50 * 1024 * 1024 # 50 MB
 RUN_RNAVIS_FLAG = False
 
-class RNAView(viewsets.ModelViewSet):
-    serializer_class = RNASerializer
-    queryset = RNA.objects.all()
+# class RNAView(viewsets.ModelViewSet):
+#     serializer_class = RNASerializer
+#     queryset = RNA.objects.all()
 
 
 def get_struct_list(request):
