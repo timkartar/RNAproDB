@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import RNA
+# from .models import RNA
 
 class RNASerializer(serializers.ModelSerializer):
     class Meta:

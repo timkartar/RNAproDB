@@ -1,7 +1,7 @@
 from django.shortcuts import render
 from rest_framework import viewsets
 from .serializers import RNASerializer
-from .models import RNA
+# from .models import RNA
 from django.http import JsonResponse
 import subprocess
 import json
