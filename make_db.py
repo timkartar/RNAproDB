@@ -78,7 +78,8 @@ if __name__ == '__main__':
                         data.append(True)
                     else:
                         data.append(False)
-                except:
+                except Exception as e:
+                    print(e)
                     data.append("NULL")
                 add_data(conn, "Structures", data)
             except Exception as e:
