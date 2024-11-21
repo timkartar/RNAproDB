@@ -20,7 +20,7 @@ from rest_framework import routers
 from rnaprodb import views
 
 router = routers.DefaultRouter()
-router.register(r'rnas', views.RNAView, 'rna')
+# router.register(r'rnas', views.RNAView, 'rna')
 
 urlpatterns = [
     path('admin/', admin.site.urls),
