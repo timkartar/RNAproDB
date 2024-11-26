@@ -10,6 +10,7 @@ from pypdb import get_info
 import uuid
 from django.views.decorators.csrf import ensure_csrf_cookie, csrf_exempt
 from .make_table import makeTable
+from Bio.PDB import PDBParser, MMCIFIO
 import re
 # Create your views here.
 
@@ -23,6 +24,32 @@ RUN_RNAVIS_FLAG = False
 # class RNAView(viewsets.ModelViewSet):
 #     serializer_class = RNASerializer
 #     queryset = RNA.objects.all()
+
+def convert_pdb_to_cif(pdb_file_path, output_dir, unique_id):
+    """
+    Convert a PDB file to CIF format.
+    
+    :param pdb_file_path: Path to the PDB file.
+    :param output_dir: Directory where the converted CIF file will be saved.
+    :param unique_id: Unique identifier for the output file name.
+    :return: Path to the generated CIF file or an error message.
+    """
+    try:
+        # Parse the PDB file
+        parser = PDBParser(QUIET=True)
+        structure = parser.get_structure(unique_id, pdb_file_path)
+        
+        # Define the CIF output path
+        cif_file_path = os.path.join(output_dir, f"{unique_id}-assembly1.cif")
+        
+        # Write to CIF format
+        io = MMCIFIO()
+        io.set_structure(structure)
+        io.save(cif_file_path)
+        
+        return cif_file_path
+    except Exception as e:
+        return {"error": f"Error converting PDB to CIF: {str(e)}"}
 
 
 def get_struct_list(request):
@@ -291,27 +318,40 @@ def handle_upload(request):
         return JsonResponse({'error': 'File size exceeds the allowed limit'}, status=400)
 
     unique_id = "upload-" + str(uuid.uuid4())
-    file_extension = os.path.splitext(file.name)[1]
+    file_extension = os.path.splitext(file.name)[1].lower()
     
-    if file_extension.lower() not in ['.cif']:
+    if file_extension not in ['.cif', '.pdb']:
         return JsonResponse({'error': 'Invalid file type'}, status=400)
 
     # Define the path where the file will be saved
-    file_path = os.path.join(f'{main_cwd}/rnaprodb_dev/output/cifs', f'{unique_id}-assembly1{file_extension}')
+    output_dir = os.path.join(f'{main_cwd}/rnaprodb_dev/output/cifs')
+    os.makedirs(output_dir, exist_ok=True)  # Ensure the output directory exists
+    file_path = os.path.join(output_dir, f'{unique_id}-assembly1{file_extension}')
 
-    # Write the file to the disk
+    # Write the uploaded file to disk
     with open(file_path, 'wb+') as destination:
         for chunk in file.chunks():
             destination.write(chunk)
     
+    # If PDB file, convert to CIF
+    if file_extension == '.pdb':
+        conversion_result = convert_pdb_to_cif(file_path, output_dir, unique_id)
+        if isinstance(conversion_result, dict) and "error" in conversion_result:
+            return JsonResponse(conversion_result, status=500)
+        file_path = conversion_result  # Update file path to point to the CIF file
+
+    # Run your processing script
     json_output = run_rna_vis('pca', unique_id, isUpload=True)
     if json_output:
-        if 'error' in json_output: # if dictionary did not work!
-            return JsonResponse({"message": "error processing your file", "error": "error processing your file", "output": str(json_output)}, status=400)
+        if 'error' in json_output:  # Handle script errors
+            return JsonResponse(
+                {"message": "Error processing your file", "error": str(json_output)}, 
+                status=400
+            )
         response_data = {
-                "message": "Script ran successfully!",
-                "id": unique_id,
+            "message": "Script ran successfully!",
+            "id": unique_id,
         }
         return JsonResponse(response_data)
     else:
-        return JsonResponse({'error': 'Upload failed script no run.', 'json_output': json_output}, status=400)
+        return JsonResponse({'error': 'Upload failed; script did not run.', 'json_output': json_output}, status=400)
