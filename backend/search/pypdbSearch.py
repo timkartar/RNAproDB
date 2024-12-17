@@ -132,7 +132,7 @@ def search(additional_queries: dict) -> list:
     if "conditional" in additional_queries:
         del additional_queries["conditional"]
     
-    with open('/srv/www/rnaprodb/rnaprodb_dev/nakb_prna_ids.txt', 'r') as f:
+    with open('/srv/www/rnaprodb.usc.edu/rnaprodb/rnaprodb_dev/nakb_prna_ids.txt', 'r') as f:
         nakb_ids = {entry.strip().upper() for entry in f.read().split(',')}
     
     queries = []
