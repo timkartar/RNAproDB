@@ -1,5 +1,7 @@
 #!/bin/bash
-PATH=$PATH:/srv/www/deeppbs.usc.edu/deeppbs-webserver/deeppbs/dependencies/bin
-cd /srv/www/rnaprodb/rnaprodb_dev
-/home/aricohen/.conda/envs/rnascape/bin/python ./get_subgraph.py $1 $2 $3
+PATH=$PATH:/srv/www/rnaprodb.usc.edu/DeepPBS/dependencies/bin
+PATH=$PATH:/srv/www/rnaprodb.usc.edu/rnaprodb/rnaprodb_dev/external
+
+cd /srv/www/rnaprodb.usc.edu/rnaprodb/rnaprodb_dev
+/srv/www/rnaprodb.usc.edu/conda/envs/rnaprodb/bin/python ./get_subgraph.py $1 $2 $3
 # >output.log 2>error.log

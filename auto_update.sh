@@ -1,11 +1,12 @@
 #!/bin/bash
 
-PATH=$PATH:/srv/www/deeppbs.usc.edu/deeppbs-webserver/deeppbs/dependencies/bin
-PATH=$PATH:/srv/www/rnaprodb/rnaprodb_dev/external
+PATH=$PATH:/srv/www/rnaprodb.usc.edu/DeepPBS/dependencies/bin
+PATH=$PATH:/srv/www/rnaprodb.usc.edu/rnaprodb/rnaprodb_dev/external
 
-cd /srv/www/rnaprodb/rnaprodb_dev
 
-source /opt/anaconda3/etc/profile.d/conda.sh
+cd /srv/www/rnaprodb.usc.edu/rnaprodb/rnaprodb_dev
 
-conda activate rnascape
+source /srv/www/rnaprodb.usc.edu/conda/etc/profile.d/conda.sh
+
+conda activate rnaprodb
 nohup python auto_update.py

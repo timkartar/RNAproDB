@@ -9,7 +9,7 @@ dirname = home =  os.path.dirname(os.path.abspath(__file__))
 parser = PDB.MMCIFParser(QUIET=True)
 
 # Parse the structure file
-structure = parser.get_structure('protein', '/home/db/rnaprodb/output/cifs/{}-assembly1.cif'.format(pdb))
+structure = parser.get_structure('protein', '/srv/www/rnaprodb.usc.edu/rnaprodb/rnaprodb_dev/output/cifs/{}-assembly1.cif'.format(pdb))
 alphabet = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789"
 chain_map = {}
 for chain in structure.get_chains():
