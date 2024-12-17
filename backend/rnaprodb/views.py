@@ -14,7 +14,8 @@ from Bio.PDB import PDBParser, MMCIFIO
 import re
 # Create your views here.
 
-main_cwd = '/srv/www/rnaprodb/'
+main_cwd = '/srv/www/rnaprodb.usc.edu/rnaprodb/'
+# main_cwd = '/srv/www/rnaprodb/'
 # main_cwd = '/home/aricohen/Desktop/django-react-rnaprodb/'
 
 temp_cwd = main_cwd + 'rnaprodb_dev'
