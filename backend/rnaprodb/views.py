@@ -188,7 +188,7 @@ def run_electrostatics(request):
             print(f"Started electrostatics process for {pdbid} with PID: {process.pid}")
             
             # Return response indicating the process has started
-            return JsonResponse({"message": f"Electrostatics process started for {pdbid}."}, status=202)
+            return JsonResponse({"message": f"Electrostatics process started for {pdbid} with process ID {process.pid}."}, status=202)
 
         except Exception as e:
             # Catch any exception and return an error response
