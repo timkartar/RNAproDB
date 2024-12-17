@@ -11,6 +11,7 @@ import subprocess
 import os
 import json
 import download_ids
+import stat
 
 home =  os.path.dirname(os.path.abspath(__file__))
 backend =  os.path.dirname(os.path.abspath(__file__))
@@ -46,7 +47,15 @@ def run_rna_vis(pdbid):
             with open(file_path, 'r') as outfile:
                 data = json.load(outfile)
                 print("Valid JSON file")
-                return True
+                cif_file_path = '{}/output/cifs/{}-assembly1.cif'.format(home, pdbid)
+            # Check if the file to chmod exists
+            if os.path.exists(cif_file_path):
+                # Change the file permissions to 777
+                os.chmod(cif_file_path, stat.S_IRWXU | stat.S_IRWXG | stat.S_IRWXO)
+                print(f"Permissions for {cif_file_path} set to 777.")
+            else:
+                print(f"File {cif_file_path} does not exist.")                
+            return True
         except json.JSONDecodeError:
             print("Error: File contains invalid JSON.")
             return False
@@ -59,6 +68,7 @@ def run_rna_vis(pdbid):
     return False
 
 if __name__ == "__main__":
+    print("Running auto update")
     potential_ids = set(download_ids.main())
     seen_ids = set()
     with open('ids_considered.txt', 'r') as ids_file:
@@ -82,6 +92,11 @@ if __name__ == "__main__":
             ids_file.write("\n" + new_id)
  
     # Run search update
+    try:
+        subprocess.run("./update_search.sh", check=True, stdout=subprocess.PIPE,stderr=subprocess.PIPE,text=True)
+        print("Search completed.")
+    except subprocess.CalledProcessError as e:
+        print("Error in search.")
 
     # Run electrostatics
     electrostatics_dir = backend + "/electrostatics"
