@@ -22,6 +22,7 @@ from get_lw import getLW
 from get_whbonds import getWHbonds, getRNAWHbonds #runHBplus
 from make_tooltip import makeTooltip
 from make_ss_graph import makeSSgraph
+from clashes import find_clashes
 
 parser = MMCIFParser(QUIET=True)
 home =  os.path.dirname(os.path.abspath(__file__))
@@ -73,6 +74,9 @@ pairs,backbone_edges, interaction_edges, interaction_types, stacks = getEdges(da
 #    #if "PSU" in item[0] or "PSU" in item[1]:
 #    #    print("WHOAAAA")
 #exit()
+
+# find steric clashes
+clashes = find_clashes(structure, data)
 
 #update: added functions to extract all H-bond interactions from dssr and to add H-bond labels to interaction_types object
 
@@ -273,7 +277,7 @@ for edge in final_json_object["links"]:
 
 ret, ntss_dict = makeSSgraph(final_json_object, dssrss)
 
-final_json_object = makeTooltip(final_json_object, ntss_dict, whbond_data, hbond_set, hbond_data)
+final_json_object = makeTooltip(final_json_object, ntss_dict, whbond_data, hbond_set, hbond_data, clashes)
 
 final_json_object['ss_nodes'] = ret['nodes']
 final_json_object['ss_links'] = ret['links']

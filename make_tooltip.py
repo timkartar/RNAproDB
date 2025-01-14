@@ -51,7 +51,7 @@ def processWH(whbond_data):
 
     return output
 
-def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data):
+def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data, clashes):
     node_idxs = {}
     node_id_idxs = {}
     edge_idxs = {}
@@ -158,6 +158,19 @@ def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data):
             table['Structural motif'] = node['name'].split(":")[3]
 
         node['tooltip_table'] = json.dumps(table)
+
+    json_obj['clashes'] = []
+    for a1, a2 in clashes:
+        dist = a1 - a2
+        node1 = f"{a1.parent.parent.id}:{a1.parent.id[1]}:"
+        node2 = f"{a2.parent.parent.id}:{a2.parent.id[1]}:"
+        dist_str = f"{dist:.3f} Å"
+        atom1 = f"{a1.fullname}@{a1.parent.parent.parent.serial_num}..{a1.parent.parent.id}.{a1.parent.resname}.{a1.parent.id[1]}."
+        atom2 = f"{a2.fullname}@{a2.parent.parent.parent.serial_num}..{a2.parent.parent.id}.{a2.parent.resname}.{a2.parent.id[1]}."
+        
+        # entry = f"{node1}\t{node2}\t{dist_str}  \t{atom1} \t{atom2}"
+        entry = ','.join([node1, node2, dist_str, atom1, atom2])
+        json_obj['clashes'].append(entry)
     
     #for edge in json_obj['links']:
     #    edge['tooltip_table'] = json.dumps({"wqwrqwrq":"qFFQ"})
