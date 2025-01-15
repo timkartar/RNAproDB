@@ -11,7 +11,7 @@ def makeTable(json_output, path=None):
     table['Water-mediated hydrogen bonds'] = ["Water,Node 1,Node 2,NT_distance,AA_distance,NT_role,AA_role,NT_Atom,AA_Atom"]
     table['Base pairing'] = ["Node 1,Node 2,Centroid distance, pair_type, Leontis-Westhof class"]
     table['Structural motif'] = ["Name,Chain,Number,Motif (DSSP annotation for protein/DSSR for RNA)"]
-    table['Clashes'] = ["Node 1,Node 2,Distance,Atom1,Atom2"]
+    table['Steric clashes'] = ["Node 1,Node 2,Distance,Atom1,Atom2"]
 
     for item in data['nodes']:
         tooltip = json.loads(item['tooltip_table'].replace("\\\\t",""))
@@ -67,7 +67,7 @@ def makeTable(json_output, path=None):
                 table['Base pairing'].append(toappend)
             
     for item in data['clashes']:
-        table['Clashes'].append(item)
+        table['Steric clashes'].append(item)
 
     #print(table['Water-mediated hydrogen bonds'])
     return table
