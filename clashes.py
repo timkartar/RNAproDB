@@ -102,6 +102,9 @@ def find_clashes(structure, data):
         if chain_1 == chain_2 and abs(residue_1.id[1] - residue_2.id[1]) <= 1:
             continue
 
+        if atom_1 - atom_2 == 0:
+            continue
+
         clashes.append((atom_1, atom_2))
 
 
