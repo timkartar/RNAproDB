@@ -51,6 +51,22 @@ def processWH(whbond_data):
 
     return output
 
+# van der Waals radius
+VDW_RADII = {
+    "H": 1.10, "C": 1.70, "N": 1.55, "O": 1.52, "P": 1.80, "S": 1.80, "F": 1.70, "CL": 1.75, "MG": 1.73, "ZN": 1.39, 
+    "K": 2.75, "SE": 1.90, "CA": 2.31, "I": 1.98, "U": 1.86, "NA": 2.27, 
+}
+
+def get_overlap(atom1, atom2):
+    dist = atom1 - atom2
+
+    # default radii 1.50
+    r1 = VDW_RADII.get(atom1.element, 1.50)
+    r2 = VDW_RADII.get(atom2.element, 1.50)
+    sum_of_radii = r1 + r2
+
+    return sum_of_radii - dist
+
 def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data, clashes):
     node_idxs = {}
     node_id_idxs = {}
@@ -165,11 +181,12 @@ def makeTooltip(json_obj, ntss_dict, whbond_data, hbond_set, hbond_data, clashes
         node1 = f"{a1.parent.parent.id}:{a1.parent.id[1]}:"
         node2 = f"{a2.parent.parent.id}:{a2.parent.id[1]}:"
         dist_str = f"{dist:.3f} Å"
-        atom1 = f"{a1.fullname}@{a1.parent.parent.parent.serial_num}..{a1.parent.parent.id}.{a1.parent.resname}.{a1.parent.id[1]}."
-        atom2 = f"{a2.fullname}@{a2.parent.parent.parent.serial_num}..{a2.parent.parent.id}.{a2.parent.resname}.{a2.parent.id[1]}."
+        clash_overlap = f"{get_overlap(a1, a2):.3f} Å"
+        atom1 = f"{a1.name}@{a1.parent.parent.parent.serial_num}..{a1.parent.parent.id}.{a1.parent.resname}.{a1.parent.id[1]}."
+        atom2 = f"{a2.name}@{a2.parent.parent.parent.serial_num}..{a2.parent.parent.id}.{a2.parent.resname}.{a2.parent.id[1]}."
         
         # entry = f"{node1}\t{node2}\t{dist_str}  \t{atom1} \t{atom2}"
-        entry = ','.join([node1, node2, dist_str, atom1, atom2])
+        entry = ','.join([node1, node2, dist_str, clash_overlap, atom1, atom2])
         json_obj['clashes'].append(entry)
     
     #for edge in json_obj['links']:
